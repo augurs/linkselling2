@@ -1,0 +1,25 @@
+.app-wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 270px!important;
+    height: 100vh;
+    background-color: #fff;
+    color: #fff;
+    transition: width 0.3s ease-in-out;
+    z-index: 2;
+}
+
+.sidebar.open {
+    width: 200px;
+}
+
+.sidebar.closed {
+    width: 0;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}

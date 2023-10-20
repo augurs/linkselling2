@@ -1,0 +1,17 @@
+.MuiPaper-root.MuiMenu-paper.MuiPopover-paper.MuiPaper-elevation8.MuiPaper-rounded {
+    transform: translateY(50px) !important;
+    border: 1px solid lightgray !important;
+    box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.10);
+    /* border-radius: $borderRadius; */
+    width: fit-content !important;
+    outline: none!important;
+}
+
+
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected{
+    background-color: #8fbd56!important;
+}
+
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected:hover{
+    background-color: #8fbd56!important;
+}

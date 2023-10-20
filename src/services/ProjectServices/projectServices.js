@@ -1,0 +1,87 @@
+import axios from "axios";
+import { baseURL2 } from "../../utility/data";
+
+const userData = JSON.parse(localStorage.getItem('userData'))
+
+export const addProjects = (values) => {
+    return axios
+      .post(`${baseURL2}/LinkSellingSystem/public/api/add-project`, {
+        user_id: userData?.id,
+        name: values.projectName,
+        domain: values.webAddress,
+        language: values.publicationLang,
+      })
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+
+  export const projectList = (values) => {
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/projects`)
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+  export const getProject = (id) => {
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`)
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+
+  export const editProject = (values , id) => {
+    return axios
+      .put(`${baseURL2}/LinkSellingSystem/public/api/update-project/${id}`, {
+        name: values.projectName,
+        domain: values.webAddress,
+        language: values.publicationLang,
+      })
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+  export const searchProject = (values) => {
+    console.log(values , "66");
+    return axios
+      .post(`${baseURL2}/LinkSellingSystem/public/api/search-project`, {
+        language: values.language ? values.language : "" ,
+        name: values.title,
+        
+      })
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+
+
+//   projectName: "",
+//   webAddress: "",
+//   publicationLang: "",
+//   publicationCountry: ""

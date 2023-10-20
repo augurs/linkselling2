@@ -1,0 +1,26 @@
+/* styles.css */
+.app-wrapper {
+    display: flex;
+    position: relative;
+  }
+  
+  .sidebar {
+    width: 270px;
+    height: 100vh;
+    transition: width 0.3s ease;
+  }
+  
+  .sidebar-closed {
+    width: 0;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .header {
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
+  

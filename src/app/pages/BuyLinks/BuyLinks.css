@@ -1,0 +1,24 @@
+#custom-tooltip {
+  z-index: 9999;
+}
+
+.custom-switch .custom-control-input:checked~.custom-control-label::before {
+  background-color: #82c035;
+  /* Change this to your desired color */
+}
+
+.traffic-container {
+  width: "200px";
+}
+
+.css-1omp2b7.Mui-selected {
+  background-color: #8fbd56 !important;
+}
+
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
+  background-color: #8fbd56 !important;
+}
+
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected:hover {
+  background-color: #8fbd56 !important;
+}

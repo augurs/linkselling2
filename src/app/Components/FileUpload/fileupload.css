@@ -1,0 +1,19 @@
+.file-upload {
+    border: 2px dashed #8fbd56;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    width: 80%;
+  }
+  
+  .file-upload.dragging {
+    border-color: #8fbd56;
+  }
+  
+  .hidden-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
