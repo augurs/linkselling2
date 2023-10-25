@@ -56,11 +56,12 @@ export const deleteCart = (userId, id) => {
         });
 }
 
-export const buyNow = (userId, domainId , serviceType) => {
+export const buyNow = (userId, domainId , serviceType, articleType) => {
     const formData = new FormData();
     formData.append("id", userId)
     formData.append('domain_id', domainId)
     formData.append('service_type', serviceType)
+    formData.append('article_type', articleType)
 
     return axios
         .post(`${baseURL2}/LinkSellingSystem/public/api/all-buy-now`, formData)

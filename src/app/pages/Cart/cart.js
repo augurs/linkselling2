@@ -25,6 +25,9 @@ const Cart = () => {
     const [showCartModal, setshowCartModal] = useState(false)
     const [buyNowId, setBuyNowId] = useState('')
     const [purchasedData, setPurchasedData] = useState([])
+    const [rowId, setRowId] = useState('')
+
+    
 
 
     const userData = JSON.parse(localStorage.getItem('userData'))
@@ -82,23 +85,29 @@ const Cart = () => {
     }
 
 
-    const buyNowServices = async (domainId, serviceType) => {
+    const buyNowServices = async (domainId, serviceType , articleType , id) => {
         setBuyNowId(domainId)
+        setRowId(id)
         setLoading({ ...loading, buyNowLoading: true })
-        const res = await buyNow(userData?.id, domainId, serviceType)
+        const res = await buyNow(userData?.id, domainId, serviceType , articleType)
         if (res.success === true) {
             setshowCartModal(true)
             setLoading({ ...loading, buyNowLoading: false })
             setPurchasedData(res)
             getCartServices()
             cartListServices()
+            setRowId()
         } else {
             setshowCartModal(true)
             setLoading({ ...loading, buyNowLoading: false })
             getCartServices()
             cartListServices()
+            setRowId()
+
         }
     }
+
+    console.log(rowId , "110");
 
     const columns = [
         {
@@ -187,7 +196,7 @@ const Cart = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType)}> {loading.buyNowLoading && buyNowId === row.domainId ? <ColorRing
+            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType , row?.articleType , row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
                 visible={true}
                 height="30"
                 width="30"
@@ -229,7 +238,8 @@ const Cart = () => {
             cartId: item?.id,
             testLink: item?.service_type === '1' ? item?.links?.txt_cost : "N/A",
             graphicLink: item?.service_type === '1' ? item?.links?.graph_cost : "N/A",
-            price : item?.service_type === '1' ? "N/A" : item?.amount
+            price : item?.service_type === '1' ? "N/A" : item?.amount,
+            rowId : item?.id,
         }
     })
 
@@ -267,7 +277,7 @@ const Cart = () => {
                             <span className='fs-3'>{cartProducts?.total} zł</span>
                         </div>
                         <div>
-                            <Button variant='primary' onClick={() => buyNowServices("", cartProducts?.product[0]?.service_type)}>
+                            <Button variant='primary' onClick={() => buyNowServices("", cartProducts?.product[0]?.service_type , "")}>
 
 
                                 {loading.buyNowLoading && buyNowId === "" ?

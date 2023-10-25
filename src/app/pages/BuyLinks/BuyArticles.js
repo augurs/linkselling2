@@ -134,10 +134,9 @@ const BuyArticles = () => {
 
 
     useEffect(() => {
-        if (articleType === translate(languageData, "RequestArticleWriting") && confirmTraffic) {
-            setFinalPrice(parseInt(orderPrice) + parseInt(traficType.price) + "00")
-        } else if (articleType === translate(languageData, "RequestArticleWriting")) {
-            setFinalPrice(parseInt(orderPrice) + "00")
+
+        if (articleType === translate(languageData, "RequestArticleWriting")) {
+            setFinalPrice(parseInt(orderPrice) + selectedSubArticles?.bestPrice)
         } else {
             setFinalPrice(selectedSubArticles?.bestPrice)
         }
@@ -319,7 +318,7 @@ const BuyArticles = () => {
             ),
             selector: (row) => row.maxLinks,
             center: true,
-            width : "130px",
+            width: "130px",
         },
         {
             name: (
@@ -329,7 +328,7 @@ const BuyArticles = () => {
             ),
             selector: (row) => row.typeOfAnchors,
             center: true,
-            width : "130px",
+            width: "130px",
         },
         {
             name: "Action",
@@ -376,8 +375,8 @@ const BuyArticles = () => {
             bestPrice: item?.client_price,
             cartOption: showCartOptions,
             cart: item.cart,
-            typeOfAnchors : item?.type_of_anchor,
-            maxLinks : item?.max_links,
+            typeOfAnchors: item?.type_of_anchor,
+            maxLinks: item?.max_links,
 
         }
     })
@@ -502,8 +501,6 @@ const BuyArticles = () => {
             homepage: item?.home_page,
             cart: item?.cart
         }
-
-
     })
 
 
@@ -511,6 +508,7 @@ const BuyArticles = () => {
         const res = await articleTypeList()
         setArticlePackages(res?.data?.reverse())
     }
+
 
 
     const addToCartArticleServices = async () => {
@@ -523,7 +521,8 @@ const BuyArticles = () => {
             articleQuality: orderType,
             articleTitle: requestArticleTitle,
             monthGuarantee: monthGuarantee,
-            amount: finalPrice
+            amount: selectedSubArticles?.bestPrice,
+            article_amount: orderPrice?.split(',')[0]
         }
         setCartLoading(true)
         const res = await addToCartArticles(data)
@@ -562,7 +561,7 @@ const BuyArticles = () => {
             getPublisherArticlesService()
         }
     }
-    console.log(selectedSubArticles , "54");
+    console.log(selectedSubArticles, "54");
 
     const handleConfirmation = () => {
         setConfirmModal(false);
@@ -987,12 +986,13 @@ const BuyArticles = () => {
                                                         {articlePackages?.map((item, index) => {
                                                             return (
 
-                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price)} key={index} className='mt-2'>
-                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2"}`} style={{ cursor: "pointer" }}>
+                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price)} key={index} className='mt-2 rounded-pill'>
+                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer"}}>
+                                                                        <div className={` d-flex justify-content-center align-items-center  ${orderType === item.name ? "bg-primary" : "bg-outline-primary"}`} style={{height:"100px"}}><h3 className={`mt-4  ${orderType === item.name ? "text-white" : "text-outline-white"}`}>{item.price} </h3> 
+                                                                        </div>
                                                                         <Card.Body className='text-center'>
-                                                                            <h3>{item.name}</h3>
                                                                             <div className='mt-4 mb-4'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                                            <div className='mb-4'>{item.price} <br /> net </div>
+                                                                            <h3 className='mb-4'>{item.name} </h3>
                                                                             <Link >{item?.description}</Link>
                                                                             <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>

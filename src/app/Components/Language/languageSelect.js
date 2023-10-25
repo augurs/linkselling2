@@ -9,8 +9,6 @@ import { useEffect } from 'react';
 import { useLanguage } from '../../Context/languageContext';
 
 const LanguageSelect = () => {
-
-
     const langState = localStorage.getItem('lang')
 
     const [lang, setLang] = useState({ name: 'Polish', flag: polandFlag });
@@ -18,16 +16,14 @@ const LanguageSelect = () => {
 
     const location = useLocation();
     const { setLanguage } = useLanguage()
-
+    const getLang = localStorage.getItem('lang');
 
 
     useEffect(() => {
-        if (location.pathname == "/nip") {
-            i18n.changeLanguage("pl");
+        if (!getLang) {
+            localStorage.setItem("lang", "pl")
         }
-
     }, [])
-
 
     const languages = [
         { name: 'Polish', flag: polandFlag, value: "pl" },

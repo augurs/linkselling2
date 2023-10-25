@@ -1,10 +1,11 @@
 import React from 'react'
-import { Card, Col, Row } from 'react-bootstrap'
+import { Button, Card, Col, Row } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { getInvoices } from '../../../services/invoicesServices/invoicesServices'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import globalLoader from '../../../assets/images/loader.svg'
+import { Link } from 'react-router-dom'
 
 const Invoices = () => {
 
@@ -89,7 +90,7 @@ const Invoices = () => {
                 </div> :
                     <>
                         <div className='my-4'>
-                            <Row >
+                            <Row className='flex justify-content-between'>
                                 <Col xs={12} sm={6} md={4} >
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
                                         <input className="input100" type="text" name="search" placeholder='Search' />
@@ -97,6 +98,11 @@ const Invoices = () => {
                                         <span className="symbol-input100">
                                             <i className="zmdi zmdi-search" aria-hidden="true"></i>
                                         </span>
+                                    </div>
+                                </Col>
+                                <Col xs={12} sm={6} md={4}>
+                                    <div className="d-flex justify-content-end">
+                                        <Link to="/companydata"><Button>My data</Button></Link>
                                     </div>
                                 </Col>
                             </Row>

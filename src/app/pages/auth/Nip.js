@@ -5,7 +5,7 @@ import LanguageSelect from '../../Components/Language/languageSelect'
 import { registerNip } from '../../../services/authServices/authservices'
 import globalLoader from '../../../assets/images/loader.svg'
 import { ToastContainer, toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 
 const Nip = () => {
@@ -15,6 +15,8 @@ const Nip = () => {
         email: "",
         nipNumber: "",
     };
+
+    const { id } = useParams()
 
     const { t } = useTranslation();
 
@@ -39,16 +41,16 @@ const Nip = () => {
     const validate = (value) => {
         let error = {};
         let isValid = true;
-        const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        // const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         const nipReg = /^[0-9]*$/;
 
-        if (!value.email) {
-            error.email =  languageData &&  languageData?.filter((item) => item.title === 'signUpEmailError')[0]?.value || 'signUpEmailError';
-            isValid = false;
-        } else if (!emailReg.test(value.email)) {
-            error.email = languageData &&  languageData?.filter((item) => item.title === 'signUpEmailError2')[0]?.value || 'signUpEmailError2';
-            isValid = false;
-        }
+        // if (!value.email) {
+        //     error.email =  languageData &&  languageData?.filter((item) => item.title === 'signUpEmailError')[0]?.value || 'signUpEmailError';
+        //     isValid = false;
+        // } else if (!emailReg.test(value.email)) {
+        //     error.email = languageData &&  languageData?.filter((item) => item.title === 'signUpEmailError2')[0]?.value || 'signUpEmailError2';
+        //     isValid = false;
+        // }
         if (!value.nipNumber) {
             error.nipNumber = "Nip jest wymagany"
             isValid = false;
@@ -66,7 +68,7 @@ const Nip = () => {
 
     const nipRegisterServices = async () => {
         setLoader(true)
-        const res = await registerNip(formValues)
+        const res = await registerNip(formValues , id)
         console.log(res);
 
         if (res?.success === true && res.message === "NIP response get successfully.") {
@@ -140,16 +142,8 @@ const Nip = () => {
                                 <Card.Body>
                                     <Form className="login100-form validate-form">
                                         <span className="login100-form-title">{t('nipHeading')}</span>
-                                        <div className="wrap-input100 validate-input mb-0">
-                                            <input className="input100" type="text" name="email" placeholder={t('nipEmail')} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} />
-                                            <span className="focus-input100"></span>
-                                            <span className="symbol-input100">
-                                                <i className="mdi mdi-domain" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                        <div className='text-danger mb-2 mt-1 text-sm-12'>{formErrors.email}</div>
                                         <div className="wrap-input100 validate-input mb-0 mt-2">
-                                            <input className="input100" type="text" name="nipNumber" placeholder={t('nipPlaceHolder')} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} />
+                                            <input className="input100" type="number" name="nipNumber" placeholder={t('nipPlaceHolder')} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} />
                                             <span className="focus-input100"></span>
                                             <span className="symbol-input100">
                                                 <i className="mdi mdi-domain" aria-hidden="true"></i>

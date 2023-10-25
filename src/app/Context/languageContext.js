@@ -19,11 +19,10 @@ function CustomLanguageContext({ children }) {
         languageService()
     }, [language])
 
-    console.log(language , "20");
+
 
     const languageService = async () => {
         const res =  await getLanguages(language)
-        console.log(res , "15");
         setLanguageData(res.data)
     }
 

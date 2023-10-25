@@ -23,6 +23,7 @@ import RequestedArticles from "./app/pages/Content/RequestedArticles.js";
 import Cart from "./app/pages/Cart/cart.js";
 import MarketPlace from "./app/pages/MarketPlace/marketPlacList.js";
 import Invoices from "./app/pages/Invoices/invoices.js";
+import Companydata from "./app/pages/companydata/companydata.js";
 import CustomCartContext from "./app/Context/cartListContext.js";
 import '../src/assets/css/custom.css'
 
@@ -63,13 +64,15 @@ function App() {
         { path: 'buyArticles', element: <BuyArticles /> },
         { path: 'requestedArticles', element: <RequestedArticles /> },
         { path: 'cart', element: <Cart /> },
-        { path: 'invoices', element: <Invoices /> },
+        { path: 'invoices', element: <Invoices />
+       },{ path: 'companydata', element: <Companydata />
+      },
 
       ]
     },
     {
 
-      path: '/nip',
+      path: '/nip/:id',
       element: <Nip />
 
     }

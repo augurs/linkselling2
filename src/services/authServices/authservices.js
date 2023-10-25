@@ -1,6 +1,8 @@
 import axios from "axios";
 import { baseURL2 } from "../../utility/data";
 
+
+
 export const login = (formValues , currLang) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/login`, {
@@ -51,11 +53,11 @@ export const forgotPassword = (email) => {
 };
 
 
-export const registerNip = (values) => {
+export const registerNip = (values , id) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/get-gus-response`, {
       nip_number: values.nipNumber,
-      email: values.email,
+      user_id: id,
     })
     .then((res) => {
       return res?.data;

@@ -66,6 +66,7 @@ export const addToCartArticles = (data) => {
   formData.append("traffice_guarantee", data.trafficGuarantee);
   formData.append("month_guarantee", data.monthGuarantee);
   formData.append("amount", data.amount);
+  formData.append("article_amount", data.article_amount);
   formData.append("article_id ", data.article);
 
   return axios
