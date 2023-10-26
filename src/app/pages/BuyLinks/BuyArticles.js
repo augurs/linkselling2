@@ -40,6 +40,7 @@ const BuyArticles = () => {
     const [confirmTraffic, setConfirmTraffic] = useState(false)
     const [orderType, setOrderType] = useState('Basic article');
     const [orderPrice, setOrderPrice] = useState('50,00 zł');
+    const [orderId, setOrderId] = useState(1);
     // const [specifyDetails, setSpecifyDetails] = useState("Specify Now")
     const [requestArticleTitle, setRequestArticleTitle] = useState("")
     const [selectArticle, setSelectArticle] = useState('')
@@ -78,6 +79,8 @@ const BuyArticles = () => {
         setSearch({ ...search, [name]: value })
     }
 
+
+    console.log(articlePackages , "82");
     // const increasePage = () => {
     //     if (page <= lastPage) {
     //         return;
@@ -217,9 +220,10 @@ const BuyArticles = () => {
     );
 
 
-    const handleOrderPriceCard = (type, price) => {
+    const handleOrderPriceCard = (type, price, id) => {
         setOrderType(type)
         setOrderPrice(price)
+        setOrderId(id)
     }
 
     const modalColumns = [
@@ -509,6 +513,7 @@ const BuyArticles = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
+    console.log(orderId , "516");
 
 
     const addToCartArticleServices = async () => {
@@ -522,7 +527,8 @@ const BuyArticles = () => {
             articleTitle: requestArticleTitle,
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
-            article_amount: orderPrice?.split(',')[0]
+            article_amount: orderPrice?.split(',')[0],
+            article_id : orderId
         }
         setCartLoading(true)
         const res = await addToCartArticles(data)
@@ -986,7 +992,7 @@ const BuyArticles = () => {
                                                         {articlePackages?.map((item, index) => {
                                                             return (
 
-                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price)} key={index} className='mt-2 rounded-pill'>
+                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='mt-2 rounded-pill'>
                                                                     <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer"}}>
                                                                         <div className={` d-flex justify-content-center align-items-center  ${orderType === item.name ? "bg-primary" : "bg-outline-primary"}`} style={{height:"100px"}}><h3 className={`mt-4  ${orderType === item.name ? "text-white" : "text-outline-white"}`}>{item.price} </h3> 
                                                                         </div>

@@ -6,7 +6,7 @@ import { useState } from 'react'
 import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
-
+import DataTable from 'react-data-table-component'
 const Invoices = () => {
 
   const userData = JSON.parse(localStorage.getItem('userData'))
@@ -14,10 +14,6 @@ const Invoices = () => {
 
   const [invoicesList, setInvoicesList] = useState([])
   const [loading, setLoading] = useState(false)
-
-
-
-
 
   useEffect(() => {
     invoicesListServices()
@@ -34,36 +30,93 @@ const Invoices = () => {
     }
   }
 
-  console.log(invoicesList)
+  const tableData = [
+      {
+        apartment_number: invoicesList.apartment_number,
+        city: invoicesList.city,
+        community: invoicesList.community,
+        company_name: invoicesList.company_name,
+        district: invoicesList.district,
+        postal_code: invoicesList.postal_code,
+        province: invoicesList.province,
+        street: invoicesList.street,
+      }
+
+  ]
+
+  const columns = [
+    {
+      name: translate(languageData, "city"),
+      selector: row => row.city,
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "community"),
+      selector: row => row.community,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "district"),
+      selector: row => row.district,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "postalCode"),
+      selector: row => row.postal_code,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "province"),
+      selector: row => row.province,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "street"),
+      selector: row => row.street,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "apartmentNumber"),
+      selector: row => row.apartment_number,
+      sortable: true,
+      center: true,
+      // width: '130px'
+    },
+
+  ]
 
   return (
     <div className='p-4'>
 
-      <h3 className='mt-3 mb-3'>Company Data</h3>
+      <h3 className='mt-3 mb-3 text-center'>Company Data</h3>
+
       <div className='mt-5 w-100'>
         {loading ? <div className='d-flex'>
           <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
         </div> :
           <>
-            <div className='my-4'>
-
-              <Card className='p-4 text-center'>
-                <Card.Title>{invoicesList.company_name}</Card.Title>
-                <Card.Body >
-                
-
-                  <p className='mb-1'><strong>Apartment_number: </strong> {invoicesList?.apartment_number} </p>
-                  <p className='mb-1'><strong> City: </strong> <span className=''>{invoicesList?.city}</span></p>
-                  <p className='mb-1'><strong>Community :</strong> {invoicesList?.community}</p>
-                  <p className='mb-1'><strong>District :</strong> {invoicesList?.district}</p>
-                  <p className='mb-1'><strong>Property_number :</strong> {invoicesList?.property_number}</p>
-                  <p className='mb-1'><strong>Province :</strong> {invoicesList?.province}</p>
-                  <p className='mb-1'><strong>Street :</strong> {invoicesList?.street}</p>
-                  <p className='mb-1'><strong>Postal_code: </strong> {invoicesList?.postal_code} </p>
-                </Card.Body>
-              </Card>
-            </div>
-
+          <h4 className='text-center'>{invoicesList.company_name}</h4>
+            <DataTable
+              columns={columns}
+              data={tableData}
+            /> 
           </>
         }
       </div>

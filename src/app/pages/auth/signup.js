@@ -118,7 +118,7 @@ const SignUp = () => {
       setSignUpLoading(false)
       setFormValues({ username: "", password: "", email: "", terms: false })
       setTimeout(() => {
-        navigate('/login')
+        navigate('/RegistrationDone')
       }, 2000);
     } else if (res.message[0] === "The email has already been taken.") {
       toast(signUpErrorsMessage, {
@@ -212,7 +212,7 @@ const SignUp = () => {
                         </a>}
                     </div>
                     <div className="text-center pt-3">
-                      <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount')[0]?.value || 'alreadyHaveAnAccount'}<a onClick={() => navigate('/login')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount2')[0]?.value || 'alreadyHaveAnAccount2'}</a></p>
+                      <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount')[0]?.value || 'alreadyHaveAnAccount'}<a onClick={() => navigate('/Login')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount2')[0]?.value || 'alreadyHaveAnAccount2'}</a></p>
                     </div>
                   </Form>
                 </Card.Body>

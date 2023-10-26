@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from './app/pages/auth/login.js'
+import Thanks from './app/pages/auth/thankyou.js'
 import SignUp from './app/pages/auth/signup.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import { useEffect } from "react";
@@ -37,6 +38,10 @@ function App() {
     {
       path: '/login',
       element: <Login />
+    },
+    {
+      path: '/RegistrationDone',
+      element: <Thanks />
     },
     {
       path: '/signUp',

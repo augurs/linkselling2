@@ -340,14 +340,15 @@ const OrderArticle = () => {
                                 return (
 
                                     <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.type, item.price)} key={index} className='mt-2'>
-                                        <Card className={`shadow-md ${orderType === item.type && "border border-primary border-2"} `} style={{ cursor: "pointer" }}>
+                                        <Card className={`shadow-md ${orderType === item?.type && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
+                                            <div className={` d-flex justify-content-center align-items-center  ${orderType === item.type ? "bg-primary" : "bg-outline-primary"}`} style={{ height: "100px" }}><h3 className={`mt-4  ${orderType === item.type ? "text-white" : "text-outline-white"}`}>{item.price} </h3>
+                                            </div>
                                             <Card.Body className='text-center'>
-                                                <h3>{item.type}</h3>
                                                 <div className='mt-4 mb-4'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                <div className='mb-4'>{item.price} <br /> {translate(languageData , "Net")} </div>
+                                                <h3 className='mb-4'>{item.type} </h3>
                                                 <Link >{translate(languageData , "SeeExample")}</Link>
                                                 <div className='mt-4'>
-                                                    <Button className={`btn  ${orderType === item.type ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData , "Select")}</Button>
+                                                    <Button className={`btn  ${orderType === item.type ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                 </div>
                                             </Card.Body>
                                         </Card>
