@@ -37,7 +37,7 @@ const ProjectList = () => {
         projectListServices()
     }, [])
 
-
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     const handleSearchService = async () => {
         setLoading(true)
@@ -49,7 +49,7 @@ const ProjectList = () => {
 
     const projectListServices = async () => {
         setLoading(true)
-        const res = await projectList()
+        const res = await projectList(userData?.id)
         setProjectList(res.data)
         setLoading(false)
     }
@@ -80,30 +80,30 @@ const ProjectList = () => {
 
     const columns = [
         {
-            name: translate(languageData , "ProjectName"),
+            name: translate(languageData, "ProjectName"),
             selector: row => row.projectName,
             sortable: true,
             left: true,
         },
         {
-            name: translate(languageData , "artilisAddingDate"),
+            name: translate(languageData, "artilisAddingDate"),
             selector: row => row.dateOfAdding,
             sortable: true,
             left: true,
         },
         {
-            name: translate(languageData , "Language"),
+            name: translate(languageData, "Language"),
             selector: row => row.language,
             sortable: true,
             left: true,
         },
         {
-            name: translate(languageData , "WebUrl"),
+            name: translate(languageData, "WebUrl"),
             selector: row => row.weburl,
             sortable: true,
             left: true,
             cell: (row) => (
-                <Link to={`http://${row.weburl}`} target="_blank" style={{textDecoration : "underline"}}>
+                <Link to={`http://${row.weburl}`} target="_blank" style={{ textDecoration: "underline" }}>
                     {row.weburl}
                 </Link>
             ),
@@ -111,8 +111,8 @@ const ProjectList = () => {
 
 
         {
-            name: translate(languageData , "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => navigate(`/editProject/${row.id}`)}>{translate(languageData , "Edit")}</button>,
+            name: translate(languageData, "Action"),
+            cell: row => <button className='btn btn-primary' onClick={() => navigate(`/editProject/${row.id}`)}>{translate(languageData, "Edit")}</button>,
             left: true,
         },
     ];
@@ -227,7 +227,7 @@ const ProjectList = () => {
     return (
         <div className='p-4'>
             <div className='d-flex flex-wrap '>
-                <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData , "AddProject")}</Button>
+                <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData, "AddProject")}</Button>
 
             </div>
             <div className='mt-4'>
@@ -247,12 +247,12 @@ const ProjectList = () => {
 
                     </Col> */}
                     <Col xs={12} sm={6} md={6} className='mb-3'>
-                        <Select options={languagesOpts} name='language' placeholder={translate(languageData , "Language")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleLanguageChange} />
+                        <Select options={languagesOpts} name='language' placeholder={translate(languageData, "Language")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleLanguageChange} />
 
                     </Col>
                     <Col xs={12} sm={6} md={6} className='mb-2'>
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                            <input className="input100" type="text" name="title" placeholder={translate(languageData , "artilstSearch")} onChange={(e) => setSearchTerms({ ...searchTerms, title: e.target.value })} />
+                            <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstSearch")} onChange={(e) => setSearchTerms({ ...searchTerms, title: e.target.value })} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
                                 <i className="zmdi zmdi-search" aria-hidden="true"></i>
@@ -312,10 +312,10 @@ const ProjectList = () => {
                         // selectableRowsComponent={Checkbox}
                         columns={columns}
                         data={data}
-                        // selectableRows
-                        // selectableRowsHighlight
-                        // selectableRowsHeader
-                        // selectableRowsHeaderComponent={checkboxHeader}
+                    // selectableRows
+                    // selectableRowsHighlight
+                    // selectableRowsHeader
+                    // selectableRowsHeaderComponent={checkboxHeader}
 
                     />
                 }

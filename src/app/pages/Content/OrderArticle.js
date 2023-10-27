@@ -11,6 +11,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
+import green from '../../../assets/images/cards/Green.png';
+import grey from '../../../assets/images/cards/Grey.png';
 
 const OrderArticle = () => {
 
@@ -45,8 +47,8 @@ const OrderArticle = () => {
     const navigate = useNavigate()
 
 
- 
-    const {languageData} = useLanguage()
+
+    const { languageData } = useLanguage()
 
 
 
@@ -58,27 +60,27 @@ const OrderArticle = () => {
 
 
         if (!values.project) {
-            error.project = translate(languageData , "PleaseSelectYourProject");
+            error.project = translate(languageData, "PleaseSelectYourProject");
             isValid = false;
         }
 
         if (!values.country) {
-            error.country = translate(languageData , "PleaseSelectYourCountry");
+            error.country = translate(languageData, "PleaseSelectYourCountry");
             isValid = false;
         }
 
         if (!values.quantity) {
-            error.quantiy = translate(languageData , "PleaseEnterArticleQuantity");
+            error.quantiy = translate(languageData, "PleaseEnterArticleQuantity");
             isValid = false;
         }
 
         if (!values.title) {
-            error.quantiy = translate(languageData , "PleaseEnterArticleTitle");;
+            error.quantiy = translate(languageData, "PleaseEnterArticleTitle");;
             isValid = false;
         }
 
         if (!values.imageAction) {
-            error.imageAction =  translate(languageData , "PleaseSelectYourImage");
+            error.imageAction = translate(languageData, "PleaseSelectYourImage");
             isValid = false;
         }
 
@@ -88,36 +90,36 @@ const OrderArticle = () => {
         // }
 
         if (!values.placingLink) {
-            error.placingLink = translate(languageData , "PleaseEnterPlacingLink");;
+            error.placingLink = translate(languageData, "PleaseEnterPlacingLink");;
             isValid = false;
         }
 
         if (!values.contactForm) {
-            error.contactForm = translate(languageData , "PleaseSelectContactForm");
+            error.contactForm = translate(languageData, "PleaseSelectContactForm");
             isValid = false;
         }
 
         if (!values.phone) {
-            error.phone =  translate(languageData , "PleaseEnterPhoneNumber");
+            error.phone = translate(languageData, "PleaseEnterPhoneNumber");
             isValid = false;
         }
 
         if (!values.attachment) {
-            error.attachment =  translate(languageData , "PleaseAttachmentRequired");
+            error.attachment = translate(languageData, "PleaseAttachmentRequired");
             isValid = false;
         }
 
         if (!values.comment) {
-            error.comment =  translate(languageData , "PleaseAddYourComment");
+            error.comment = translate(languageData, "PleaseAddYourComment");
             isValid = false;
         }
 
 
         if (!values.email) {
-            error.email = translate(languageData , "PleaseEnterEmail");
+            error.email = translate(languageData, "PleaseEnterEmail");
             isValid = false
         } else if (!emailRegex.test(values.email)) {
-            error.email = translate(languageData , "signUpEmailError2");
+            error.email = translate(languageData, "signUpEmailError2");
             isValid = false;
         }
 
@@ -187,43 +189,43 @@ const OrderArticle = () => {
 
     }
 
-    const formOfContactOpts =[
+    const formOfContactOpts = [
         {
-            value : translate(languageData , "LinksellingChatAnytime")
+            value: translate(languageData, "LinksellingChatAnytime")
         },
         {
-            value : translate(languageData , "PhoneAnytime")
+            value: translate(languageData, "PhoneAnytime")
         },
         {
-            value :  translate(languageData , "PhoneFrom8to12")
+            value: translate(languageData, "PhoneFrom8to12")
         },
         {
-            value : translate(languageData , "PhoneFrom12to4")
+            value: translate(languageData, "PhoneFrom12to4")
         },
         {
-            value : translate(languageData , "PhoneFrom4to8")
+            value: translate(languageData, "PhoneFrom4to8")
         }
     ]
 
     const articlePriceData = [
         {
-            type: translate(languageData , "BasicArticle"),
+            type: translate(languageData, "BasicArticle"),
             price: "50,00 zł",
         },
         {
-            type:  translate(languageData , "ExtendedArticle"),
+            type: translate(languageData, "ExtendedArticle"),
             price: "75,00 zł",
         },
         {
-            type: translate(languageData , "SpecialistArticle"),
+            type: translate(languageData, "SpecialistArticle"),
             price: "150,00 zł",
         },
         {
-            type: translate(languageData , "PremiumArticle"),
+            type: translate(languageData, "PremiumArticle"),
             price: "250,00 zł",
         },
         {
-            type: translate(languageData , "PremiumPlusArticle"),
+            type: translate(languageData, "PremiumPlusArticle"),
             price: "625,00 zł",
         },
     ]
@@ -235,8 +237,10 @@ const OrderArticle = () => {
         </OverlayTrigger>
     );
 
+    const userData2 =JSON.parse(localStorage.getItem("userData"))
+
     const articleListServices = async () => {
-        const res = await getArticles()
+        const res = await getArticles(userData2?.id)
         setArticlesData(res.data)
     }
 
@@ -259,7 +263,7 @@ const OrderArticle = () => {
 
             <ToastContainer />
             <Card className='mt-4'>
-                <Card.Header className='f-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData , "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>Back</Button></Card.Header>
+                <Card.Header className='f-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>Back</Button></Card.Header>
                 <Card.Body>
                     {/* <Row className='mt-5 border-bottom pb-6'>
                         <Col lg={12} className='border border-primary p-2 ms-auto py-4'>
@@ -278,12 +282,12 @@ const OrderArticle = () => {
                         <Col lg={10} className='mt-6 pb-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "ArticleType")} *</span>
+                                    <span>{translate(languageData, "ArticleType")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData , "artilistPaidArticle")}</Button>
-                                    <Button className={`btn ${articleType === 'guest' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("guest")}>{translate(languageData , "artilistGuestArticle")}</Button>
-                                    <Button className={`btn ${articleType === 'personal' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("personal")}>{translate(languageData , "artilistArticlePersonalUse")}</Button>
+                                    <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData, "artilistPaidArticle")}</Button>
+                                    <Button className={`btn ${articleType === 'guest' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("guest")}>{translate(languageData, "artilistGuestArticle")}</Button>
+                                    <Button className={`btn ${articleType === 'personal' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("personal")}>{translate(languageData, "artilistArticlePersonalUse")}</Button>
                                 </Col>
                             </Row>
                         </Col>
@@ -292,12 +296,12 @@ const OrderArticle = () => {
                         <Col lg={10} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "artilstProject")} *</span>
+                                    <span>{translate(languageData, "artilstProject")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="form-group">
                                         <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                            <option label={translate(languageData , "artilstProject")}></option>
+                                            <option label={translate(languageData, "artilstProject")}></option>
                                             {articlesData.map((item, index) => {
                                                 return (
                                                     <option value={item.project} key={index}>{item.project}</option>
@@ -313,7 +317,7 @@ const OrderArticle = () => {
                         <Col lg={10} className='mt-1 pb-6 ' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "CountryOfPublication")}</span>
+                                    <span>{translate(languageData, "CountryOfPublication")}</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="form-group">
@@ -333,7 +337,7 @@ const OrderArticle = () => {
                             </Row>
                         </Col>
                     </div>
-                    <div className='mt-5 mb-4'><h4>{translate(languageData , "ArticleQuality")}</h4></div>
+                    <div className='mt-5 mb-4'><h4>{translate(languageData, "ArticleQuality")}</h4></div>
                     <div className='mt-6 border-bottom pb-7'>
                         <Row className='justify-content-center'>
                             {articlePriceData.map((item, index) => {
@@ -341,16 +345,18 @@ const OrderArticle = () => {
 
                                     <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.type, item.price)} key={index} className='mt-2'>
                                         <Card className={`shadow-md ${orderType === item?.type && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
-                                            <div className={` d-flex justify-content-center align-items-center  ${orderType === item.type ? "bg-primary" : "bg-outline-primary"}`} style={{ height: "100px" }}><h3 className={`mt-4  ${orderType === item.type ? "text-white" : "text-outline-white"}`}>{item.price} </h3>
-                                            </div>
                                             <Card.Body className='text-center'>
+                                                <h3 className={`mt-4  ${orderType === item.type ? "text-primary" : "text-outline-primary"}`}>{item.price} </h3>
                                                 <div className='mt-4 mb-4'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
                                                 <h3 className='mb-4'>{item.type} </h3>
-                                                <Link >{translate(languageData , "SeeExample")}</Link>
+                                                <Link >{translate(languageData, "SeeExample")}</Link>
                                                 <div className='mt-4'>
                                                     <Button className={`btn  ${orderType === item.type ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                 </div>
                                             </Card.Body>
+                                            <div className={`d-flex justify-content-center align-items-center ${orderType === item.type ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
+                                                <img src={orderType === item.type ? green : grey} />
+                                            </div>
                                         </Card>
                                     </Col>
 
@@ -360,15 +366,15 @@ const OrderArticle = () => {
                         </Row>
                     </div>
                     <div className='mt-6 border-bottom pb-7'>
-                        <div className='fw-semibold'><h4>{translate(languageData , "OrderDetails")}</h4></div>
+                        <div className='fw-semibold'><h4>{translate(languageData, "OrderDetails")}</h4></div>
                         <Col lg={7} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "NumberOfArticle")} *</span>
+                                    <span>{translate(languageData, "NumberOfArticle")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="number" name="quantity" placeholder={translate(languageData , "NumberOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                        <input className="input100" type="number" name="quantity" placeholder={translate(languageData, "NumberOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                                     </div>
                                     <div className='text-danger text-center mt-1'>{formErrors.quantiy}</div>
                                 </Col>
@@ -377,11 +383,11 @@ const OrderArticle = () => {
                         <Col lg={7} className='mt-6 ' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "TitleOfArticle")} *</span>
+                                    <span>{translate(languageData, "TitleOfArticle")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="text" name="title" placeholder={translate(languageData , "TitleOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                        <input className="input100" type="text" name="title" placeholder={translate(languageData, "TitleOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                                     </div>
                                     <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                 </Col>
@@ -391,12 +397,12 @@ const OrderArticle = () => {
                         <Col lg={7} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "ActionMainImage")} *</span>
+                                    <span>{translate(languageData, "ActionMainImage")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="form-group">
                                         <select name="imageAction" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                            <option label={translate(languageData , "Action")}></option>
+                                            <option label={translate(languageData, "Action")}></option>
                                             {imageActions.map((item, index) => {
                                                 return (
                                                     <option key={index}>{item}</option>
@@ -411,7 +417,7 @@ const OrderArticle = () => {
                         <Col lg={7} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData , "CommentsAndRecommendations")} *</span>
+                                    <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
@@ -447,7 +453,7 @@ const OrderArticle = () => {
                         </Col>
                     </div>
                     <div>
-                        <h5 className='fw-semibold mt-6'>{translate(languageData , "PreferredFormContactWith")}</h5>
+                        <h5 className='fw-semibold mt-6'>{translate(languageData, "PreferredFormContactWith")}</h5>
                         <div>
                             <Col lg={7} className='mt-6' >
                                 <Row className='align-items-center '>
@@ -457,9 +463,9 @@ const OrderArticle = () => {
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="form-group">
                                             <select name="contactForm" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                                <option label={translate(languageData , "LinksellingChatAnytime")}></option>
-                                                {formOfContactOpts.map((item , index) =>{
-                                                    return(
+                                                <option label={translate(languageData, "LinksellingChatAnytime")}></option>
+                                                {formOfContactOpts.map((item, index) => {
+                                                    return (
                                                         <option value={item.value}>{item.value}</option>
                                                     )
                                                 })}
@@ -473,11 +479,11 @@ const OrderArticle = () => {
                             <Col lg={7} className='mt-4' >
                                 <Row className='align-items-center '>
                                     <Col xs={12} md={4}>
-                                        <span>{translate(languageData , "BuyArticlePhone")} *</span>
+                                        <span>{translate(languageData, "BuyArticlePhone")} *</span>
                                     </Col>
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <input className="input100" type="number" name="phone" placeholder={translate(languageData , "BuyArticlePhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                            <input className="input100" type="number" name="phone" placeholder={translate(languageData, "BuyArticlePhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                                         </div>
                                         <div className='text-danger text-center mt-1'>{formErrors.phone}</div>
                                     </Col>
@@ -486,11 +492,11 @@ const OrderArticle = () => {
                             <Col lg={7} className='mt-5' >
                                 <Row className='align-items-center '>
                                     <Col xs={12} md={4}>
-                                        <span>{translate(languageData , "BuyArticleEmail")} *</span>
+                                        <span>{translate(languageData, "BuyArticleEmail")} *</span>
                                     </Col>
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <input className="input100" type="email" name="email" placeholder={translate(languageData , "BuyArticleEmail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                            <input className="input100" type="email" name="email" placeholder={translate(languageData, "BuyArticleEmail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                                         </div>
                                         <div className='text-danger text-center mt-1'>{formErrors.email}</div>
                                     </Col>
@@ -510,10 +516,10 @@ const OrderArticle = () => {
                     <Row className='w-100 d-flex justify-content-between'>
 
                         <Col lg={6} className='ms-2'>
-                            <span className='d-flex align-items-center ms-2'> {translate(languageData , "TotalAmount")} <span className='fw-semibold ms-2' style={{ fontSize: "20px" }}>{orderPrice}</span> </span>
+                            <span className='d-flex align-items-center ms-2'> {translate(languageData, "TotalAmount")} <span className='fw-semibold ms-2' style={{ fontSize: "20px" }}>{orderPrice}</span> </span>
                         </Col>
                         <Col lg={5} className=''>
-                            <Button className='d-flex ms-auto' onClick={() => orderArticleServices()}> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData , "PurchaseAndPay")}</Button>
+                            <Button className='d-flex ms-auto' onClick={() => orderArticleServices()}> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData, "PurchaseAndPay")}</Button>
                         </Col>
                     </Row>
                 </Card.Body>

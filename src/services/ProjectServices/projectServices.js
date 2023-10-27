@@ -21,9 +21,9 @@ export const addProjects = (values) => {
   };
 
 
-  export const projectList = (values) => {
+  export const projectList = (id) => {
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/projects`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/projects/${id}`)
       .then((res) => {
         return res?.data;
       })

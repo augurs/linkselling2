@@ -4,7 +4,7 @@ import { baseURL2 } from "../../utility/data";
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addArticle = (formValues, editor) => {
+export const addArticle = (formValues, editor, id) => {
   const formData = new FormData();
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
@@ -12,6 +12,7 @@ export const addArticle = (formValues, editor) => {
   formData.append("document", formValues.document);
   formData.append("image", formValues.image);
   formData.append("content", editor)
+  formData.append("user_id", id)
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/add-article`, formData)
@@ -24,9 +25,9 @@ export const addArticle = (formValues, editor) => {
     });
 };
 
-export const getArticles = () => {
+export const getArticles = (id) => {
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/articles`,)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/articles/${id}`,)
     .then((res) => {
       return res?.data;
     })

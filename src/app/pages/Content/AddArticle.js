@@ -28,6 +28,7 @@ const AddArticle = () => {
     const [articleType, setArticleType] = useState('chooselater')
     const [editor, setEditor] = useState()
 
+    const userData2 = JSON.parse(localStorage.getItem("userData"))
 
     const navigate = useNavigate()
 
@@ -55,7 +56,7 @@ const AddArticle = () => {
         } else {
             setLoading(true)
         }
-        const res = await addArticle(formValues, editor)
+        const res = await addArticle(formValues, editor, userData2.id)
         if (res.response === true && res.success === true) {
             setLoading(false)
             toast(res.message, {

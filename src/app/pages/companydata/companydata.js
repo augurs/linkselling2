@@ -40,6 +40,7 @@ const Invoices = () => {
         postal_code: invoicesList.postal_code,
         province: invoicesList.province,
         street: invoicesList.street,
+        nip_number: invoicesList.nip_number,
       }
 
   ]
@@ -95,6 +96,13 @@ const Invoices = () => {
     {
       name: translate(languageData, "apartmentNumber"),
       selector: row => row.apartment_number,
+      sortable: true,
+      center: true,
+      // width: '130px'
+    },
+    {
+      name: translate(languageData, "NipNumber"),
+      selector: row => row.nip_number,
       sortable: true,
       center: true,
       // width: '130px'
