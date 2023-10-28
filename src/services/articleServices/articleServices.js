@@ -71,14 +71,14 @@ export const viewRequestedArticles = (customerId, articleId) => {
 
 
 
-export const searchArticles = (values) => {
+export const searchArticles = (values, id) => {
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article`, {
+    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article/${id}`, {
       title: values.title,
       project: values.project,
       lead: "",
       date: values.date,
-      status: ""
+      status: "",
     })
     .then((res) => {
       return res?.data;

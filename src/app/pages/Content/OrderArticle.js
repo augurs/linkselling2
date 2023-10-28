@@ -238,6 +238,7 @@ const OrderArticle = () => {
     );
 
     const userData2 =JSON.parse(localStorage.getItem("userData"))
+    
 
     const articleListServices = async () => {
         const res = await getArticles(userData2?.id)

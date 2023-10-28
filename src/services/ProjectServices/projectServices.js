@@ -62,10 +62,10 @@ export const addProjects = (values) => {
       });
   };
 
-  export const searchProject = (values) => {
+  export const searchProject = (values, id) => {
     console.log(values , "66");
     return axios
-      .post(`${baseURL2}/LinkSellingSystem/public/api/search-project`, {
+      .post(`${baseURL2}/LinkSellingSystem/public/api/search-project/${id}`, {
         language: values.language ? values.language : "" ,
         name: values.title,
         

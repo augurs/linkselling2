@@ -3,7 +3,7 @@ import { Button, Col, Dropdown, Row } from 'react-bootstrap'
 import DataTable from 'react-data-table-component';
 import Checkbox from '../../Components/checkbox';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { json, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { getArticles, searchArticles } from '../../../services/articleServices/articleServices';
 import globalLoader from '../../../assets/images/loader.svg'
@@ -18,6 +18,8 @@ const ArticleList = () => {
     const [articleSearchData, setArticleSearchData] = useState([]);
     const [loading, setLoading] = useState(false)
 
+    const userData = JSON.parse(localStorage.getItem('userData'))
+
     const navigate = useNavigate();
 
 
@@ -30,16 +32,17 @@ const ArticleList = () => {
     }, [])
 
 
+    const userData2 = JSON.parse(localStorage.getItem("userData"));
 
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchArticles(searchTerms)
+        const res = await searchArticles(searchTerms, userData2?.id)
         setArticleSearchData(res?.data)
         setLoading(false)
     }
 
     const handleArticleList = async () => {
-        const res = await getArticles()
+        const res = await getArticles(userData?.id)
         setArticleList(res.data)
     }
 

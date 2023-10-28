@@ -41,7 +41,7 @@ const ProjectList = () => {
 
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchProject(searchTerms)
+        const res = await searchProject(searchTerms, userData?.id)
         setSearchedData(res?.data)
         setLoading(false)
     }

@@ -20,7 +20,7 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
         navigate('/login')
     }
 
-    console.log(cartContextData , "23");
+
 
 
 

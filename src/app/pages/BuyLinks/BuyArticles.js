@@ -67,6 +67,7 @@ const BuyArticles = () => {
     const navigate = useNavigate()
 
     const userData = JSON.parse(localStorage.getItem('userData'));
+
     const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
 
     const { cartListServices } = useCart()
@@ -196,7 +197,7 @@ const BuyArticles = () => {
 
     const getArticleListServices = async () => {
         setListLoading(true)
-        const res = await getArticles()
+        const res = await getArticles(userData?.id)
         setArticleList(res?.data)
         setListLoading(false)
     }
@@ -580,7 +581,6 @@ const BuyArticles = () => {
         const res = await getCart(userData?.id)
         setCartList(res?.product)
     }
-
     const getPublisherArticlesService = async () => {
         const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
         setArticles(res.data)
