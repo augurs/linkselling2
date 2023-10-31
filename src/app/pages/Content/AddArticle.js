@@ -10,7 +10,9 @@ import globalLoader from '../../../assets/images/loader.svg'
 import ReactQuill from 'react-quill';
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
-
+import { projectList } from '../../../services/ProjectServices/projectServices';
+import { useEffect } from 'react';
+import JSZip from 'jszip';
 const AddArticle = () => {
 
     const initialValues = {
@@ -27,28 +29,90 @@ const AddArticle = () => {
     const [loading2, setLoading2] = useState(false)
     const [articleType, setArticleType] = useState('chooselater')
     const [editor, setEditor] = useState()
+    const [articlesData2, setArticlesData2] = useState([]);
+    const [title, setTitle] = useState('');
+    const [lead, setLead] = useState('');
+    const [content, setContent] = useState('');
+    const [fileName, setFileName] = useState('');
 
     const userData2 = JSON.parse(localStorage.getItem("userData"))
-
+    const { languageData } = useLanguage();
     const navigate = useNavigate()
+    useEffect(() => {
+        setEditor(content)
+    }, [fileName, content])
+
+    useEffect(() => {
+        setFormValues({ ...formValues, title: title, lead: lead })
+    }, [title, fileName, lead])
+
+
+
 
 
     const allowedDocExtensions = ['.docx', '.doc', '.odt', '.html'];
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
 
+    //*docsx reader code//
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setFileName(file.name);
+
+        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const arrayBuffer = event.target.result;
+                const blob = new Blob([arrayBuffer]);
+
+                extractTextFromDocx(blob);
+            };
+
+            reader.readAsArrayBuffer(file);
+        } else {
+            setTitle('Invalid file type. Please upload a DOCX file.');
+        }
+    };
+
+    const extractTextFromDocx = async (blob) => {
+        const zip = new JSZip();
+
+        zip.loadAsync(blob).then(async (zip) => {
+
+            zip.file('word/document.xml').async('string').then((docXml) => {
+
+                const textContent = docXml.replace(/<[^>]+>/g, '');
+                setContent(textContent);
+
+
+                setTitle(textContent.substr(0, 50));
+                setLead(textContent.substr(50, 50));
+            });
+        });
+    };
+     //docsx reader code//*
 
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
     }
 
-
+  
 
 
     const handleArticleType = (type) => {
         setArticleType(type)
     }
 
+    const fieldTranslationMap = {
+        content: translate(languageData, "ContentField"),
+        document: translate(languageData, "DocumentField"),
+        image: translate(languageData, "ImageField"),
+        lead: translate(languageData, "LeadField"),
+        project: translate(languageData, "ProjectNameField"),
+        title: translate(languageData, "TitleField"),
+
+    };
     const handleAddArticleServices = async (type) => {
 
         if (type === "saveandexit") {
@@ -77,7 +141,28 @@ const AddArticle = () => {
                 setLoading(false)
             }
 
-        } else {
+        }else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
+        }
+        else {
             toast("Something went wrong", {
                 position: "top-right",
                 autoClose: 5000,
@@ -96,15 +181,19 @@ const AddArticle = () => {
         }
     }
 
-    const { languageData } = useLanguage();
+    
 
 
-    const projects = [
-        "project1",
-        "project2",
-        "project3",
-        "project4"
-    ]
+    useEffect(() => {
+        articleListServices2()
+
+    }, [])
+    const articleListServices2 = async () => {
+        const res = await projectList(userData2?.id)
+        setArticlesData2(res?.data.reverse())
+    }
+
+
 
 
     const handleChange = (e) => {
@@ -196,10 +285,20 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "AddArtiImportDoc")}</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedDocExtensions} getData={handleFiles} name="document" /></div>
+                                <div>
+                                    <FileUpload
+                                        allowedFileExtensions={allowedDocExtensions}
+                                        getData={(file, name) => {
+                                            handleFiles(file, name);
+                                            handleFileChange({ target: { files: [file] } });
+                                        }}
+                                        name="document"
+                                    />
+                                </div>
                                 <div className='text-danger text-center mt-1'>{formErrors.document}</div>
                             </Col>
                         </Row>
+
                         <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
                         <Row className='align-items-center '>
                             <Col xs={12} md={4}>
@@ -209,9 +308,9 @@ const AddArticle = () => {
                                 <div className="form-group">
                                     <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { handleChange(e) }} onClick={() => validate(formValues)}>
                                         <option label={translate(languageData, "artilstProject")}></option>
-                                        {projects.map((item, index) => {
+                                        {articlesData2.map((item, index) => {
                                             return (
-                                                <option value={item} key={index}>{item}</option>
+                                                <option value={item.name} key={index}>{item.name}</option>
                                             )
                                         })}
 
@@ -227,9 +326,7 @@ const AddArticle = () => {
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
-
-
+                                    <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.title} />
                                 </div>
                                 <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                             </Col>
@@ -239,8 +336,8 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "AddArtiLead")}</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <textarea className="input100 py-2" type="text" name="lead" cols={8} rows={10} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} style={{ paddingLeft: "15px" }} />
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="lead is required">
+                                    <textarea className="input100 py-2" type="text" name="lead" cols={8} rows={10} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} style={{ paddingLeft: "15px" }} value={formValues.lead} />
                                 </div>
                                 <div className='text-danger text-center mt-1'>{formErrors.lead}</div>
                             </Col>
@@ -390,8 +487,8 @@ const AddArticle = () => {
                         </div>}
 
                     <div className='mt-5 ms-auto px-3'>
-                        <Button className='btn btn-primary' onClick={() => validate(formValues) ? handleAddArticleServices("save") : ""}> {loading ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "Save")}  </Button>
-                        <Button className='btn btn-primary ms-2' onClick={() => validate(formValues) ? handleAddArticleServices("saveandexit") : ""}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button>
+                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")}> {loading ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "Save")}  </Button>
+                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button>
                         {articleType === "paid" && <Button className='btn btn-primary ms-2'>Send for Verification</Button>}
                     </div>
                 </Card>

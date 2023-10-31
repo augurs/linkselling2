@@ -4,7 +4,8 @@ import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap
 import { FaInfoCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import FileUpload from '../../Components/FileUpload/FileUpload';
-import { getArticles, orderArticles } from '../../../services/articleServices/articleServices';
+import { orderArticles } from '../../../services/articleServices/articleServices';
+import { projectList } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import { countries } from '../../../utility/data';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,6 +14,7 @@ import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import green from '../../../assets/images/cards/Green.png';
 import grey from '../../../assets/images/cards/Grey.png';
+import { articleTypeList } from "../../../services/buyArticleServices/buyArticlesServices";
 
 const OrderArticle = () => {
 
@@ -38,12 +40,14 @@ const OrderArticle = () => {
 
     const [articleType, setArticleType] = useState('paid');
     const [orderType, setOrderType] = useState('Basic article');
-    const [articlesData, setArticlesData] = useState([]);
+    // const [articlesData, setArticlesData] = useState([]);
+    const [articlesData2, setArticlesData2] = useState([]);
     const [formValues, setFormValues] = useState(initialValues)
     const [orderPrice, setOrderPrice] = useState('50,00 zł');
     const [formErrors, setFormErrors] = useState({})
     const [orderLoading, setOrderLoading] = useState(false)
-
+    const [articlePackages, setArticlePackages] = useState([])
+    const [orderId, setOrderId] = useState(1);
     const navigate = useNavigate()
 
 
@@ -94,10 +98,10 @@ const OrderArticle = () => {
             isValid = false;
         }
 
-        if (!values.contactForm) {
-            error.contactForm = translate(languageData, "PleaseSelectContactForm");
-            isValid = false;
-        }
+        // if (!values.contactForm) {
+        //     error.contactForm = translate(languageData, "PleaseSelectContactForm");
+        //     isValid = false;
+        // }
 
         if (!values.phone) {
             error.phone = translate(languageData, "PleaseEnterPhoneNumber");
@@ -130,8 +134,14 @@ const OrderArticle = () => {
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
     }
+    useEffect(() => {
+        articleTypeListService()
+    }, [])
 
-
+    const articleTypeListService = async () => {
+        const res = await articleTypeList()
+        setArticlePackages(res?.data?.reverse())
+    }
 
 
     const allowedAttachmentExtension = ['.JPG', '.JPEG', '.PNG', '.PDF', '.docx', '.doc', '.odt', '.html']
@@ -144,7 +154,9 @@ const OrderArticle = () => {
     ]
 
     useEffect(() => {
-        articleListServices()
+        // articleListServices()
+        articleListServices2()
+
     }, [])
 
 
@@ -152,18 +164,112 @@ const OrderArticle = () => {
         setArticleType(type)
     }
 
-    const handleOrderPriceCard = (type, price) => {
+    const handleOrderPriceCard = (type, price, id) => {
         setOrderType(type)
         setOrderPrice(price)
+        setOrderId(id)
     }
 
-    const orderArticleServices = async () => {
-        setOrderLoading(true)
-        const res = await orderArticles(formValues, orderPrice, articleType)
+    // const orderArticleServices = async () => {
+    //     setOrderLoading(true)
+    //     const res = await orderArticles(formValues, orderPrice, articleType)
 
-        if (res.success === true && res.response === true) {
-            toast("Order added successfully", {
-                position: "top-right",
+    //     if (res.success === true && res.response === true) {
+    //         toast("Order added successfully", {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'success'
+    //         });
+    //         setOrderLoading(false)
+    //     } else {
+    //         toast("Something went wrong", {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'error'
+    //         });
+    //         setOrderLoading(false)
+    //     }
+
+    // }
+
+    // const orderArticleServices = async () => {
+    //     setOrderLoading(true);
+    //     const res = await orderArticles(formValues, orderPrice, articleType);
+    
+    //     if (res.success === true && res.response === true) {
+    //         toast(translate(languageData, "OrderAddedSuccessfully"), {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'success'
+    //         });
+    //         setOrderLoading(false);
+    //     } else if (res.success === false && res.response) {
+    //         for (const field in res.response) {
+    //             const errorMessage = res.response[field].join('. ');
+    //             toast(`${field}: ${errorMessage}`, {
+    //                 position: "top-center",
+    //                 autoClose: 5000,
+    //                 hideProgressBar: false,
+    //                 closeOnClick: true,
+    //                 pauseOnHover: true,
+    //                 draggable: true,
+    //                 progress: undefined,
+    //                 type: 'error'
+    //             });
+    //         }
+    //         setOrderLoading(false);
+    //     } else {
+    //         toast("Something went wrong", {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'error'
+    //         });
+    //         setOrderLoading(false);
+    //     }
+    // };
+    
+    const fieldTranslationMap = {
+        project: translate(languageData, "ProjectField"),
+        country: translate(languageData, "CountryField"),
+        email: translate(languageData, "EmailField"),
+        phone: translate(languageData, "PhoneField"),
+        placing_link: translate(languageData, "PlacingLinkField"),
+        quantity: translate(languageData, "QuantityField"),
+        Comments: translate(languageData, "Comments"),
+        Action_on_the_main_image : translate(languageData, "Actiononthemainimage "),
+        image : translate(languageData, "ImageField"),
+        article_type : translate(languageData, "Articletype "),
+        title_of_article : translate(languageData, "TitleofArticleField"),
+
+    };
+    
+    const orderArticleServices = async () => {
+        setOrderLoading(true);
+        const res = await orderArticles(formValues, orderPrice, articleType);
+    
+        if (res.success === true) {
+            toast(translate(languageData, "OrderAddedSuccessfully"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -172,10 +278,29 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'success'
             });
-            setOrderLoading(false)
+        } else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
         } else {
             toast("Something went wrong", {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -184,51 +309,32 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'error'
             });
-            setOrderLoading(false)
         }
+    
+        setOrderLoading(false);
+    };
+    
 
-    }
+    // const formOfContactOpts = [
+    //     {
+    //         value: translate(languageData, "LinksellingChatAnytime")
+    //     },
+    //     {
+    //         value: translate(languageData, "PhoneAnytime")
+    //     },
+    //     {
+    //         value: translate(languageData, "PhoneFrom8to12")
+    //     },
+    //     {
+    //         value: translate(languageData, "PhoneFrom12to4")
+    //     },
+    //     {
+    //         value: translate(languageData, "PhoneFrom4to8")
+    //     }
+    // ]
 
-    const formOfContactOpts = [
-        {
-            value: translate(languageData, "LinksellingChatAnytime")
-        },
-        {
-            value: translate(languageData, "PhoneAnytime")
-        },
-        {
-            value: translate(languageData, "PhoneFrom8to12")
-        },
-        {
-            value: translate(languageData, "PhoneFrom12to4")
-        },
-        {
-            value: translate(languageData, "PhoneFrom4to8")
-        }
-    ]
 
-    const articlePriceData = [
-        {
-            type: translate(languageData, "BasicArticle"),
-            price: "50,00 zł",
-        },
-        {
-            type: translate(languageData, "ExtendedArticle"),
-            price: "75,00 zł",
-        },
-        {
-            type: translate(languageData, "SpecialistArticle"),
-            price: "150,00 zł",
-        },
-        {
-            type: translate(languageData, "PremiumArticle"),
-            price: "250,00 zł",
-        },
-        {
-            type: translate(languageData, "PremiumPlusArticle"),
-            price: "625,00 zł",
-        },
-    ]
+
 
 
     const TooltipLink = ({ id, children, title }) => (
@@ -237,12 +343,17 @@ const OrderArticle = () => {
         </OverlayTrigger>
     );
 
-    const userData2 =JSON.parse(localStorage.getItem("userData"))
-    
+    const userData2 = JSON.parse(localStorage.getItem("userData"))
 
-    const articleListServices = async () => {
-        const res = await getArticles(userData2?.id)
-        setArticlesData(res.data)
+
+    // const articleListServices = async () => {
+    //     const res = await getArticles(userData2?.id)
+    //     setArticlesData(res.data)
+    // }
+
+    const articleListServices2 = async () => {
+        const res = await projectList(userData2?.id)
+        setArticlesData2(res?.data.reverse())
     }
 
 
@@ -303,9 +414,9 @@ const OrderArticle = () => {
                                     <div className="form-group">
                                         <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
                                             <option label={translate(languageData, "artilstProject")}></option>
-                                            {articlesData.map((item, index) => {
+                                            {articlesData2.map((item, index) => {
                                                 return (
-                                                    <option value={item.project} key={index}>{item.project}</option>
+                                                    <option value={item.name} key={index}>{item.name}</option>
                                                 )
                                             })}
 
@@ -341,22 +452,22 @@ const OrderArticle = () => {
                     <div className='mt-5 mb-4'><h4>{translate(languageData, "ArticleQuality")}</h4></div>
                     <div className='mt-6 border-bottom pb-7'>
                         <Row className='justify-content-center'>
-                            {articlePriceData.map((item, index) => {
+                            {articlePackages?.map((item, index) => {
                                 return (
-
-                                    <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.type, item.price)} key={index} className='mt-2'>
-                                        <Card className={`shadow-md ${orderType === item?.type && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
+                                    <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='mt-2 rounded-pill'>
+                                        <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
                                             <Card.Body className='text-center'>
-                                                <h3 className={`mt-4  ${orderType === item.type ? "text-primary" : "text-outline-primary"}`}>{item.price} </h3>
-                                                <div className='mt-4 mb-4'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                <h3 className='mb-4'>{item.type} </h3>
-                                                <Link >{translate(languageData, "SeeExample")}</Link>
+                                                <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
+                                                <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
+                                                <h3 className='mb-3'>{item.name} </h3>
+                                                <Link >{item?.description}</Link>
                                                 <div className='mt-4'>
-                                                    <Button className={`btn  ${orderType === item.type ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
+                                                    <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                 </div>
+                                                <div></div>
                                             </Card.Body>
-                                            <div className={`d-flex justify-content-center align-items-center ${orderType === item.type ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
-                                                <img src={orderType === item.type ? green : grey} />
+                                            <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
+                                                <img src={orderType === item.name ? green : grey} />
                                             </div>
                                         </Card>
                                     </Col>
@@ -456,7 +567,7 @@ const OrderArticle = () => {
                     <div>
                         <h5 className='fw-semibold mt-6'>{translate(languageData, "PreferredFormContactWith")}</h5>
                         <div>
-                            <Col lg={7} className='mt-6' >
+                            {/* <Col lg={7} className='mt-6' >
                                 <Row className='align-items-center '>
                                     <Col xs={12} md={4}>
                                         <span>Form of contact *</span>
@@ -476,8 +587,8 @@ const OrderArticle = () => {
                                         <div className='text-danger text-center mt-1'>{formErrors.contactForm}</div>
                                     </Col>
                                 </Row>
-                            </Col>
-                            <Col lg={7} className='mt-4' >
+                            </Col> */}
+                            <Col lg={7} className='mt-6' >
                                 <Row className='align-items-center '>
                                     <Col xs={12} md={4}>
                                         <span>{translate(languageData, "BuyArticlePhone")} *</span>

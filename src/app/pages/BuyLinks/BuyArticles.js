@@ -516,7 +516,7 @@ const BuyArticles = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
-    console.log(orderId, "516");
+    // console.log(orderId, "516");
 
 
     const addToCartArticleServices = async () => {

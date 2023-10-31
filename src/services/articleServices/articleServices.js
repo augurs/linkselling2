@@ -147,7 +147,6 @@ export const orderArticles = (formValues, orderPrice, articleType) => {
   formData.append("title_of_article", formValues.title);
   formData.append("attachment", formValues.attachment)
   formData.append("placing_link", formValues.placingLink)
-  formData.append("contact_form", formValues.contactForm)
   formData.append("phone", formValues.phone)
   formData.append("email", formValues.email)
   formData.append("gross_amount", orderPrice)

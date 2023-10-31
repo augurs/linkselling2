@@ -163,9 +163,10 @@ const ArticleInProgress = () => {
     ]
 
 
+    const userData= JSON.parse(localStorage.getItem("userData"));
 
     const handleArticleList = async () => {
-        const res = await getArticles()
+        const res = await getArticles(userData?.id)
         setArticleList(res.data)
     }
 
