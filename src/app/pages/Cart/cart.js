@@ -122,7 +122,12 @@ const Cart = () => {
 
             cell: row => <div>
                 <div>
-                    {row.name}
+                    <div>
+                        {row?.name}
+                    </div>
+                    <div className='text-muted'><small>
+                        {row?.articleType}</small>
+                    </div>
                 </div>
                 {/* <div className='text-muted text-center' style={{ fontSize: "10px" }}>{row?.articleType}</div> */}
             </div>,

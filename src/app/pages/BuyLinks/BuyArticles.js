@@ -21,6 +21,8 @@ import { useLanguage } from "../../Context/languageContext";
 import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles, requestArticle } from "../../../services/buyArticleServices/buyArticlesServices";
 import { ToastContainer, toast } from "react-toastify";
 import globalLoader from '../../../assets/images/loader.svg'
+import green from '../../../assets/images/cards/Green.png'
+import grey from '../../../assets/images/cards/Grey.png'
 import { useEffect } from "react";
 import { getArticles } from "../../../services/articleServices/articleServices";
 import { getCart } from "../../../services/invoicesServices/invoicesServices";
@@ -65,6 +67,7 @@ const BuyArticles = () => {
     const navigate = useNavigate()
 
     const userData = JSON.parse(localStorage.getItem('userData'));
+
     const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
 
     const { cartListServices } = useCart()
@@ -80,7 +83,7 @@ const BuyArticles = () => {
     }
 
 
-    console.log(articlePackages , "82");
+    console.log(articlePackages, "82");
     // const increasePage = () => {
     //     if (page <= lastPage) {
     //         return;
@@ -194,7 +197,7 @@ const BuyArticles = () => {
 
     const getArticleListServices = async () => {
         setListLoading(true)
-        const res = await getArticles()
+        const res = await getArticles(userData?.id)
         setArticleList(res?.data)
         setListLoading(false)
     }
@@ -513,7 +516,7 @@ const BuyArticles = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
-    console.log(orderId , "516");
+    // console.log(orderId, "516");
 
 
     const addToCartArticleServices = async () => {
@@ -528,7 +531,7 @@ const BuyArticles = () => {
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
             article_amount: orderPrice?.split(',')[0],
-            article_id : orderId
+            article_id: orderId
         }
         setCartLoading(true)
         const res = await addToCartArticles(data)
@@ -578,7 +581,6 @@ const BuyArticles = () => {
         const res = await getCart(userData?.id)
         setCartList(res?.product)
     }
-
     const getPublisherArticlesService = async () => {
         const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
         setArticles(res.data)
@@ -993,17 +995,20 @@ const BuyArticles = () => {
                                                             return (
 
                                                                 <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='mt-2 rounded-pill'>
-                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer"}}>
-                                                                        <div className={` d-flex justify-content-center align-items-center  ${orderType === item.name ? "bg-primary" : "bg-outline-primary"}`} style={{height:"100px"}}><h3 className={`mt-4  ${orderType === item.name ? "text-white" : "text-outline-white"}`}>{item.price} </h3> 
-                                                                        </div>
+                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
                                                                         <Card.Body className='text-center'>
-                                                                            <div className='mt-4 mb-4'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                                            <h3 className='mb-4'>{item.name} </h3>
+                                                                            <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
+                                                                            <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
+                                                                            <h3 className='mb-3'>{item.name} </h3>
                                                                             <Link >{item?.description}</Link>
                                                                             <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                                             </div>
+                                                                            <div></div>
                                                                         </Card.Body>
+                                                                        <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
+                                                                            <img src={orderType === item.name ? green : grey} />
+                                                                        </div>
                                                                     </Card>
                                                                 </Col>
 

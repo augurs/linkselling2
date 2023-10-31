@@ -4,7 +4,7 @@ import { baseURL2 } from "../../utility/data";
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addArticle = (formValues, editor) => {
+export const addArticle = (formValues, editor, id) => {
   const formData = new FormData();
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
@@ -12,6 +12,7 @@ export const addArticle = (formValues, editor) => {
   formData.append("document", formValues.document);
   formData.append("image", formValues.image);
   formData.append("content", editor)
+  formData.append("user_id", id)
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/add-article`, formData)
@@ -24,9 +25,9 @@ export const addArticle = (formValues, editor) => {
     });
 };
 
-export const getArticles = () => {
+export const getArticles = (id) => {
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/articles`,)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/articles/${id}`,)
     .then((res) => {
       return res?.data;
     })
@@ -70,14 +71,14 @@ export const viewRequestedArticles = (customerId, articleId) => {
 
 
 
-export const searchArticles = (values) => {
+export const searchArticles = (values, id) => {
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article`, {
+    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article/${id}`, {
       title: values.title,
       project: values.project,
       lead: "",
       date: values.date,
-      status: ""
+      status: "",
     })
     .then((res) => {
       return res?.data;
@@ -146,7 +147,6 @@ export const orderArticles = (formValues, orderPrice, articleType) => {
   formData.append("title_of_article", formValues.title);
   formData.append("attachment", formValues.attachment)
   formData.append("placing_link", formValues.placingLink)
-  formData.append("contact_form", formValues.contactForm)
   formData.append("phone", formValues.phone)
   formData.append("email", formValues.email)
   formData.append("gross_amount", orderPrice)

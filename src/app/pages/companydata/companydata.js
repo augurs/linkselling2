@@ -1,5 +1,4 @@
 import React from 'react'
-import { Button, Card, Col, Row } from 'react-bootstrap'
 import { getInvoices } from '../../../services/invoicesServices/invoicesServices'
 import { useEffect } from 'react'
 import { useState } from 'react'
@@ -32,14 +31,15 @@ const Invoices = () => {
 
   const tableData = [
       {
-        apartment_number: invoicesList.apartment_number,
-        city: invoicesList.city,
-        community: invoicesList.community,
-        company_name: invoicesList.company_name,
-        district: invoicesList.district,
-        postal_code: invoicesList.postal_code,
-        province: invoicesList.province,
-        street: invoicesList.street,
+        apartment_number: invoicesList?.apartment_number,
+        city: invoicesList?.city,
+        community: invoicesList?.community,
+        company_name: invoicesList?.company_name,
+        district: invoicesList?.district,
+        postal_code: invoicesList?.postal_code,
+        province: invoicesList?.province,
+        street: invoicesList?.street,
+        nip_number: invoicesList?.nip_number,
       }
 
   ]
@@ -99,6 +99,13 @@ const Invoices = () => {
       center: true,
       // width: '130px'
     },
+    {
+      name: translate(languageData, "NipNumber"),
+      selector: row => row.nip_number,
+      sortable: true,
+      center: true,
+      // width: '130px'
+    },
 
   ]
 
@@ -112,7 +119,7 @@ const Invoices = () => {
           <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
         </div> :
           <>
-          <h4 className='text-center'>{invoicesList.company_name}</h4>
+          <h4 className='text-center'>{invoicesList?.company_name}</h4>
             <DataTable
               columns={columns}
               data={tableData}

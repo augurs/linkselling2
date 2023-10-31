@@ -67,3 +67,16 @@ export const registerNip = (values , id) => {
       return error.response.data;
     });
 };
+
+
+export const thankupage = () => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-thankyou`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

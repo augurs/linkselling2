@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import "./login.css"
@@ -16,6 +16,14 @@ function Login() {
     email: "",
     password: "",
   };
+
+  const userData = localStorage.getItem('userData');
+  
+  useEffect(() => {
+    if (userData) {
+      navigate('/')
+    }
+  }, [])
 
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});

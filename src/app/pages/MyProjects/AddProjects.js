@@ -39,6 +39,12 @@ const AddProjects = () => {
         validate(formValues)
     }
 
+    const fieldTranslationMap = {
+        name: translate(languageData, "ProjectNameField"),
+        language: translate(languageData, "publicationLanguageField"),
+        domain: translate(languageData, "WebAddressField"),
+
+    };
     const addProjectService = async () => {
 
         setLoading(true)
@@ -61,6 +67,26 @@ const AddProjects = () => {
             }, 1000);
 
             setLoading(false)
+        }else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
         } else {
             toast("Something went wrong", {
                 position: "top-right",
@@ -182,7 +208,7 @@ const AddProjects = () => {
                     </Row> */}
                 </Card.Body>
                 <div className='d-flex mb-5'>
-                    <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => validate(formValues) ? addProjectService() : ""}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData , "Save")} </Button>
+                    <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData , "Save")} </Button>
                 </div>
             </Card>
 
