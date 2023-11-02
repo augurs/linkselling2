@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, DropdownButton, Dropdown } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
@@ -29,6 +29,7 @@ import { getCart } from "../../../services/invoicesServices/invoicesServices";
 import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
 import { Pagination, Stack } from "@mui/material";
+import { projectList } from '../../../services/ProjectServices/projectServices';
 
 const BuyArticles = () => {
 
@@ -62,6 +63,7 @@ const BuyArticles = () => {
     const [selectedPublisherArticle, setSelectedPublisherArticle] = useState()
     const [selectedSubArticles, setSelectedSubArticles] = useState('')
     const [articlePackages, setArticlePackages] = useState([])
+    const [articlesData2, setArticlesData2] = useState([]);
 
 
     const navigate = useNavigate()
@@ -135,6 +137,10 @@ const BuyArticles = () => {
 
     useEffect(() => {
         articleTypeListService()
+    }, [])
+
+    useEffect(() => {
+        articleListServices()
     }, [])
 
 
@@ -600,6 +606,11 @@ const BuyArticles = () => {
     }
 
 
+    const articleListServices = async () => {
+        const res = await projectList(userData?.id)
+        setArticlesData2(res?.data.reverse())
+    }
+
     return (
         <>
             <ToastContainer />
@@ -898,6 +909,17 @@ const BuyArticles = () => {
                             <h4>
                                 {translate(languageData, "SelectionPortalOffer")}: <b>{selectedPublisherArticle?.portalLink}</b>
                             </h4>
+                        </div>
+                        <div className="form-group">
+                            <DropdownButton
+                                title={translate(languageData, "artilstProject")}
+                                id="default-dropdown"
+                                variant="btn btn-primary"
+                            > 
+                                {articlesData2.map((item, index) => (
+                                    <Dropdown.Item key={index}>{item.name}</Dropdown.Item>
+                                ))}
+                            </DropdownButton>
                         </div>
                     </Modal.Header>
                     <Modal.Body>

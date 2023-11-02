@@ -54,83 +54,6 @@ const OrderArticle = () => {
 
     const { languageData } = useLanguage()
 
-
-
-
-    const validate = (values) => {
-        let error = {};
-        let isValid = true;
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-
-
-        if (!values.project) {
-            error.project = translate(languageData, "PleaseSelectYourProject");
-            isValid = false;
-        }
-
-        if (!values.country) {
-            error.country = translate(languageData, "PleaseSelectYourCountry");
-            isValid = false;
-        }
-
-        if (!values.quantity) {
-            error.quantiy = translate(languageData, "PleaseEnterArticleQuantity");
-            isValid = false;
-        }
-
-        if (!values.title) {
-            error.quantiy = translate(languageData, "PleaseEnterArticleTitle");;
-            isValid = false;
-        }
-
-        if (!values.imageAction) {
-            error.imageAction = translate(languageData, "PleaseSelectYourImage");
-            isValid = false;
-        }
-
-        // if (!values.imageAction) {
-        //     error.imageAction = "Please select your image action";
-        //     isValid = false;
-        // }
-
-        if (!values.placingLink) {
-            error.placingLink = translate(languageData, "PleaseEnterPlacingLink");;
-            isValid = false;
-        }
-
-        // if (!values.contactForm) {
-        //     error.contactForm = translate(languageData, "PleaseSelectContactForm");
-        //     isValid = false;
-        // }
-
-        if (!values.phone) {
-            error.phone = translate(languageData, "PleaseEnterPhoneNumber");
-            isValid = false;
-        }
-
-        if (!values.attachment) {
-            error.attachment = translate(languageData, "PleaseAttachmentRequired");
-            isValid = false;
-        }
-
-        if (!values.comment) {
-            error.comment = translate(languageData, "PleaseAddYourComment");
-            isValid = false;
-        }
-
-
-        if (!values.email) {
-            error.email = translate(languageData, "PleaseEnterEmail");
-            isValid = false
-        } else if (!emailRegex.test(values.email)) {
-            error.email = translate(languageData, "signUpEmailError2");
-            isValid = false;
-        }
-
-        setFormErrors(error);
-        return isValid;
-    }
-
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
     }
@@ -154,7 +77,6 @@ const OrderArticle = () => {
     ]
 
     useEffect(() => {
-        // articleListServices()
         articleListServices2()
 
     }, [])
@@ -170,84 +92,7 @@ const OrderArticle = () => {
         setOrderId(id)
     }
 
-    // const orderArticleServices = async () => {
-    //     setOrderLoading(true)
-    //     const res = await orderArticles(formValues, orderPrice, articleType)
 
-    //     if (res.success === true && res.response === true) {
-    //         toast("Order added successfully", {
-    //             position: "top-center",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'success'
-    //         });
-    //         setOrderLoading(false)
-    //     } else {
-    //         toast("Something went wrong", {
-    //             position: "top-center",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'error'
-    //         });
-    //         setOrderLoading(false)
-    //     }
-
-    // }
-
-    // const orderArticleServices = async () => {
-    //     setOrderLoading(true);
-    //     const res = await orderArticles(formValues, orderPrice, articleType);
-    
-    //     if (res.success === true && res.response === true) {
-    //         toast(translate(languageData, "OrderAddedSuccessfully"), {
-    //             position: "top-center",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'success'
-    //         });
-    //         setOrderLoading(false);
-    //     } else if (res.success === false && res.response) {
-    //         for (const field in res.response) {
-    //             const errorMessage = res.response[field].join('. ');
-    //             toast(`${field}: ${errorMessage}`, {
-    //                 position: "top-center",
-    //                 autoClose: 5000,
-    //                 hideProgressBar: false,
-    //                 closeOnClick: true,
-    //                 pauseOnHover: true,
-    //                 draggable: true,
-    //                 progress: undefined,
-    //                 type: 'error'
-    //             });
-    //         }
-    //         setOrderLoading(false);
-    //     } else {
-    //         toast("Something went wrong", {
-    //             position: "top-center",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'error'
-    //         });
-    //         setOrderLoading(false);
-    //     }
-    // };
-    
     const fieldTranslationMap = {
         project: translate(languageData, "ProjectField"),
         country: translate(languageData, "CountryField"),
@@ -256,17 +101,17 @@ const OrderArticle = () => {
         placing_link: translate(languageData, "PlacingLinkField"),
         quantity: translate(languageData, "QuantityField"),
         Comments: translate(languageData, "Comments"),
-        Action_on_the_main_image : translate(languageData, "Actiononthemainimage "),
-        image : translate(languageData, "ImageField"),
-        article_type : translate(languageData, "Articletype "),
-        title_of_article : translate(languageData, "TitleofArticleField"),
+        Action_on_the_main_image: translate(languageData, "Actiononthemainimage "),
+        image: translate(languageData, "ImageField"),
+        article_type: translate(languageData, "Articletype "),
+        title_of_article: translate(languageData, "TitleofArticleField"),
 
     };
-    
+
     const orderArticleServices = async () => {
         setOrderLoading(true);
         const res = await orderArticles(formValues, orderPrice, articleType);
-    
+
         if (res.success === true) {
             toast(translate(languageData, "OrderAddedSuccessfully"), {
                 position: "top-center",
@@ -310,32 +155,77 @@ const OrderArticle = () => {
                 type: 'error'
             });
         }
-    
+
         setOrderLoading(false);
     };
+
+
+    const validate = (values) => {
+        let error = {};
+        let isValid = true;
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
     
-
-    // const formOfContactOpts = [
-    //     {
-    //         value: translate(languageData, "LinksellingChatAnytime")
-    //     },
-    //     {
-    //         value: translate(languageData, "PhoneAnytime")
-    //     },
-    //     {
-    //         value: translate(languageData, "PhoneFrom8to12")
-    //     },
-    //     {
-    //         value: translate(languageData, "PhoneFrom12to4")
-    //     },
-    //     {
-    //         value: translate(languageData, "PhoneFrom4to8")
-    //     }
-    // ]
-
-
-
-
+        if (!values.project) {
+            error.project = translate(languageData, "PleaseSelectYourProject");
+            isValid = false;
+        }
+    
+        if (!values.country) {
+            error.country = translate(languageData, "PleaseSelectYourCountry");
+            isValid = false;
+        }
+    
+        if (!values.quantity) {
+            error.quantity = translate(languageData, "PleaseEnterArticleQuantity");
+            isValid = false;
+        }
+    
+        if (!values.title) {
+            error.title = translate(languageData, "PleaseEnterArticleTitle");
+            isValid = false;
+        }
+    
+        if (!values.imageAction) {
+            error.imageAction = translate(languageData, "PleaseSelectYourImage");
+            isValid = false;
+        }
+    
+        if (!values.placingLink) {
+            error.placingLink = translate(languageData, "PleaseEnterPlacingLink");
+            isValid = false;
+        } else if (!urlRegex.test(values.placingLink)) {
+            error.placingLink = translate(languageData, "InvalidURLFormat");
+            isValid = false;
+        }
+    
+        if (!values.phone) {
+            error.phone = translate(languageData, "PleaseEnterPhoneNumber");
+            isValid = false;
+        }
+    
+        if (!values.attachment) {
+            error.attachment = translate(languageData, "PleaseAttachmentRequired");
+            isValid = false;
+        }
+    
+        if (!values.comment) {
+            error.comment = translate(languageData, "PleaseAddYourComment");
+            isValid = false;
+        }
+    
+        if (!values.email) {
+            error.email = translate(languageData, "PleaseEnterEmail");
+            isValid = false;
+        } else if (!emailRegex.test(values.email)) {
+            error.email = translate(languageData, "InvalidEmailFormat");
+            isValid = false;
+        }
+    
+        setFormErrors(error);
+        return isValid;
+    }
+    
 
     const TooltipLink = ({ id, children, title }) => (
         <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
@@ -346,17 +236,11 @@ const OrderArticle = () => {
     const userData2 = JSON.parse(localStorage.getItem("userData"))
 
 
-    // const articleListServices = async () => {
-    //     const res = await getArticles(userData2?.id)
-    //     setArticlesData(res.data)
-    // }
 
     const articleListServices2 = async () => {
         const res = await projectList(userData2?.id)
         setArticlesData2(res?.data.reverse())
     }
-
-
 
 
     const handleChange = (e) => {
@@ -486,9 +370,9 @@ const OrderArticle = () => {
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="number" name="quantity" placeholder={translate(languageData, "NumberOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                        <input className="input100" type="number" name="quantity" placeholder={translate(languageData, "NumberOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
                                     </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.quantiy}</div>
+                                    <div className='text-danger text-center mt-1'>{formErrors.quantity}</div>
                                 </Col>
                             </Row>
                         </Col>
@@ -499,7 +383,7 @@ const OrderArticle = () => {
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="text" name="title" placeholder={translate(languageData, "TitleOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                        <input className="input100" type="text" name="title" placeholder={translate(languageData, "TitleOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
                                     </div>
                                     <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                 </Col>
@@ -546,7 +430,7 @@ const OrderArticle = () => {
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <textarea className="input100" type="text" name="placingLink" cols={8} rows={10} onChange={(e) => handleChange(e)} style={{ paddingLeft: "15px" }} onKeyDown={() => validate(formValues)} />
+                                        <textarea className="input100" type="url" name="placingLink" cols={8} rows={10} onChange={(e) => handleChange(e)} style={{ paddingLeft: "15px" }} onBlur={() => validate(formValues)} onKeyDown={() => validate(formValues)}/>
                                     </div>
                                     <div className='text-danger text-center mt-1'>{formErrors.placingLink}</div>
                                 </Col>
@@ -608,7 +492,7 @@ const OrderArticle = () => {
                                     </Col>
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <input className="input100" type="email" name="email" placeholder={translate(languageData, "BuyArticleEmail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                            <input className="input100" type="email" name="email" placeholder={translate(languageData, "BuyArticleEmail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
                                         </div>
                                         <div className='text-danger text-center mt-1'>{formErrors.email}</div>
                                     </Col>

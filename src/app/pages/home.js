@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import { useLanguage } from '../Context/languageContext'
-import { dashboardprojects } from '../../services/HomeServices/homeService'
+import { dashboardprojects, dashboardpromotion, todolists } from '../../services/HomeServices/homeService'
 import { translate } from '../../utility/helper';
 import globalLoader from '../../assets/images/loader.svg'
 import DataTable from 'react-data-table-component'
@@ -17,6 +17,29 @@ const Home = () => {
   const [dashBoardproject, setDashBoardProjects] = useState([])
   const [loading, setLoading] = useState(false)
   const [ordersList, setOrdersList] = useState([])
+  const [promotionList, setPromotionList] = useState([])
+  const [toDoList, setToDoList] = useState([])
+
+
+
+  //api 1st section start
+
+  useEffect(() => {
+    todoListService()
+  }, [])
+
+  const todoListService = async () => {
+    setLoading(true)
+    const res = await todolists(userData?.id)
+    if (res.success === true) {
+      setToDoList(res?.data)
+      setLoading(false)
+    }
+  }
+  //*api 1st section end
+
+  //api 2nd section start
+
   useEffect(() => {
     dashBoardProjectsServices()
   }, [])
@@ -42,10 +65,9 @@ const Home = () => {
   const columns = [
     {
       name: translate(languageData, "ProjectName"),
-      selector: row => `${row.name}`, // Add "$" sign before row.price
+      selector: row => `${row.name}`,
       sortable: true,
       center: true,
-      // width: '180px'
     },
     {
       name: translate(languageData, "no_of_proejct"),
@@ -65,14 +87,75 @@ const Home = () => {
     },
 
   ]
+  //*api 2nd section end
 
 
+  //api 3rd section start
+  useEffect(() => {
+    promotionListServices()
+  }, [])
 
+  const promotionListServices = async () => {
+    setLoading(true)
+    const res = await dashboardpromotion()
+    if (res.success === true) {
+      setPromotionList(res?.data)
+      setLoading(false)
+    }
+  }
+
+  const tableData2 = promotionList?.map((item) => {
+    const date = new Date(item?.end_date);
+    return {
+      portal: item?.portal,
+      old_price: item?.old_price,
+      new_price: item?.new_price,
+      date: date?.toLocaleString(),
+    }
+  })
+
+  const columns2 = [
+    {
+      name: translate(languageData, "Portal Name"),
+      selector: row => row.portal,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "Old price / New price"),
+      selector: row => `${row.old_price} zł / ${row.old_price} zł`, // Add "$" sign before row.price
+      sortable: true,
+      center: true,
+      // width: '180px'
+    },
+    {
+      name: translate(languageData, "Promotion end"),
+      selector: row => row.date,
+
+      sortable: true,
+      center: true,
+      //  width: '180px'
+    },
+    {
+      name: translate(languageData, "writingAction"),
+      sortable: true,
+      center: true,
+      cell: (row) => (
+        <Link to={`/buyArticles`} className='btn btn-primary btn-pill'>Buy Publication</Link>
+      ),
+    },
+
+
+  ]
+  //*api 3rd section end
+
+
+  //api 4th section start
   useEffect(() => {
     ordersListServices()
   }, [])
-
-
 
   const ordersListServices = async () => {
     setLoading(true)
@@ -83,7 +166,7 @@ const Home = () => {
     }
   }
 
-  const tableData1 = ordersList?.slice(0,5).map((item) => {
+  const tableData1 = ordersList?.slice(0, 5).map((item) => {
     const date = new Date(item?.created_at);
     return {
       domain: item?.domain,
@@ -142,37 +225,44 @@ const Home = () => {
       center: true,
       cell: (row) => {
         let buttonClass = "btn btn-primary btn-pill";
-        let buttonText = row.status;
-        
+        let buttonText = "";
+
         switch (row.status) {
           case "PendingForAssing":
             buttonClass = "btn btn-danger btn-pill";
+            buttonText = "Pending";
             break;
           case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
+            buttonText = "Changes Requested";
             break;
           case "Completed":
             buttonClass = "btn btn-primary btn-pill";
+            buttonText = "Completed";
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
+            buttonText = "Assigned to Writer";
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
+            buttonText = "Under Customer Review";
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
+            buttonText = row.status;
         }
-    
+
         return (
-          <span className={buttonClass}>
+          <span className={`${buttonClass} d-flex justify-content-center`}>
             {buttonText}
           </span>
         );
       },
     }
-,    
-    
+
+    ,
+
     {
       name: translate(languageData, "writingAction"),
       sortable: true,
@@ -193,6 +283,12 @@ const Home = () => {
     }
 
   ]
+  //*api 4th section end
+
+  function formatDate(created_at) {
+    const date = new Date(created_at);
+    return date.toDateString(); // Convert to a readable date format
+  }
 
   return (
     <div className="inner-body" id="content">
@@ -200,75 +296,48 @@ const Home = () => {
       <Row>
         <Col xs={12} sm={7}>
           <Card className='mt-5'>
-            <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
+            <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>To do</h3>
             </Card.Header>
             <Card.Body >
-              <Row>
-                <Col xs={12} sm={4}>
-                  <Card className='mt-5 shadow-lg'> {/* Increased shadow with 'shadow-lg' class */}
-                    <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-                      <h3 className='fw-semibold'>To do 1.</h3>
-                    </Card.Header>
-                    <Card.Body>
-                      <div className='mb-4'>
-                        <h4>Send for verification the article Tajski masaż - co to, zalety,….</h4>
-                        <p>Date: ASAP (deadline has expired: 2023-10-25, 14:47)</p>
-                        <Button className="btn btn-primary">Complete</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col xs={12} sm={4}>
-                  <Card className='mt-5 shadow-lg'> {/* Increased shadow with 'shadow-lg' class */}
-                    <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-                      <h3 className='fw-semibold'>To do 2.</h3>
-                    </Card.Header>
-                    <Card.Body>
-                      <div className='mb-4'>
-                        <h4>Supplement the article (brak tytułu) which has been ordered</h4>
-                        <p>Date: No deadline</p>
-                        <Button className="btn btn-primary">Complete</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col xs={12} sm={4}>
-                  <Card className='mt-5 shadow-lg'> {/* Increased shadow with 'shadow-lg' class */}
-                    <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-                      <h3 className='fw-semibold'>To do 3.</h3>
-                    </Card.Header>
-                    <Card.Body>
-                      <div className='mb-4'>
-                        <h4>Supplement the article (brak tytułu) which has been ordered</h4>
-                        <p>Date: No deadline</p>
-                        <Button className="btn btn-primary">Complete</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
+              <div className="px-1" style={{ maxHeight: '346px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                <Row>
+                  {toDoList?.map((data, index) => (
+                    <Col xs={12} sm={4} key={index}>
+                      <Card className='mt-5 shadow-lg' >
+                        <Card.Body>
+                          <div className='mb-4'>
+                            <h4>{data?.title}</h4>
+                            <p>Date: {formatDate(data.created_at)}</p>
+                            <Button className="btn btn-primary">{data?.status}</Button>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
             </Card.Body>
           </Card>
         </Col>
         <Col xs={12} sm={5}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>Project list  of User</h3>
+              <h3 className='fw-semibold'>Project List</h3>
               <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData, "AddProject")}</Button>
             </Card.Header>
             <Card.Body>
               <Row>
-                <div className='mt-5 w-100'>
+                <div className=' w-100'>
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <>
+                    <div style={{ height: '340px', overflowY: 'scroll' }}>
                       <DataTable
                         columns={columns}
                         data={tableData}
                       />
-                    </>
+                    </div>
                   }
                 </div>
               </Row>
@@ -281,17 +350,31 @@ const Home = () => {
         <Col xs={12} sm={7}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>To do</h3>
+              <h3 className='fw-semibold'>Promotional List</h3>
             </Card.Header>
             <Card.Body >
-              Remain api
+              <Row>
+                <div className='mt-1 w-100'>
+                  {loading ? <div className='d-flex'>
+                    <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                  </div> :
+                    <div style={{ height: '317px', overflowY: 'scroll' }}>
+                      <DataTable
+                        columns={columns2}
+                        data={tableData2}
+                      />
+                    </div>
+                  }
+                </div>
+              </Row>
             </Card.Body>
           </Card>
         </Col>
         <Col xs={12} sm={5}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>Order list  of User</h3>
+              <h3 className='fw-semibold'>Order List</h3>
+              <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/orders')}>{translate(languageData, "View all Orders")}</Button>
             </Card.Header>
             <Card.Body>
               <Row>
