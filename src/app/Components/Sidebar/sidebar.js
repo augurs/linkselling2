@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BiBookContent } from 'react-icons/bi';
 import { PiArticleLight } from 'react-icons/pi';
 import { FaEdit } from 'react-icons/fa';
-import { BsPencil } from 'react-icons/bs';
+import { BsPencil, BsFillBagCheckFill } from 'react-icons/bs';
 import { RiBillFill } from 'react-icons/ri';
 import { AiOutlineProject, AiOutlineShopping } from 'react-icons/ai';
 import { PiLinkSimpleThin } from 'react-icons/pi';
@@ -10,7 +10,6 @@ import { LiaFileInvoiceDollarSolid, LiaFileInvoiceSolid } from 'react-icons/lia'
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
-
 
 const Sidebar = ({ sidebarActive }) => {
 
@@ -121,6 +120,14 @@ const Sidebar = ({ sidebarActive }) => {
                            
                                 <span className="side-menu__icon"><LiaFileInvoiceDollarSolid size={20} style={{ color: "gray!important" }}/></span>
                                 <span className="side-menu__label">{translate(languageData, "sidebarInvoices")}</span>
+
+                            </Link>
+                        </li>
+                        <li className="slide" style={{ cursor: "pointer" }}>
+                        <Link to='/orders' className="side-menu__item has-link" data-bs-toggle="slide">
+                           
+                                <span className="side-menu__icon"><BsFillBagCheckFill size={20} style={{ color: "gray!important" }}/></span>
+                                <span className="side-menu__label">{translate(languageData, "artilistOrders")}</span>
 
                             </Link>
                         </li>
