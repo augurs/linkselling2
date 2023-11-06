@@ -10,8 +10,9 @@ import { LiaFileInvoiceDollarSolid, LiaFileInvoiceSolid } from 'react-icons/lia'
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
+import { Button } from 'react-bootstrap';
 
-const Sidebar = ({ sidebarActive }) => {
+const Sidebar = ({toggleSiderbar, sidebarActive }) => {
 
 
     const location = useLocation()
@@ -48,7 +49,14 @@ const Sidebar = ({ sidebarActive }) => {
             <div className="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
             <div className="app-sidebar">
                 <div className="side-header">
-                    {!sidebarActive && <h2 className='mx-auto text-dark'>{translate(languageData, "title")}</h2>}
+                    {!sidebarActive && <h3 className='mx-auto text-dark'>{translate(languageData, "title")}</h3>}
+                    <Button
+                        className="btn btn-icon btn-light sidebar_toggle_btn"
+                        type="button"
+                        onClick={() => toggleSiderbar()}
+                    >
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </Button>
                 </div>
                 <div className="main-sidemenu">
                     <div className="slide-left disabled" id="slide-left">

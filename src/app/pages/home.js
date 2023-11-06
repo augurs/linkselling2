@@ -70,7 +70,7 @@ const Home = () => {
       center: true,
     },
     {
-      name: translate(languageData, "no_of_proejct"),
+      name: translate(languageData, "noOfProjects"),
       selector: row => row.no_of_proejct,
 
       sortable: true,
@@ -82,7 +82,7 @@ const Home = () => {
       sortable: true,
       center: true,
       cell: (row) => (
-        <Link to={`/buyArticles`} className='btn btn-primary btn-pill'>Buy New</Link>
+        <Link to={`/buyArticles`} className='btn btn-primary btn-pill d-flex justify-content-center'>{translate(languageData, "buyNew")}</Link>
       ),
     },
 
@@ -111,44 +111,45 @@ const Home = () => {
       old_price: item?.old_price,
       new_price: item?.new_price,
       date: date?.toLocaleString(),
+      id: item?.id
     }
   })
 
   const columns2 = [
     {
-      name: translate(languageData, "Portal Name"),
-      selector: row => row.portal,
-
-      sortable: true,
-      center: true,
-      //  width: '180px'
-    },
-    {
-      name: translate(languageData, "Old price / New price"),
-      selector: row => `${row.old_price} zł / ${row.old_price} zł`, // Add "$" sign before row.price
+      name: translate(languageData, "PortalName"),
+      selector: (row) => row.portal,
       sortable: true,
       center: true,
       // width: '180px'
     },
     {
-      name: translate(languageData, "Promotion end"),
-      selector: row => row.date,
-
+      name: translate(languageData, "oldNewPrice"),
+      selector: (row) => `${row.old_price} zł / ${row.old_price} zł`,
       sortable: true,
       center: true,
-      //  width: '180px'
+      // width: '180px'
+    },
+    {
+      name: translate(languageData, "promotionEnd"),
+      selector: (row) => row.date,
+      sortable: true,
+      center: true,
+      // width: '180px'
     },
     {
       name: translate(languageData, "writingAction"),
       sortable: true,
       center: true,
       cell: (row) => (
-        <Link to={`/buyArticles`} className='btn btn-primary btn-pill'>Buy Publication</Link>
+        <div className='d-flex justify-content-center'>
+          <Link to={`/buyArticles?id=${row.id}`} className='btn btn-primary btn-pill'>
+            <small>{translate(languageData, "buyPublication")}</small>
+          </Link>
+        </div>
       ),
     },
-
-
-  ]
+  ];
   //*api 3rd section end
 
 
@@ -234,7 +235,7 @@ const Home = () => {
             break;
           case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = "Changes Requested";
+            buttonText = "Requested";
             break;
           case "Completed":
             buttonClass = "btn btn-primary btn-pill";
@@ -242,11 +243,11 @@ const Home = () => {
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
-            buttonText = "Assigned to Writer";
+            buttonText = "Assigned";
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
-            buttonText = "Under Customer Review";
+            buttonText = "Review";
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
@@ -287,17 +288,20 @@ const Home = () => {
 
   function formatDate(created_at) {
     const date = new Date(created_at);
-    return date.toDateString(); // Convert to a readable date format
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   return (
     <div className="inner-body" id="content">
-      <h1 className='text-center mt-2'>Home</h1>
+      <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
       <Row>
         <Col xs={12} sm={7}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>To do</h3>
+              <h3 className='fw-semibold'>{translate(languageData, "todo")}</h3>
             </Card.Header>
             <Card.Body >
               <div className="px-1" style={{ maxHeight: '346px', overflowY: 'scroll', overflowX: 'hidden' }}>
@@ -305,11 +309,11 @@ const Home = () => {
                   {toDoList?.map((data, index) => (
                     <Col xs={12} sm={4} key={index}>
                       <Card className='mt-5 shadow-lg' >
-                        <Card.Body>
+                        <Card.Body className='d-flex justify-content-center'>
                           <div className='mb-4'>
                             <h4>{data?.title}</h4>
                             <p>Date: {formatDate(data.created_at)}</p>
-                            <Button className="btn btn-primary">{data?.status}</Button>
+                            <Button className="btn btn-primary"><small>{data?.status}</small></Button>
                           </div>
                         </Card.Body>
                       </Card>
@@ -323,7 +327,7 @@ const Home = () => {
         <Col xs={12} sm={5}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>Project List</h3>
+              <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
               <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData, "AddProject")}</Button>
             </Card.Header>
             <Card.Body>
@@ -332,7 +336,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <div style={{ height: '340px', overflowY: 'scroll' }}>
+                    <div style={{ height: '240px', overflowY: 'scroll' }}>
                       <DataTable
                         columns={columns}
                         data={tableData}
@@ -350,7 +354,7 @@ const Home = () => {
         <Col xs={12} sm={7}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>Promotional List</h3>
+              <h3 className='fw-semibold'>{translate(languageData, "promotionalList")}</h3>
             </Card.Header>
             <Card.Body >
               <Row>
@@ -373,8 +377,8 @@ const Home = () => {
         <Col xs={12} sm={5}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
-              <h3 className='fw-semibold'>Order List</h3>
-              <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/orders')}>{translate(languageData, "View all Orders")}</Button>
+              <h3 className='fw-semibold'>{translate(languageData, "OrdersList")}</h3>
+              <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/orders')}>{translate(languageData, "viewAllOrders")}</Button>
             </Card.Header>
             <Card.Body>
               <Row>

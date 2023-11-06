@@ -28,6 +28,7 @@ import Companydata from "./app/pages/companydata/companydata.js";
 import Orders from "./app/pages/Orders/Orders.js";
 import CustomCartContext from "./app/Context/cartListContext.js";
 import '../src/assets/css/custom.css'
+import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 
 
 function App() {
@@ -70,9 +71,9 @@ function App() {
         { path: 'buyArticles', element: <BuyArticles /> },
         { path: 'requestedArticles', element: <RequestedArticles /> },
         { path: 'cart', element: <Cart /> },
-        { path: 'invoices', element: <Invoices />},
-        { path: 'companydata', element: <Companydata />},
-        { path: 'orders', element: <Orders />},
+        { path: 'invoices', element: <Invoices /> },
+        { path: 'companydata', element: <Companydata /> },
+        { path: 'orders', element: <Orders /> },
 
       ]
     },
@@ -86,12 +87,13 @@ function App() {
 
   return (
     <div>
-      <CustomCartContext>
-        <CustomLanguageContext>
-          <RouterProvider router={browserRouter} />
-        </CustomLanguageContext>
-      </CustomCartContext>
-
+      <SidebarProvider>
+        <CustomCartContext>
+          <CustomLanguageContext>
+            <RouterProvider router={browserRouter} />
+          </CustomLanguageContext>
+        </CustomCartContext>
+      </SidebarProvider>
     </div>
   );
 }

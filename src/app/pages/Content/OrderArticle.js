@@ -259,7 +259,7 @@ const OrderArticle = () => {
 
             <ToastContainer />
             <Card className='mt-4'>
-                <Card.Header className='f-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>Back</Button></Card.Header>
+                <Card.Header className='d-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>Back</Button></Card.Header>
                 <Card.Body>
                     {/* <Row className='mt-5 border-bottom pb-6'>
                         <Col lg={12} className='border border-primary p-2 ms-auto py-4'>

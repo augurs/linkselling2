@@ -8,6 +8,8 @@ import { Button, Modal } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import { toast, ToastContainer } from 'react-toastify';
 import { ColorRing } from 'react-loader-spinner';
+import { translate } from '../../../utility/helper';
+import { useLanguage } from '../../Context/languageContext';
 
 const RequestedArticles = () => {
 
@@ -18,7 +20,7 @@ const RequestedArticles = () => {
     const [viewArticle, setViewArticle] = useState()
     const [suggestion, setSuggestion] = useState('')
     const [editor, setEditor] = useState('')
-
+    const { languageData } = useLanguage();
 
     useEffect(() => {
         setEditor(viewArticle?.content)
@@ -111,52 +113,52 @@ const RequestedArticles = () => {
     const columns = [
 
         {
-            name: "S.No",
+            name: translate(languageData,"S.No."),
             selector: row => row?.id,
             sortable: true,
             center: true,
         },
         {
-            name: "Title",
+            name: translate(languageData,"artilstTitle"),
             selector: row => row?.title,
             sortable: true,
             center: true,
         },
         {
-            name: "AI",
+            name: translate(languageData,"writingAi"),
             selector: row => row?.ai,
             sortable: true,
             center: true,
         },
         {
-            name: "Content Size",
+            name: translate(languageData,"writingContentSize"),
             selector: row => row?.contentsize,
             sortable: true,
             center: true,
         },
         {
-            name: "Max Link",
+            name: translate(languageData,"maxLinks"),
             selector: row => row?.maxLink,
             center: true,
             sortable: true,
         },
         {
-            name: 'Date of Article',
+            name: translate(languageData,"writingDateOfArticle"),
             selector: row => row?.dateOfArticle,
             center: true,
             sortable: true,
         },
 
         {
-            name: 'Status',
+            name: translate(languageData,"writingStatus"),
             cell: row => <button className='btn btn-outline-primary btn-pill ' >{row?.status}</button>,
             center: true,
             sortable: true,
             width: '200px',
         },
         {
-            name: 'Action',
-            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >Edit</button>,
+            name: translate(languageData,"Action"),
+            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData,"Edit")}</button>,
             center: true,
             sortable: true,
         },
@@ -191,7 +193,7 @@ const RequestedArticles = () => {
                     <img src={globalLoader} className='mx-auto' alt='loader1' />
                 </div> :
                 <div>
-                    <h4 className='mt-1 mb-3'>Requested Articles</h4>
+                    <h4 className='mt-1 mb-3'>{translate(languageData,"requestedArticles")}</h4>
 
                     <DataTable
                         columns={columns}

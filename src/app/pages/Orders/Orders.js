@@ -90,30 +90,36 @@ const Orders = () => {
       center: true,
       cell: (row) => {
         let buttonClass = "btn btn-primary btn-pill";
-        let buttonText = row.status;
-        
+        let buttonText = "";
+
         switch (row.status) {
           case "PendingForAssing":
             buttonClass = "btn btn-danger btn-pill";
+            buttonText = "Pending";
             break;
           case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
+            buttonText = "Requested";
             break;
           case "Completed":
             buttonClass = "btn btn-primary btn-pill";
+            buttonText = "Completed";
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
+            buttonText = "Assigned";
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
+            buttonText = "Review";
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
+            buttonText = row.status;
         }
-    
+
         return (
-          <span className={buttonClass}>
+          <span className={`${buttonClass} d-flex justify-content-center`}>
             {buttonText}
           </span>
         );

@@ -7,11 +7,10 @@ import usFlag from "../../../assets/images/flags/us.svg"
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
-
 import { BsExclamationOctagon } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import "./BuyLinks.css";
-
+import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
@@ -28,13 +27,20 @@ import { getArticles } from "../../../services/articleServices/articleServices";
 import { getCart } from "../../../services/invoicesServices/invoicesServices";
 import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
-import { Pagination, Stack } from "@mui/material";
+import { InputLabel, Pagination, Stack } from "@mui/material";
 import { projectList } from '../../../services/ProjectServices/projectServices';
-
+import { useSidebar } from '../../Context/togglerBarContext';
+import { useParams } from 'react-router-dom';
+import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 const BuyArticles = () => {
+
+    const initialValues = {
+        project: "",
+    };
 
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
+    const [formValues, setFormValues] = useState(initialValues);
     const [showOfferModal, setShowOfferModal] = useState(false);
     const [showCartOptions, setShowCartOptions] = useState(false);
     const [articleType, setArticleType] = useState(translate(languageData, "SelectOwnArticle"));
@@ -53,6 +59,7 @@ const BuyArticles = () => {
     const [cartLoading, setCartLoading] = useState(false)
     const [articleList, setArticleList] = useState([])
     const [cartList, setCartList] = useState([])
+    const [project, setProject] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
@@ -64,15 +71,39 @@ const BuyArticles = () => {
     const [selectedSubArticles, setSelectedSubArticles] = useState('')
     const [articlePackages, setArticlePackages] = useState([])
     const [articlesData2, setArticlesData2] = useState([]);
+    const [promotionList, setPromotionList] = useState([])
+    const [selectedId, setSelectedId] = useState(null);
+    const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
+    const { cartListServices } = useCart()
+    const { toggleSidebar1 } = useSidebar();
+    const { id } = useParams();
+    const handleRemoveTypeAnchor1 = () => {
+        setSearch({ ...search, doFollow: 0 });
+    };
+
+    const handleRemoveTypeAnchor2 = () => {
+        setSearch({ ...search, promotions: 0 });
+    };
+
+    const handleRemoveTypeAnchor = (type) => {
+        setTypeAnchors(typeAnchors.filter((item) => item !== type));
+    };
+
+
+
+    useEffect(() => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const id = queryParams.get('id');
+      setSelectedId(id);
+    }, []);
+
 
 
     const navigate = useNavigate()
 
     const userData = JSON.parse(localStorage.getItem('userData'));
 
-    const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
 
-    const { cartListServices } = useCart()
 
     useEffect(() => {
         getPublisherArticlesService()
@@ -84,6 +115,11 @@ const BuyArticles = () => {
         setSearch({ ...search, [name]: value })
     }
 
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues({ ...formValues, [name]: value });
+    };
 
     console.log(articlePackages, "82");
     // const increasePage = () => {
@@ -158,7 +194,13 @@ const BuyArticles = () => {
     const handleAnchorsType = (e) => {
         const value = e.target.value
         setTypeAnchors(typeof value === 'string' ? value.split(',') : value)
+        toggleSidebar1()
     }
+
+    const handletoggle = () => {
+        toggleSidebar1()
+    }
+
 
 
 
@@ -537,7 +579,8 @@ const BuyArticles = () => {
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
             article_amount: orderPrice?.split(',')[0],
-            article_id: orderId
+            article_id: orderId,
+            project: project
         }
         setCartLoading(true)
         const res = await addToCartArticles(data)
@@ -605,12 +648,26 @@ const BuyArticles = () => {
         }
     }
 
-
     const articleListServices = async () => {
         const res = await projectList(userData?.id)
         setArticlesData2(res?.data.reverse())
     }
 
+    useEffect(() => {
+        promotionListServices()
+    }, [])
+
+    const promotionListServices = async () => {
+        setLoading(true)
+        const res = await dashboardpromotion()
+        if (res.success === true) {
+            setPromotionList(res?.data)
+            setLoading(false)
+        }
+    }
+
+    const numCheckboxesToDisplay = promotionList.length;
+    const boxWidth = `${100 / numCheckboxesToDisplay}%`;
     return (
         <>
             <ToastContainer />
@@ -668,49 +725,37 @@ const BuyArticles = () => {
                                     </span>
                                 </div>
                             </Col> */}
-                            <Col xs={12} sm={6} md={4} className="" style={{ zIndex: "100" }}>
-                                {/* <div className="form-group">
-                                    <select
-                                        name="status"
-                                        style={{ height: "45px" }}
-                                        className="form-select"
-                                        id="default-dropdown"
-                                        data-bs-placeholder="Select Status"
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        multiple
-                                    >
-                                        <option label="Type of Anchors"></option>
-                                        <option value="0" >0</option>
-                                    </select>
-                                </div> */}
-                                <FormControl fullWidth>
-                                    {/* <Label for="discountableItems">
-                                        Discountable items
-                                    </Label> */}
+                            <Col xs={12} sm={6} md={4} className="">
+                                <FormControl fullWidth onMouseEnter={handletoggle}>
+
                                     <Select
                                         labelId="typeofanchors-label"
                                         id="typeofanchors"
                                         multiple
                                         value={typeAnchors}
                                         onChange={handleAnchorsType}
-                                        input={<OutlinedInput name='typeofanchors' />}
+                                        input={<OutlinedInput name="typeofanchors" />}
                                         renderValue={(selected) => selected.join(', ')}
-                                        MenuProps={MenuProps}
                                         style={{ height: "40px" }}
                                         displayEmpty={true}
                                         IconComponent={() => (
-                                            <MdOutlineKeyboardArrowDown size={20} className='me-1 MuiSvgIcon-root MuiSelect-icon' />
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon'
+                                            />
                                         )}
                                     >
-                                        <MenuItem value="" disabled>{translate(languageData, "typeofAnchors")}</MenuItem>
-                                        {anchorTypes?.map((name, index) => (
-
-                                            <MenuItem key={index} value={name?.type} className='check_list'>
-                                                <Checkbox checked={typeAnchors?.indexOf(name?.type) > -1} />
-                                                <ListItemText primary={name?.type} />
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "Select Anchor Types")}
+                                        </MenuItem>
+                                        {anchorTypes.map((name, index) => (
+                                            <MenuItem key={index} value={name.type} className='check_list'>
+                                                <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
+                                                <ListItemText primary={name.type} />
                                             </MenuItem>
                                         ))}
                                     </Select>
+
                                 </FormControl>
                             </Col>
                             <Col xs={12} sm={6} md={4} className=''>
@@ -721,16 +766,16 @@ const BuyArticles = () => {
                                             className='pe-2'
                                             onChange={(e) => handleCheckChange(e)}
                                             name="doFollow"
-                                            checked={search.doFollow}
+                                            checked={search?.doFollow}
 
                                         />
-                                        <span className='mt-1'>{translate(languageData, "doFollowP")}</span>
+                                        <span className='mt-1' >{translate(languageData, "doFollowP")}</span>
                                     </label>
                                 </div>
 
                             </Col>
 
-                            <Col xs={12} sm={6} md={4} className=''>
+                            {/* <Col xs={12} sm={6} md={4} className=''>
                                 <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
                                     <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
                                         <Form.Check
@@ -744,6 +789,24 @@ const BuyArticles = () => {
                                     </label>
                                 </div>
 
+                            </Col> */}
+
+
+                            <Col xs={12} sm={6} md={4} className='d-flex gap-2 '>
+                                {promotionList?.slice(0, numCheckboxesToDisplay).map((checkbox) => (
+                                    <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
+                                        <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                            <Form.Check
+                                                id={checkbox.id}
+                                                className='pe-2'
+                                                onChange={(e) => handleCheckChange(e, checkbox.id)}
+                                                name={checkbox.name}
+                                                checked={checkbox.checked}
+                                            />
+                                            <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
+                                        </label>
+                                    </div>
+                                ))}
                             </Col>
 
 
@@ -854,8 +917,46 @@ const BuyArticles = () => {
                             </Col>
                         </Row>
 
+                        <ul className="d-flex gap-2">
+                            {typeAnchors.map((type) => (
+                                <li key={type}>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemoveTypeAnchor(type)}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        {type}
+                                    </Button>
+                                </li>
+                            ))}
+                            {search?.doFollow ? <div>
 
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className="btn btn-light text-dark"
+                                    onClick={handleRemoveTypeAnchor1}
+                                >
+                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                    doFollow
+                                </Button>
+                            </div> : ""}
+                            {search?.promotions ? <div>
 
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className="btn btn-light text-dark"
+                                    onClick={handleRemoveTypeAnchor2}
+                                >
+                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                    Promotions
+                                </Button>
+                            </div> : ""}
+                        </ul>
 
                         {/* <Button variant="primary" className="mx-auto d-flex mt-4">
                             {translate(languageData, "artilstSearch")}
@@ -911,15 +1012,14 @@ const BuyArticles = () => {
                             </h4>
                         </div>
                         <div className="form-group">
-                            <DropdownButton
-                                title={translate(languageData, "artilstProject")}
-                                id="default-dropdown"
-                                variant="btn btn-primary"
-                            > 
-                                {articlesData2.map((item, index) => (
-                                    <Dropdown.Item key={index}>{item.name}</Dropdown.Item>
-                                ))}
-                            </DropdownButton>
+                            <select name="project" style={{ height: "45px" }} className="btn btn-primary" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setProject(e.target.value)}>
+                                <option label={translate(languageData, "artilstProject")}></option>
+                                {articlesData2.map((item, index) => {
+                                    return (
+                                        <option value={item?.id} key={index}>{item?.name}</option>
+                                    )
+                                })}
+                            </select>
                         </div>
                     </Modal.Header>
                     <Modal.Body>

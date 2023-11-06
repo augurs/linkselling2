@@ -68,6 +68,7 @@ export const addToCartArticles = (data) => {
   formData.append("amount", data.amount);
   formData.append("article_amount", data.article_amount);
   formData.append("article_id", data.article_id);
+  formData.append("project", data.project);
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/single-add-to-card/${data.userId}`, formData)
