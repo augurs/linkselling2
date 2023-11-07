@@ -59,6 +59,7 @@ const Home = () => {
     return {
       no_of_proejct: item?.no_of_proejct,
       name: item?.name,
+      id: item?.id
     }
   })
 
@@ -82,7 +83,7 @@ const Home = () => {
       sortable: true,
       center: true,
       cell: (row) => (
-        <Link to={`/buyArticles`} className='btn btn-primary btn-pill d-flex justify-content-center'>{translate(languageData, "buyNew")}</Link>
+        <Link to={`/buyArticles?pid=${row.id}`} className='btn btn-primary btn-pill d-flex justify-content-center'>{translate(languageData, "buyNew")}</Link>
       ),
     },
 

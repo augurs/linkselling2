@@ -4,7 +4,7 @@ import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
 import { BsExclamationOctagon } from "react-icons/bs";
@@ -32,6 +32,8 @@ import { projectList } from '../../../services/ProjectServices/projectServices';
 import { useSidebar } from '../../Context/togglerBarContext';
 import { useParams } from 'react-router-dom';
 import { dashboardpromotion } from '../../../services/HomeServices/homeService'
+import ReactQuill from "react-quill";
+import FileUpload from '../../Components/FileUpload/FileUpload'
 const BuyArticles = () => {
 
     const initialValues = {
@@ -43,8 +45,8 @@ const BuyArticles = () => {
     const [formValues, setFormValues] = useState(initialValues);
     const [showOfferModal, setShowOfferModal] = useState(false);
     const [showCartOptions, setShowCartOptions] = useState(false);
-    const [articleType, setArticleType] = useState(translate(languageData, "SelectOwnArticle"));
-    const [articleTypeValue, setarticleTypeValue] = useState('SelectOwnArticle')
+    const [articleType, setArticleType] = useState(translate(languageData, "RequestArticleWriting"));
+    const [articleTypeValue, setarticleTypeValue] = useState('RequestArticleWriting')
     const [traficType, setTraficType] = useState({ price: '0,00 zł', clicks: "0" })
     const [confirmTraffic, setConfirmTraffic] = useState(false)
     const [orderType, setOrderType] = useState('Basic article');
@@ -60,6 +62,9 @@ const BuyArticles = () => {
     const [articleList, setArticleList] = useState([])
     const [cartList, setCartList] = useState([])
     const [project, setProject] = useState('')
+    const [content, setContent] = useState('')
+    const [image, setImage] = useState('')
+    const [date, setDate] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
@@ -72,11 +77,18 @@ const BuyArticles = () => {
     const [articlePackages, setArticlePackages] = useState([])
     const [articlesData2, setArticlesData2] = useState([]);
     const [promotionList, setPromotionList] = useState([])
-    const [selectedId, setSelectedId] = useState(null);
+    const [checkboxes, setCheckboxes] = useState([]);
+    const [selectedProject, setSelectedProject] = useState('');
+    const [userSelectedProject, setUserSelectedProject] = useState('');
     const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
-    const { id } = useParams();
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const id = queryParams.get('id');
+    const pid = queryParams.get('pid');
+
     const handleRemoveTypeAnchor1 = () => {
         setSearch({ ...search, doFollow: 0 });
     };
@@ -88,14 +100,6 @@ const BuyArticles = () => {
     const handleRemoveTypeAnchor = (type) => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
     };
-
-
-
-    useEffect(() => {
-      const queryParams = new URLSearchParams(window.location.search);
-      const id = queryParams.get('id');
-      setSelectedId(id);
-    }, []);
 
 
 
@@ -121,40 +125,18 @@ const BuyArticles = () => {
         setFormValues({ ...formValues, [name]: value });
     };
 
-    console.log(articlePackages, "82");
-    // const increasePage = () => {
-    //     if (page <= lastPage) {
-    //         return;
-    //     }
-    //     setPage(page + 1)
-    // }
-
-    // const decreasePage = () => {
-    //     if (page >= 1) {
-    //         return;
-    //     }
-    //     setPage(page - 1)
-
-    // }
-
     const handlePageChange = (event, value) => {
         setPage(value)
     }
 
-    const handleCheckChange = (e) => {
-        const { name, checked } = e.target
-        let newVal = checked ? 1 : 0;
-        setSearch({ ...search, [name]: newVal })
-    }
+
 
     // dofollow, promotion, min_dr, max_dr, min_link, max_link, min_href, max_hre
     // type_of_anchor
 
 
     useEffect(() => {
-        if (articleType === translate(languageData, "SelectOwnArticle")) {
-            setarticleTypeValue('SelectOwnArticle')
-        } else if (articleType === translate(languageData, "RequestArticleWriting")) {
+       if (articleType === translate(languageData, "RequestArticleWriting")) {
             setarticleTypeValue('RequestArticle')
         } else if (articleType === translate(languageData, "AddNewArticle")) {
             setarticleTypeValue('AddAnArticle ')
@@ -162,6 +144,13 @@ const BuyArticles = () => {
             setarticleTypeValue('SelectLater')
         }
     }, [articleType])
+
+    // useEffect(() => {
+    //     if (articleType === translate(languageData, "AddNewArticle")) {
+    //         setOrderId('')
+    //     }
+    // }, [articleType])
+
 
     useEffect(() => {
         getArticleListServices()
@@ -178,6 +167,9 @@ const BuyArticles = () => {
     useEffect(() => {
         articleListServices()
     }, [])
+
+
+
 
 
 
@@ -251,7 +243,7 @@ const BuyArticles = () => {
     }
 
     useEffect(() => {
-        setArticleType(translate(languageData, "SelectOwnArticle"))
+        setArticleType(translate(languageData, "RequestArticleWriting"))
     }, [showCartOptions])
 
 
@@ -564,7 +556,7 @@ const BuyArticles = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
-    // console.log(orderId, "516");
+
 
 
     const addToCartArticleServices = async () => {
@@ -580,10 +572,13 @@ const BuyArticles = () => {
             amount: selectedSubArticles?.bestPrice,
             article_amount: orderPrice?.split(',')[0],
             article_id: orderId,
-            project: project
+            project: project,
+            content: content,
+            image: image,
+            date: date
         }
         setCartLoading(true)
-        const res = await addToCartArticles(data)
+        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
                 position: "top-right",
@@ -630,13 +625,32 @@ const BuyArticles = () => {
         const res = await getCart(userData?.id)
         setCartList(res?.product)
     }
-    const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
-        setArticles(res.data)
-        setLastPage(res?.last_page)
+
+    const modules = {
+        toolbar: [
+            [{ 'header': '1' }, { 'header': '2' }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ],
+    };
+    const formats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike',
+        'list', 'bullet',
+        'link', 'image'
+    ];
+
+    const handleEditorChange = (html) => {
+        setContent(html)
     }
 
+    const allowedImageExtension = ['.jpg', '.gif', '.png']
 
+    const handleFiles = (file) => { // Remove the 'name' parameter as it's not needed
+        setImage(file); // Set the image state directly to the selected File object
+    };
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
@@ -648,26 +662,80 @@ const BuyArticles = () => {
         }
     }
 
+    //slect project api and auto select option with id start
     const articleListServices = async () => {
         const res = await projectList(userData?.id)
         setArticlesData2(res?.data.reverse())
     }
 
     useEffect(() => {
-        promotionListServices()
-    }, [])
-
-    const promotionListServices = async () => {
-        setLoading(true)
-        const res = await dashboardpromotion()
-        if (res.success === true) {
-            setPromotionList(res?.data)
-            setLoading(false)
+        if (pid) {
+            // If pid is present in the URL, set selectedProject based on pid
+            setSelectedProject(pid);
+        } else {
+            // If no pid is found in the URL, use userSelectedProject if available
+            if (userSelectedProject) {
+                setSelectedProject(userSelectedProject);
+            } else {
+                // If neither pid nor userSelectedProject is available, set selectedProject manually
+                setSelectedProject("DEFAULT_PROJECT_ID"); // Replace with your default project ID
+            }
         }
-    }
+    }, [pid, userSelectedProject]);
 
-    const numCheckboxesToDisplay = promotionList.length;
+
+    //slect project api and auto select option with id 
+
+    //filter article send data with cheked box start
+    const getPublisherArticlesService = async () => {
+        const res = await getPublisherArticles(page, id, search, typeAnchors, userData?.id)
+        setArticles(res.data)
+        setLastPage(res?.last_page)
+    }
+    //filter article send data with cheked box start
+
+    //promotion api start//
+
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            const res = await dashboardpromotion();
+
+            if (res.success === true) {
+                const data = res.data;
+                if (id) {
+                    const updatedCheckboxes = data.map(checkbox => ({
+                        ...checkbox,
+                        checked: checkbox.id === parseInt(id),
+                    }));
+                    setCheckboxes(updatedCheckboxes);
+                } else {
+                    setCheckboxes(data);
+                }
+            }
+
+            setLoading(false);
+        }
+
+        fetchData();
+    }, [id]);
+
+    const handleCheckChange = (e, checkboxId) => {
+        const { checked } = e.target;
+        const updatedCheckboxes = checkboxes.map(checkbox => ({
+            ...checkbox,
+            checked: checkbox.id === checkboxId ? checked : checkbox.checked,
+        }));
+        setCheckboxes(updatedCheckboxes);
+        setSearch({ ...search, promotions: checked ? checkboxId : 0 });
+
+    };
+
+    const numCheckboxesToDisplay = checkboxes.length;
     const boxWidth = `${100 / numCheckboxesToDisplay}%`;
+
+    //promotion api end//
+
     return (
         <>
             <ToastContainer />
@@ -792,21 +860,24 @@ const BuyArticles = () => {
                             </Col> */}
 
 
-                            <Col xs={12} sm={6} md={4} className='d-flex gap-2 '>
-                                {promotionList?.slice(0, numCheckboxesToDisplay).map((checkbox) => (
-                                    <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
-                                        <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                            <Form.Check
-                                                id={checkbox.id}
-                                                className='pe-2'
-                                                onChange={(e) => handleCheckChange(e, checkbox.id)}
-                                                name={checkbox.name}
-                                                checked={checkbox.checked}
-                                            />
-                                            <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
-                                        </label>
-                                    </div>
-                                ))}
+                            <Col xs={12} sm={6} md={4} className='d-flex gap-2'>
+                                {checkboxes
+                                    ?.slice(0, numCheckboxesToDisplay)
+                                    .map((checkbox) => (
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
+
+                                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                                <Form.Check
+                                                    id={checkbox.id}
+                                                    className='pe-2'
+                                                    onChange={(e) => handleCheckChange(e, checkbox.id)}
+                                                    name={checkbox.name}
+                                                    checked={checkbox.checked}
+                                                />
+                                                <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
+                                            </label>
+                                        </div>
+                                    ))}
                             </Col>
 
 
@@ -1012,7 +1083,7 @@ const BuyArticles = () => {
                             </h4>
                         </div>
                         <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} className="btn btn-primary" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setProject(e.target.value)}>
+                            <select name="project" style={{ height: "45px" }} className="btn btn-primary" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { setUserSelectedProject(e.target.value); setProject(e.target.value); }} value={selectedProject}>
                                 <option label={translate(languageData, "artilstProject")}></option>
                                 {articlesData2.map((item, index) => {
                                     return (
@@ -1045,15 +1116,6 @@ const BuyArticles = () => {
                             <div>
                                 <div className="mt-5 d-flex justify-content-center flex-wrap">
                                     <Button
-                                        className={`${articleType === translate(languageData, "SelectOwnArticle")
-                                            ? "btn-primary"
-                                            : "btn-outline-primary"
-                                            }   rounded-0`}
-                                        onClick={() => setArticleType(translate(languageData, "SelectOwnArticle"))}
-                                    >
-                                        {translate(languageData, "SelectOwnArticle")}
-                                    </Button>
-                                    <Button
                                         className={`${articleType === translate(languageData, "RequestArticleWriting")
                                             ? "btn-primary"
                                             : "btn-outline-primary"
@@ -1071,16 +1133,6 @@ const BuyArticles = () => {
                                     >
                                         {translate(languageData, "AddNewArticle")}
                                     </Button>
-                                    <Button
-
-                                        className={`${articleType === translate(languageData, "selectLater")
-                                            ? "btn-primary"
-                                            : "btn-outline-primary"
-                                            }   rounded-0`}
-                                        onClick={() => setArticleType(translate(languageData, "selectLater"))}
-                                    >
-                                        {translate(languageData, "selectLater")}
-                                    </Button>
                                 </div>
                                 <div className="mt-5">
                                     <div>
@@ -1089,26 +1141,6 @@ const BuyArticles = () => {
                                                 {/* <p className="fw-semibold ps-4">{translate(languageData, "sidebarContent")}</p> */}
                                             </div>}
                                         <div className="ps-4">
-                                            {articleType === translate(languageData, "SelectOwnArticle") &&
-                                                <Row className="mt-5 border-bottom">
-                                                    {/* <Col xs={12} md={4}>
-                                                        <span>{translate(languageData, "SelectArticle")} *</span>
-                                                    </Col> */}
-                                                    {/* <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                        <div className="form-group">
-                                                            <select name="selectArticle" style={{ height: "45px" }} class=" form-select" id="default-dropdown" onChange={(e) => setSelectArticle(e.target.value)} value={selectArticle}>
-                                                                <option label="Select"></option>
-                                                                {articleList?.map((item, index) => {
-                                                                    return (
-                                                                        <option value={item?.id} key={index}>{item?.title}</option>
-                                                                    )
-                                                                })}
-
-                                                            </select>
-                                                        </div>
-
-                                                    </Col> */}
-                                                </Row>}
 
                                             {articleType === translate(languageData, "RequestArticleWriting") &&
                                                 <div>
@@ -1161,6 +1193,77 @@ const BuyArticles = () => {
                                                             </Col>
                                                         </Row>} */}
 
+                                                    {/* <Row className='align-items-center mt-5'>
+                                                    <Col xs={12} md={4}>
+                                                        <span>{translate(languageData , "Theme")} *</span>
+                                                    </Col>
+                                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                        <div className="form-group">
+                                                        <Select options={""} name='language' placeholder="Language" styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }}  />
+
+                                                        </div>
+                                                    
+                                                    </Col>
+                                                </Row> */}
+
+
+                                                </div>
+
+                                            }
+
+                                            {articleType === translate(languageData, "AddNewArticle") &&
+                                                <div>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Title *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Publication date *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='mt-4 pb-8'>
+                                                        <Col xs={12} md={4} className='mt-2'>
+                                                            <span>{translate(languageData, "sidebarContent")}</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <ReactQuill
+                                                                theme="snow"
+                                                                onChange={handleEditorChange}
+                                                                value={content}
+                                                                modules={modules}
+                                                                formats={formats}
+                                                                bounds={'.app'}
+                                                                placeholder="Write content"
+                                                                style={{ height: "300px" }}
+                                                            />
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Image *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
+                                                        </Col>
+                                                    </Row>
                                                     {/* <Row className='align-items-center mt-5'>
                                                     <Col xs={12} md={4}>
                                                         <span>{translate(languageData , "Theme")} *</span>
