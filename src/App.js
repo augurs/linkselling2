@@ -3,6 +3,7 @@ import Login from './app/pages/auth/login.js'
 import Thanks from './app/pages/auth/thankyou.js'
 import SignUp from './app/pages/auth/signup.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
+import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
 import { useEffect } from "react";
 import Home from "./app/pages/home.js";
 import { ToastContainer } from "react-toastify";
@@ -52,6 +53,10 @@ function App() {
     {
       path: '/forgotpassword',
       element: <ForgotPassword />
+    },
+    {
+      path: '/resubmitarticle',
+      element: <Resubmnittedarticle />
     },
     {
       path: "/",

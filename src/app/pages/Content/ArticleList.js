@@ -83,7 +83,7 @@ const ArticleList = () => {
             name: translate(languageData,"artilstType")+" "+ translate(languageData,"ArticleListSource"),
             selector: row => row.type,
             sortable: true,
-            cell: row => <button className='btn btn-pill btn-outline-primary'>Own</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary'>{translate(languageData,"own")}</button>,
             center: true,
         },
         {
@@ -94,7 +94,7 @@ const ArticleList = () => {
         },
         {
             name: translate(languageData,"artilstStatus"),
-            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>Ready for publication</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>{translate(languageData,"readyForPublication")}</button>,
             center: true,
         },
 

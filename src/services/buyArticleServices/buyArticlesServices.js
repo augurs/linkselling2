@@ -1,6 +1,5 @@
 import axios from "axios";
 import { baseURL2 } from "../../utility/data";
-import { translate } from "../../utility/helper";
 
 
 
@@ -23,10 +22,10 @@ export const requestArticle = (data) => {
     });
 };
 
-export const getPublisherArticles = (page, promoId, search, anchorType, userId) => {
-  let promo = promoId ? promoId : 0;
+export const getPublisherArticles = (page, search, anchorType, userId) => {
+
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions ? search?.promotions : promo}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}&user_id=${userId}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}&user_id=${userId}`)
     .then((res) => {
       return res.data;
     })
@@ -76,7 +75,9 @@ export const addToCartArticles = (data, isAddNew) => {
   {!isAddNew && formData.append("article_id", data.article_id); }
   formData.append("content", data.content);
   formData.append("image", data.image);
+  formData.append("project", data.project);
   formData.append("date", data.date);
+  formData.append("links", data.links);
 
 
   return axios

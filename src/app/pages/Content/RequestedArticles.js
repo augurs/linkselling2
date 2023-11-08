@@ -113,52 +113,94 @@ const RequestedArticles = () => {
     const columns = [
 
         {
-            name: translate(languageData,"S.No."),
+            name: translate(languageData, "S.No."),
             selector: row => row?.id,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"artilstTitle"),
+            name: translate(languageData, "artilstTitle"),
             selector: row => row?.title,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"writingAi"),
+            name: translate(languageData, "writingAi"),
             selector: row => row?.ai,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"writingContentSize"),
+            name: translate(languageData, "writingContentSize"),
             selector: row => row?.contentsize,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"maxLinks"),
+            name: translate(languageData, "maxLinks"),
             selector: row => row?.maxLink,
             center: true,
             sortable: true,
         },
         {
-            name: translate(languageData,"writingDateOfArticle"),
+            name: translate(languageData, "writingDateOfArticle"),
             selector: row => row?.dateOfArticle,
             center: true,
             sortable: true,
         },
 
+        // {
+        //     name: translate(languageData,"writingStatus"),
+        //     cell: row => <button className='btn btn-outline-primary btn-pill ' >{row?.status}</button>,
+        //     center: true,
+        //     sortable: true,
+        //     width: '200px',
+        // },
         {
-            name: translate(languageData,"writingStatus"),
-            cell: row => <button className='btn btn-outline-primary btn-pill ' >{row?.status}</button>,
-            center: true,
+            name: translate(languageData, "writingStatus"),
+            selector: (row) => row?.status,
             sortable: true,
-            width: '200px',
+            center: true,
+            cell: (row) => {
+                let buttonClass = "btn btn-primary";
+                let buttonText = "";
+
+                switch (row.status) {
+                    case "PendingForAssing":
+                        buttonClass = "btn btn-danger ";
+                        buttonText = translate(languageData, "pending");
+                        break;
+                    case "RequestChanges":
+                        buttonClass = "btn btn-warning";
+                        buttonText = translate(languageData, "requestChanges");
+                        break;
+                    case "Completed":
+                        buttonClass = "btn btn-primary";
+                        buttonText = translate(languageData, "completed");
+                        break;
+                    case "AssignedToWriter":
+                        buttonClass = "btn btn-info";
+                        buttonText = translate(languageData, "assigned");
+                        break;
+                    case "CustomerReview":
+                        buttonClass = "btn btn-success";
+                        buttonText = translate(languageData, "review");
+                        break;
+                    default:
+                        buttonClass = "btn btn-primary";
+                        buttonText = row.status;
+                }
+
+                return (
+                    <span className={`${buttonClass} d-flex justify-content-center`}>
+                        {buttonText}
+                    </span>
+                );
+            },
         },
         {
-            name: translate(languageData,"Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData,"Edit")}</button>,
+            name: translate(languageData, "Action"),
+            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData, "Edit")}</button>,
             center: true,
             sortable: true,
         },
@@ -193,7 +235,7 @@ const RequestedArticles = () => {
                     <img src={globalLoader} className='mx-auto' alt='loader1' />
                 </div> :
                 <div>
-                    <h4 className='mt-1 mb-3'>{translate(languageData,"requestedArticles")}</h4>
+                    <h4 className='mt-1 mb-3'>{translate(languageData, "requestedArticles")}</h4>
 
                     <DataTable
                         columns={columns}

@@ -95,23 +95,23 @@ const Orders = () => {
         switch (row.status) {
           case "PendingForAssing":
             buttonClass = "btn btn-danger btn-pill";
-            buttonText = "Pending";
+            buttonText = translate(languageData,"pending");
             break;
           case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = "Requested";
+            buttonText = translate(languageData,"requestChanges");;
             break;
           case "Completed":
             buttonClass = "btn btn-primary btn-pill";
-            buttonText = "Completed";
+            buttonText = translate(languageData,"completed");;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
-            buttonText = "Assigned";
+            buttonText = translate(languageData,"Assigned");;
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
-            buttonText = "Review";
+            buttonText = translate(languageData,"review");;
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";

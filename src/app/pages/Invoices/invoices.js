@@ -6,31 +6,32 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import globalLoader from '../../../assets/images/loader.svg'
 import { Link } from 'react-router-dom'
-
+import { translate } from "../../../utility/helper";
+import { useLanguage } from "../../Context/languageContext";
 const Invoices = () => {
 
     const userData = JSON.parse(localStorage.getItem('userData'))
-
+    const { languageData } = useLanguage();
     const [invoicesList, setInvoicesList] = useState([])
     const [loading, setLoading] = useState(false)
 
     const columns = [
         {
-            name: 'Order Id',
+            name: translate(languageData, 'orderId'),
             selector: row => row.orderId,
             sortable: true,
             center: true,
             // width: '130px'
         },
         {
-            name: "Transaction Number",
+            name: translate(languageData, 'transactionNumber'),
             selector: row => row.transactionNumber,
             sortable: true,
             center: true,
             //  width: '180px'
         },
         {
-            name: "Date",
+            name: translate(languageData, 'invoiceDate'),
             selector: row => row.date,
 
             sortable: true,
@@ -38,12 +39,12 @@ const Invoices = () => {
             //  width: '180px'
         },
         {
-            name: "Action",
+            name: translate(languageData, 'Action'),
             sortable: true,
             center: true,
             //  width: '180px'
             cell: (row) => (
-                <a href={row.invoice} className='btn btn-primary btn-pill' target='_blank'>Invoices</a>
+                <a href={row.invoice} className='btn btn-primary btn-pill' target='_blank'>{translate(languageData, "Invoices")}</a>
             ),
         },
 
@@ -83,7 +84,7 @@ const Invoices = () => {
     return (
         <div className='p-4'>
 
-            <h3 className='mt-3 mb-3'>Invoices</h3>
+            <h3 className='mt-3 mb-3'>{translate(languageData, "Invoices")}</h3>
             <div className='mt-5 w-100'>
                 {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
@@ -102,7 +103,7 @@ const Invoices = () => {
                                 </Col>
                                 <Col xs={12} sm={6} md={4}>
                                     <div className="d-flex justify-content-end">
-                                        <Link to="/companydata"><Button>My data</Button></Link>
+                                        <Link to="/companydata"><Button>{translate(languageData,"myData")}</Button></Link>
                                     </div>
                                 </Col>
                             </Row>

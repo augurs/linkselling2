@@ -108,15 +108,23 @@ const Home = () => {
   const tableData2 = promotionList?.map((item) => {
     const date = new Date(item?.end_date);
     return {
+      name: item?.name,
       portal: item?.portal,
       old_price: item?.old_price,
       new_price: item?.new_price,
       date: date?.toLocaleString(),
       id: item?.id
     }
-  })
+  }).reverse();
 
   const columns2 = [
+    {
+      name: translate(languageData, "promoName"),
+      selector: (row) => row.name,
+      sortable: true,
+      center: true,
+      // width: '180px'
+    },
     {
       name: translate(languageData, "PortalName"),
       selector: (row) => row.portal,
