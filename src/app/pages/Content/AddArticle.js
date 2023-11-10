@@ -122,7 +122,7 @@ const AddArticle = () => {
         }
         const res = await addArticle(formValues, editor, userData2.id)
         if (res.response === true && res.success === true) {
-            toast(res.message, {
+            toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -162,8 +162,8 @@ const AddArticle = () => {
             }
         }
         else {
-            toast("Something went wrong", {
-                position: "top-right",
+            toast(translate(languageData, "Somthing went wrong"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

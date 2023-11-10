@@ -4,6 +4,8 @@ import Thanks from './app/pages/auth/thankyou.js'
 import SignUp from './app/pages/auth/signup.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
+import Portalarticledetails from './app/pages/auth/portalarticledetails.js'
+import Portalarticleupdate from './app/pages/auth/portallinkupdatewithid.js'
 import { useEffect } from "react";
 import Home from "./app/pages/home.js";
 import { ToastContainer } from "react-toastify";
@@ -53,11 +55,11 @@ function App() {
     {
       path: '/forgotpassword',
       element: <ForgotPassword />
+    },{
+      path: '/portalarticledetail/:id/',
+      element: <Portalarticledetails />
     },
-    {
-      path: '/resubmitarticle',
-      element: <Resubmnittedarticle />
-    },
+    { path: '/portalarticledetails/:id', element: <Portalarticleupdate /> },
     {
       path: "/",
       element: <Layout />,
@@ -79,6 +81,10 @@ function App() {
         { path: 'invoices', element: <Invoices /> },
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
+        {
+          path: '/resubmitarticle/:id',
+          element: <Resubmnittedarticle />
+        },
 
       ]
     },

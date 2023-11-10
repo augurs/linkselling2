@@ -27,7 +27,7 @@ const Cart = () => {
     const [purchasedData, setPurchasedData] = useState([])
     const [rowId, setRowId] = useState('')
 
-    
+
 
 
     const userData = JSON.parse(localStorage.getItem('userData'))
@@ -55,8 +55,8 @@ const Cart = () => {
         const res = await deleteCart(userData?.id, id)
         if (res.success === true) {
             toast(translate(languageData, "deletedCartSuccessfully"), {
-                position: "top-right",
-                autoClose: 5000,
+                position: "top-center",
+                autoClose: 1000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -69,7 +69,7 @@ const Cart = () => {
             cartListServices()
         } else {
             toast(res.message, {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -85,11 +85,11 @@ const Cart = () => {
     }
 
 
-    const buyNowServices = async (domainId, serviceType , articleType , id) => {
+    const buyNowServices = async (domainId, serviceType, articleType, id) => {
         setBuyNowId(domainId)
         setRowId(id)
         setLoading({ ...loading, buyNowLoading: true })
-        const res = await buyNow(userData?.id, domainId, serviceType , articleType)
+        const res = await buyNow(userData?.id, domainId, serviceType, articleType)
         if (res.success === true) {
             setshowCartModal(true)
             setLoading({ ...loading, buyNowLoading: false })
@@ -107,7 +107,7 @@ const Cart = () => {
         }
     }
 
-    console.log(rowId , "110");
+    console.log(rowId, "110");
 
     const columns = [
         {
@@ -119,23 +119,30 @@ const Cart = () => {
         },
         {
             name: translate(languageData, "domainName"),
-
-            cell: row => <div>
+            cell: (row) => (
                 <div>
                     <div>
-                        {row?.name}
-                    </div>
-                    <div className='text-muted'><small>
-                        {row?.articleType}</small>
+                        <div>{row?.name}</div>
+                        <div className='text-muted'>
+                            <small>
+                                {row?.articleType === 'ArticleWriting'
+                                    ? translate(languageData, 'articleWriting')
+                                    : row?.articleType === 'RequestArticle'
+                                        ? translate(languageData, 'publicationOfArticle')
+                                        : row?.articleType === 'SelectLater'
+                                            ? translate(languageData, 'selectLater')
+                                            : row?.articleType === 'AddAnArticle'
+                                                ? translate(languageData, 'AddNewArticle')
+                                                : ''}
+                            </small>
+                        </div>
                     </div>
                 </div>
-                {/* <div className='text-muted text-center' style={{ fontSize: "10px" }}>{row?.articleType}</div> */}
-            </div>,
-            selector: row => row.name,
+            ),
+            selector: (row) => row.name,
             sortable: true,
-            // center: true,
-            //  width: '180px'
         },
+
         {
             name: translate(languageData, "writingLanguage"),
             selector: row => row.language,
@@ -201,7 +208,7 @@ const Cart = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType , row?.articleType , row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
+            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
                 visible={true}
                 height="30"
                 width="30"
@@ -243,8 +250,8 @@ const Cart = () => {
             cartId: item?.id,
             testLink: item?.service_type === '1' ? item?.links?.txt_cost : "N/A",
             graphicLink: item?.service_type === '1' ? item?.links?.graph_cost : "N/A",
-            price : item?.service_type === '1' ? "N/A" : item?.amount,
-            rowId : item?.id,
+            price: item?.service_type === '1' ? "N/A" : item?.amount,
+            rowId: item?.id,
         }
     })
 
@@ -282,7 +289,7 @@ const Cart = () => {
                             <span className='fs-3'>{cartProducts?.total} zł</span>
                         </div>
                         <div>
-                            <Button variant='primary' onClick={() => buyNowServices("", cartProducts?.product[0]?.service_type , "")}>
+                            <Button variant='primary' onClick={() => buyNowServices("", cartProducts?.product[0]?.service_type, "")}>
 
 
                                 {loading.buyNowLoading && buyNowId === "" ?

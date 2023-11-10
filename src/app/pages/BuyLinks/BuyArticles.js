@@ -562,23 +562,6 @@ const BuyArticles = () => {
 
 
     const addToCartArticleServices = async () => {
-        if (!project) {
-            setError(<span className="text-danger">{translate(languageData, 'PleaseSelectYourProject')}</span>); {
-            }
-            toast(translate(languageData, 'PleaseSelectYourProject'), {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'error'
-            });
-            return;
-        } else {
-            setError("")
-        }
         const data = {
             domainId: selectedSubArticles?.id,
             userId: userData?.id,
@@ -1148,6 +1131,16 @@ const BuyArticles = () => {
                                         onClick={() => setArticleType(translate(languageData, "AddNewArticle"))}
                                     >
                                         {translate(languageData, "AddNewArticle")}
+                                    </Button>
+                                    <Button
+
+                                        className={`${articleType === translate(languageData, "selectLater")
+                                            ? "btn-primary"
+                                            : "btn-outline-primary"
+                                            }   rounded-0`}
+                                        onClick={() => setArticleType(translate(languageData, "selectLater"))}
+                                    >
+                                        {translate(languageData, "selectLater")}
                                     </Button>
                                 </div>
                                 <div className="mt-5">

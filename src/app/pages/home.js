@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import { useLanguage } from '../Context/languageContext'
 import { dashboardprojects, dashboardpromotion, todolists } from '../../services/HomeServices/homeService'
-import { translate } from '../../utility/helper';
+import { translate, formatDate } from '../../utility/helper';
 import globalLoader from '../../assets/images/loader.svg'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom';
@@ -295,14 +295,6 @@ const Home = () => {
   ]
   //*api 4th section end
 
-  function formatDate(created_at) {
-    const date = new Date(created_at);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
   return (
     <div className="inner-body" id="content">
       <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
@@ -321,7 +313,7 @@ const Home = () => {
                         <Card.Body className='d-flex justify-content-center'>
                           <div className='mb-4'>
                             <h4>{data?.title}</h4>
-                            <p>Date: {formatDate(data.created_at)}</p>
+                            <small>Date: {formatDate(data.created_at)}</small>
                             <Button className="btn btn-primary"><small>{data?.status}</small></Button>
                           </div>
                         </Card.Body>

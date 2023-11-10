@@ -94,7 +94,7 @@ const Invoices = () => {
                             <Row className='flex justify-content-between'>
                                 <Col xs={12} sm={6} md={4} >
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="text" name="search" placeholder='Search' />
+                                        <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} />
                                         <span className="focus-input100"></span>
                                         <span className="symbol-input100">
                                             <i className="zmdi zmdi-search" aria-hidden="true"></i>

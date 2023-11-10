@@ -88,7 +88,7 @@ const AddProjects = () => {
                 }
             }
         } else {
-            toast("Something went wrong", {
+            toast(translate(languageData, "loginFailureMessage2"), {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -155,7 +155,7 @@ const AddProjects = () => {
         <div className='p-4'>
             <ToastContainer />
             <Card>
-                <Card.Header><h2 className=''>Add Project</h2></Card.Header>
+                <Card.Header><h2 className=''>{translate(languageData, "AddProject")}</h2></Card.Header>
                 <Card.Body>
                     <Row className='align-items-center'>
                         <Col lg={3} xs={12}>
@@ -163,7 +163,7 @@ const AddProjects = () => {
                         </Col>
                         <Col lg={8} xs={12}>
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="projectName" placeholder='Project Name' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                             </div>
                             <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
                         </Col>
@@ -174,14 +174,14 @@ const AddProjects = () => {
                         </Col>
                         <Col lg={8} xs={12}>
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="webAddress" placeholder='Web Address' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                             </div>
                             <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
                         </Col>
                     </Row>
                     <Row className='align-items-center mt-3'>
                         <Col lg={3} xs={12}>
-                        {translate(languageData , "LanguagePublication")} *
+                        {translate(languageData , "publicationLanguage")} *
                         </Col>
                         <Col lg={8} xs={12}>
                             <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
