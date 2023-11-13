@@ -176,7 +176,7 @@ const Home = () => {
     }
   }
 
-  const tableData1 = ordersList?.slice(0, 5).map((item) => {
+  const tableData1 = ordersList?.slice(0,5).map((item) => {
     const date = new Date(item?.created_at);
     return {
       domain: item?.domain,
@@ -222,7 +222,7 @@ const Home = () => {
     },
     {
       name: translate(languageData, "dateOfOrder"),
-      selector: row => row.date,
+      selector: row => formatDate(row.date),
 
       sortable: true,
       center: true,
@@ -240,23 +240,35 @@ const Home = () => {
         switch (row.status) {
           case "PendingForAssing":
             buttonClass = "btn btn-danger btn-pill";
-            buttonText = "Pending";
+            buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
-          case "RequestChanges":
+          case "Rejected":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = "Requested";
+            buttonText = <small>{translate(languageData, "Rejected")}</small>;
             break;
-          case "Completed":
+          case "Accepted":
             buttonClass = "btn btn-primary btn-pill";
-            buttonText = "Completed";
+            buttonText = <small>{translate(languageData, "Accepted")}</small>;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
-            buttonText = "Assigned";
+            buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+            break;
+            case "ReadyToPublish":
+            buttonClass = "btn btn-warning btn-pill";
+            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            break;
+          case "RejectedLink":
+            buttonClass = "btn btn-primary btn-pill";
+            buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+            break;
+          case "Published":
+            buttonClass = "btn btn-info btn-pill";
+            buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
-            buttonText = "Review";
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
@@ -264,7 +276,7 @@ const Home = () => {
         }
 
         return (
-          <span className={`${buttonClass} d-flex justify-content-center`}>
+          <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '135px', minHeight: "35px" }}>
             {buttonText}
           </span>
         );

@@ -3,7 +3,7 @@ import { orderslist } from '../../../services/OrdersServices/ordersServices'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import globalLoader from '../../../assets/images/loader.svg'
-import { translate } from '../../../utility/helper'
+import { formatDate, translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
 import DataTable from 'react-data-table-component'
 import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
@@ -77,7 +77,7 @@ const Orders = () => {
     },
     {
       name: translate(languageData, "dateOfOrder"),
-      selector: row => row.date,
+      selector: row => formatDate(row.date),
 
       sortable: true,
       center: true,
@@ -95,23 +95,35 @@ const Orders = () => {
         switch (row.status) {
           case "PendingForAssing":
             buttonClass = "btn btn-danger btn-pill";
-            buttonText = translate(languageData,"pending");
+            buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
-          case "RequestChanges":
+          case "Rejected":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = translate(languageData,"requestChanges");;
+            buttonText = <small>{translate(languageData, "Rejected")}</small>;
             break;
-          case "Completed":
+          case "Accepted":
             buttonClass = "btn btn-primary btn-pill";
-            buttonText = translate(languageData,"completed");;
+            buttonText = <small>{translate(languageData, "Accepted")}</small>;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
-            buttonText = translate(languageData,"Assigned");;
+            buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+            break;
+            case "ReadyToPublish":
+            buttonClass = "btn btn-warning btn-pill";
+            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            break;
+          case "RejectedLink":
+            buttonClass = "btn btn-primary btn-pill";
+            buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+            break;
+          case "Published":
+            buttonClass = "btn btn-info btn-pill";
+            buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
           case "CustomerReview":
             buttonClass = "btn btn-success btn-pill";
-            buttonText = translate(languageData,"review");;
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
@@ -119,7 +131,7 @@ const Orders = () => {
         }
 
         return (
-          <span className={`${buttonClass} d-flex justify-content-center`}>
+          <span className={`${buttonClass} d-flex justify-content-center align-items-center`}>
             {buttonText}
           </span>
         );
