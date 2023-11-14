@@ -93,37 +93,41 @@ const Orders = () => {
         let buttonText = "";
 
         switch (row.status) {
-          case "PendingForAssing":
-            buttonClass = "btn btn-danger btn-pill";
-            buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
-            break;
-          case "Rejected":
+          case "Pending":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "Rejected")}</small>;
-            break;
-          case "Accepted":
-            buttonClass = "btn btn-primary btn-pill";
-            buttonText = <small>{translate(languageData, "Accepted")}</small>;
+            buttonText = <small>{translate(languageData, "Pending")}</small>;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
             buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
             break;
-            case "ReadyToPublish":
+          case "Completed":
+            buttonClass = "btn btn-success btn-pill";
+            buttonText = <small>{translate(languageData, "Completed")}</small>;
+            break;
+            case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+            break;
+          case "Rejected":
+            buttonClass = "btn btn-danger btn-pill";
+            buttonText = <small>{translate(languageData, "Rejected")}</small>;
+            break;
+          case "Accepted":
+            buttonClass = "btn btn-secondary btn-pill";
+            buttonText = <small>{translate(languageData, "Accepted")}</small>;
+            break;
+          case "CustomerReview":
+            buttonClass = "btn btn-warning btn-pill";
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           case "RejectedLink":
-            buttonClass = "btn btn-primary btn-pill";
+            buttonClass = "btn btn-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
             break;
           case "Published":
-            buttonClass = "btn btn-info btn-pill";
+            buttonClass = "btn btn-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
-            break;
-          case "CustomerReview":
-            buttonClass = "btn btn-success btn-pill";
-            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
@@ -137,8 +141,8 @@ const Orders = () => {
         );
       },
     }
-,    
-    
+    ,
+
     {
       name: translate(languageData, "writingAction"),
       sortable: true,

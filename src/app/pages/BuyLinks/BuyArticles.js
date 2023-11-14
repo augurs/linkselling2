@@ -33,6 +33,7 @@ import { useSidebar } from '../../Context/togglerBarContext';
 import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 import ReactQuill from "react-quill";
 import FileUpload from '../../Components/FileUpload/FileUpload'
+import { BsInfoCircle } from 'react-icons/bs';
 const BuyArticles = () => {
 
     const initialValues = {
@@ -435,8 +436,22 @@ const BuyArticles = () => {
         {
             name: (
                 <div>
-                    <div>{translate(languageData, "PortalType")}</div>
-                    <div>{translate(languageData, "Language")}</div>
+                    <div>
+                        {translate(languageData, "PortalType")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>here we described about domain name</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
+                    <div>
+                        {translate(languageData, "Language")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
                 </div>
             ),
             selector: (row) => row.protalType,
@@ -478,7 +493,16 @@ const BuyArticles = () => {
             },
         },
         {
-            name: "Dr",
+            name: (
+                <div>
+                    DR
+                    <OverlayTrigger placement="top" overlay={<Tooltip>Here given Domain Rating of domain </Tooltip>}>
+                        <span className="ms-2">
+                            <BsInfoCircle />
+                        </span>
+                    </OverlayTrigger>
+                </div>
+            ),
             selector: (row) => row.dr,
             center: true,
             cell: (row) => (
@@ -490,7 +514,16 @@ const BuyArticles = () => {
         },
 
         {
-            name: translate(languageData, "Ahrefs"),
+            name: (
+                <div>
+                    {translate(languageData, "Ahrefs")}
+                    <OverlayTrigger placement="top" overlay={<Tooltip>This is the Ahref rating of domain given by AHREF website</Tooltip>}>
+                        <span className="ms-2">
+                            <BsInfoCircle />
+                        </span>
+                    </OverlayTrigger>
+                </div>
+            ),
             selector: (row) => row.ahrefs,
             center: true,
             cell: (row) => (
@@ -502,7 +535,14 @@ const BuyArticles = () => {
         {
             name: (
                 <div>
-                    <div>{translate(languageData, "BestPrice")}</div>
+                    <div>
+                        {translate(languageData, "BestPrice")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>In this section price of domain are given.</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
                 </div>
             ),
             selector: (row) => row.bestPrice,
@@ -650,8 +690,8 @@ const BuyArticles = () => {
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
-    const handleFiles = (file) => { // Remove the 'name' parameter as it's not needed
-        setImage(file); // Set the image state directly to the selected File object
+    const handleFiles = (file) => { 
+        setImage(file); 
     };
     // const paginationArray = numberToNumeralsArray(lastPage)
 
@@ -1018,11 +1058,18 @@ const BuyArticles = () => {
                             {translate(languageData, "artilstSearch")}
                         </Button> */}
                     </Card.Body>
+                </Card>
+                <Card>
+                
+                    <Card.Body>
                     {listLoading ?
                         <div className="d-flex">
                             <img src={globalLoader} className='mx-auto mt-5' alt='loader1' />
                         </div> :
+                        
                         <DataTable columns={columns} data={data} />}
+                    </Card.Body>
+                  
                 </Card>
 
                 <div className={`d-flex ${checkAddedToCart ? "justify-content-between" : "justify-content-end"} mb-4`}>

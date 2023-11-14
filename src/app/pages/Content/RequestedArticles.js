@@ -166,30 +166,46 @@ const RequestedArticles = () => {
                 let buttonText = "";
 
                 switch (row.status) {
-                    case "PendingForAssing":
-                        buttonClass = "btn btn-danger ";
-                        buttonText = translate(languageData, "pending");
-                        break;
-                    case "RequestChanges":
-                        buttonClass = "btn btn-warning";
-                        buttonText = translate(languageData, "requestChanges");
-                        break;
-                    case "Completed":
-                        buttonClass = "btn btn-primary";
-                        buttonText = translate(languageData, "completed");
-                        break;
+                    case "Pending":
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "Pending")}</small>;
+                      break;
                     case "AssignedToWriter":
-                        buttonClass = "btn btn-info";
-                        buttonText = translate(languageData, "assigned");
-                        break;
+                      buttonClass = "btn btn-info btn-pill";
+                      buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+                      break;
+                    case "Completed":
+                      buttonClass = "btn btn-success btn-pill";
+                      buttonText = <small>{translate(languageData, "Completed")}</small>;
+                      break;
+                      case "RequestChanges":
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                      break;
+                    case "Rejected":
+                      buttonClass = "btn btn-danger btn-pill";
+                      buttonText = <small>{translate(languageData, "Rejected")}</small>;
+                      break;
+                    case "Accepted":
+                      buttonClass = "btn btn-secondary btn-pill";
+                      buttonText = <small>{translate(languageData, "Accepted")}</small>;
+                      break;
                     case "CustomerReview":
-                        buttonClass = "btn btn-success";
-                        buttonText = translate(languageData, "review");
-                        break;
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                      break;
+                    case "RejectedLink":
+                      buttonClass = "btn btn-danger btn-pill";
+                      buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+                      break;
+                    case "Published":
+                      buttonClass = "btn btn-primary btn-pill";
+                      buttonText = <small>{translate(languageData, "Published")}</small>;
+                      break;
                     default:
-                        buttonClass = "btn btn-primary";
-                        buttonText = row.status;
-                }
+                      buttonClass = "btn btn-primary btn-pill";
+                      buttonText = row.status;
+                  }
 
                 return (
                     <span className={`${buttonClass} d-flex justify-content-center`}>

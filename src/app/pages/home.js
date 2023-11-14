@@ -9,7 +9,6 @@ import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
 import { orderslist } from '../../services/OrdersServices/ordersServices'
-
 const Home = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
   const { languageData } = useLanguage()
@@ -36,6 +35,38 @@ const Home = () => {
       setLoading(false)
     }
   }
+
+  const getActionText = (status) => {
+    switch (status) {
+      case "CustomerReview":
+        return translate(languageData, "NeedToAddAnArticle");
+      case "Published":
+        return translate(languageData, "NeedToAcceptPublication");
+      case "Accepted":
+        return translate(languageData, "NeedToAcceptArticle");
+      case "Rejected":
+        return translate(languageData, "YourPublicationWasRejected");
+      // Add more cases for other statuses
+      default:
+        return status; // If no match, just return the status
+    }
+  };
+
+  const getButtonText = (status) => {
+    switch (status) {
+      case "CustomerReview":
+        return translate(languageData, "AddArticle");
+      case "Published":
+        return translate(languageData, "AcceptPublication");
+      case "Accepted":
+        return translate(languageData, "Accept");
+      case "Rejected":
+        return translate(languageData, "Rejected");
+    
+      default:
+        return "Action"; 
+    }
+  };
   //*api 1st section end
 
   //api 2nd section start
@@ -176,7 +207,7 @@ const Home = () => {
     }
   }
 
-  const tableData1 = ordersList?.slice(0,5).map((item) => {
+  const tableData1 = ordersList?.slice(0, 5).map((item) => {
     const date = new Date(item?.created_at);
     return {
       domain: item?.domain,
@@ -211,7 +242,6 @@ const Home = () => {
       center: true,
       // width: '180px'
     },
-
     {
       name: translate(languageData, "artilstProject"),
       selector: row => row.project,
@@ -238,37 +268,41 @@ const Home = () => {
         let buttonText = "";
 
         switch (row.status) {
-          case "PendingForAssing":
-            buttonClass = "btn btn-danger btn-pill";
-            buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
-            break;
-          case "Rejected":
+          case "Pending":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "Rejected")}</small>;
-            break;
-          case "Accepted":
-            buttonClass = "btn btn-primary btn-pill";
-            buttonText = <small>{translate(languageData, "Accepted")}</small>;
+            buttonText = <small>{translate(languageData, "Pending")}</small>;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-info btn-pill";
             buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
             break;
-            case "ReadyToPublish":
+          case "Completed":
+            buttonClass = "btn btn-success btn-pill";
+            buttonText = <small>{translate(languageData, "Completed")}</small>;
+            break;
+          case "RequestChanges":
             buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+            break;
+          case "Rejected":
+            buttonClass = "btn btn-danger btn-pill";
+            buttonText = <small>{translate(languageData, "Rejected")}</small>;
+            break;
+          case "Accepted":
+            buttonClass = "btn btn-secondary btn-pill";
+            buttonText = <small>{translate(languageData, "Accepted")}</small>;
+            break;
+          case "CustomerReview":
+            buttonClass = "btn btn-warning btn-pill";
+            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           case "RejectedLink":
-            buttonClass = "btn btn-primary btn-pill";
+            buttonClass = "btn btn-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
             break;
           case "Published":
-            buttonClass = "btn btn-info btn-pill";
+            buttonClass = "btn btn-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
-            break;
-          case "CustomerReview":
-            buttonClass = "btn btn-success btn-pill";
-            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           default:
             buttonClass = "btn btn-primary btn-pill";
@@ -276,15 +310,12 @@ const Home = () => {
         }
 
         return (
-          <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '135px', minHeight: "35px" }}>
+          <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '140px', minHeight: "35px" }}>
             {buttonText}
           </span>
         );
       },
-    }
-
-    ,
-
+    },
     {
       name: translate(languageData, "writingAction"),
       sortable: true,
@@ -324,9 +355,10 @@ const Home = () => {
                       <Card className='mt-5 shadow-lg' >
                         <Card.Body className='d-flex justify-content-center'>
                           <div className='mb-4'>
-                            <h4>{data?.title}</h4>
-                            <small>Date: {formatDate(data.created_at)}</small>
-                            <Button className="btn btn-primary"><small>{data?.status}</small></Button>
+                            <h4>{data?.title.slice(0, 10)}...</h4>
+                            <small>{translate(languageData, "Action")}: {getActionText(data?.status)}</small><br />
+                            <small>{translate(languageData, "invoiceDate")}: {formatDate(data?.created_at)}</small><br />
+                            <Button className="btn btn-primary mt-2"><small>{getButtonText(data?.status)}</small></Button>
                           </div>
                         </Card.Body>
                       </Card>
