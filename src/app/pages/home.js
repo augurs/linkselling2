@@ -154,28 +154,31 @@ const Home = () => {
       selector: (row) => row.name,
       sortable: true,
       center: true,
-      // width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "PortalName"),
       selector: (row) => row.portal,
       sortable: true,
       center: true,
-      // width: '180px'
+      wrap: true,
+      width: "130px"
     },
     {
       name: translate(languageData, "oldNewPrice"),
       selector: (row) => `${row.old_price} zł / ${row.old_price} zł`,
       sortable: true,
       center: true,
-      // width: '180px'
+      wrap: true,
+      width: "150px"
     },
     {
       name: translate(languageData, "promotionEnd"),
-      selector: (row) => row.date,
+      selector: (row) => formatDate(row.date),
       sortable: true,
       center: true,
-      // width: '180px'
+      wrap: true,
+      width: "150px"
     },
     {
       name: translate(languageData, "writingAction"),

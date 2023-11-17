@@ -27,6 +27,7 @@ import { getArticles } from "../../../services/articleServices/articleServices";
 import { getCart } from "../../../services/invoicesServices/invoicesServices";
 import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
+import Select1 from 'react-select'
 import { Pagination, Stack } from "@mui/material";
 import { projectList } from '../../../services/ProjectServices/projectServices';
 import { useSidebar } from '../../Context/togglerBarContext';
@@ -34,15 +35,26 @@ import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 import ReactQuill from "react-quill";
 import FileUpload from '../../Components/FileUpload/FileUpload'
 import { BsInfoCircle } from 'react-icons/bs';
+import { languages } from '../../../utility/data'
+import { addProjects } from '../../../services/ProjectServices/projectServices'
+import { FaPlus, FaSearch } from 'react-icons/fa';
 const BuyArticles = () => {
 
     const initialValues = {
         project: "",
     };
 
+    let initialValues1 = {
+        projectName: "",
+        webAddress: "",
+        publicationLang: "",
+    }
+
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
     const [formValues, setFormValues] = useState(initialValues);
+    const [formValues1, setFormValues1] = useState(initialValues1);
+    const [formErrors, setFormErrors] = useState({})
     const [showOfferModal, setShowOfferModal] = useState(false);
     const [showCartOptions, setShowCartOptions] = useState(false);
     const [articleType, setArticleType] = useState(translate(languageData, "RequestArticleWriting"));
@@ -85,6 +97,15 @@ const BuyArticles = () => {
     const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
+    const [showModal, setShowModal] = useState(false);
+
+    const handleShowModal = () => {
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -167,9 +188,7 @@ const BuyArticles = () => {
         articleTypeListService()
     }, [])
 
-    useEffect(() => {
-        articleListServices()
-    }, [])
+
 
 
 
@@ -285,9 +304,11 @@ const BuyArticles = () => {
                 <div className="my-2">
                     <div className="d-flex align-items-center">
                         <div>
+                            <div className="d-flex gap-2 justify-content-center">
                             <Link className="my-1" style={{ fontSize: "18px" }}>
                                 {row?.portalLink}
                             </Link>
+                            <Link to="/DomainDetails"><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
                             <span>
                                 {row?.homepage ?
                                     <Tool title="Homepage">
@@ -444,19 +465,11 @@ const BuyArticles = () => {
                             </span>
                         </OverlayTrigger>
                     </div>
-                    <div>
-                        {translate(languageData, "Language")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
-                            <span className="ms-2">
-                                <BsInfoCircle />
-                            </span>
-                        </OverlayTrigger>
-                    </div>
                 </div>
             ),
             selector: (row) => row.protalType,
             cell: (row) => (
-                <div className="my-2">
+                <div className="my-2 d-flex align-items-center gap-1">
                     <div >
                         <div className="d-flex align-items-center">
                             <Link className="my-1" style={{ fontSize: "18px" }}>
@@ -484,13 +497,36 @@ const BuyArticles = () => {
                             </span>
                         </div>
                     </div>
-                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} alt="flag" /></div>
+                    <div className="btn btn-outline-primary">
+                        <Link to="/DomainDetails"><FaSearch style={{ cursor: "pointer" }}/></Link>
+                    </div>
                 </div>
             ),
             width: "250px",
             style: {
                 width: "250px",
             },
+        },
+        {
+            name: (
+                <div>
+                    <div>
+                        {translate(languageData, "Language")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
+                </div>
+            ),
+            selector: (row) => row.protalType,
+            center: true,
+            cell: (row) => (
+                <div >
+                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} alt="flag" /></div>
+                </div>
+            ),
         },
         {
             name: (
@@ -690,8 +726,8 @@ const BuyArticles = () => {
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
-    const handleFiles = (file) => { 
-        setImage(file); 
+    const handleFiles = (file) => {
+        setImage(file);
     };
     // const paginationArray = numberToNumeralsArray(lastPage)
 
@@ -707,8 +743,11 @@ const BuyArticles = () => {
     //slect project api and auto select option with id start
     const articleListServices = async () => {
         const res = await projectList(userData?.id)
-        setArticlesData2(res?.data.reverse())
+        setArticlesData2(res?.data)
     }
+    useEffect(() => {
+        articleListServices()
+    }, [])
 
     useEffect(() => {
         if (pid) {
@@ -778,6 +817,125 @@ const BuyArticles = () => {
     const boxWidth = `${100 / numCheckboxesToDisplay}%`;
 
     //promotion api end//
+
+    //add project modal api start
+
+    const handleChange1 = (e) => {
+        const { name, value } = e.target;
+        setFormValues1({ ...formValues1, [name]: value })
+    }
+
+    const handleSelectChange1 = (selectedOption) => {
+        setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
+        validate(formValues1)
+    }
+
+    const fieldTranslationMap = {
+        name: translate(languageData, "ProjectNameField"),
+        language: translate(languageData, "publicationLanguageField"),
+        domain: translate(languageData, "WebAddressField"),
+
+    };
+    const addProjectService = async () => {
+
+        setLoading(true)
+        const res = await addProjects(formValues1);
+
+        if (res.response === true && res.success === true) {
+            toast(res.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'success'
+            });
+            await articleListServices();
+                setProject(res.data.id);
+            setLoading(false)
+        } else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
+        } else {
+            toast(translate(languageData, "loginFailureMessage2"), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'error'
+            });
+            setLoading(false)
+        }
+        handleCloseModal();
+    }
+
+
+    const validate = (values) => {
+        let errors = {};
+        let isValid = true;
+
+        if (!values.projectName) {
+            errors.projectName = translate(languageData, "ProjectNameRequired");
+            isValid = false
+        }
+
+        if (!values.webAddress) {
+            errors.webAddress = translate(languageData, "WebAddressRequired");
+            isValid = false;
+        }
+
+        if (!values.publicationLang) {
+            errors.publicationLang = translate(languageData, "PublicationLanguageRequired")
+            isValid = false;
+        }
+
+        setFormErrors(errors);
+        return isValid;
+    }
+
+
+    const languageOption = languages.map((item) => {
+        return {
+            value: item.name,
+            label: item.name
+        }
+    })
+
+    const languagesOpts = [
+        {
+            value: "English",
+            label: "English"
+        },
+        {
+            value: "Polish",
+            label: "Polish"
+        }
+    ]
+//add project modal api end
 
     return (
         <>
@@ -1060,16 +1218,16 @@ const BuyArticles = () => {
                     </Card.Body>
                 </Card>
                 <Card>
-                
+
                     <Card.Body>
-                    {listLoading ?
-                        <div className="d-flex">
-                            <img src={globalLoader} className='mx-auto mt-5' alt='loader1' />
-                        </div> :
-                        
-                        <DataTable columns={columns} data={data} />}
+                        {listLoading ?
+                            <div className="d-flex">
+                                <img src={globalLoader} className='mx-auto mt-5' alt='loader1' />
+                            </div> :
+
+                            <DataTable columns={columns} data={data} />}
                     </Card.Body>
-                  
+
                 </Card>
 
                 <div className={`d-flex ${checkAddedToCart ? "justify-content-between" : "justify-content-end"} mb-4`}>
@@ -1114,28 +1272,32 @@ const BuyArticles = () => {
                                 {translate(languageData, "SelectionPortalOffer")}: <b>{selectedPublisherArticle?.portalLink}</b>
                             </h4>
                         </div>
-                        <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} className="btn btn-primary" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => {
-                                const selectedValue = e.target.value;
-                                setProject(selectedValue);
-                                if (selectedValue.trim() === '') {
-                                    setError(
-                                        <span className="text-danger">
-                                            {translate(languageData, 'PleaseSelectYourProject')}
-                                        </span>
-                                    );
-                                } else {
-                                    setError('');
-                                }
-                            }} value={project}>
-                                <option label={translate(languageData, "artilstProject")}></option>
-                                {articlesData2?.map((item, index) => {
-                                    return (
-                                        <option value={item?.id} key={index}>{item?.name}</option>
-                                    )
-                                })}
-                            </select>
-                            {error && <div className="error-message">* {error}</div>}
+                        <div className="form-group d-flex justify-content-center gap-2">
+                            <div className="btn btn-outline-primary d-flex align-items-center" onClick={handleShowModal}>
+                            <FaPlus style={{ cursor: "pointer" }} className="me-1"/>{translate(languageData, "AddProject")}
+                            </div>
+                            <div>
+                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px"}} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
+                                    const selectedValue = e.target.value;
+                                    setProject(selectedValue);
+                                    if (selectedValue.trim() === '') {
+                                        setError(
+                                            <span className="text-danger">
+                                                {translate(languageData, 'PleaseSelectYourProject')}
+                                            </span>
+                                        );
+                                    } else {
+                                        setError('');
+                                    }
+                                }} value={project}>
+                                    <option label={translate(languageData, "artilstProject")}></option>
+                                    {articlesData2?.map((item, index) => {
+                                        return (
+                                            <option value={item?.id} key={index}>{item?.name}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
                         </div>
 
                     </Modal.Header>
@@ -1458,6 +1620,57 @@ const BuyArticles = () => {
                         </div>
                     </Modal.Body>
                 </Modal>
+
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add Project</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row className='align-items-center'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "NameOfTheProject")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-3'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "WebAddress")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-3'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "publicationLanguage")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <Select1 options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange1} />
+                                <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
+                            </Col>
+
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <div>
+                            <Button variant="secondary" onClick={handleCloseModal}>
+                                Close
+                            </Button>
+                        </div>
+                        <div className=''>
+                            <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
+                        </div>
+                    </Modal.Footer>
+                </Modal>
+
             </div>
         </>
     );
