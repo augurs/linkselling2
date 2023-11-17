@@ -47,72 +47,66 @@ const Invoices = () => {
   const columns = [
     {
       name: translate(languageData, "city"),
-      selector: row => row.city,
+      selector: (row) => row.city,
       sortable: true,
       center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "community"),
-      selector: row => row.community,
-
+      selector: (row) => row.community,
       sortable: true,
       center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "district"),
-      selector: row => row.district,
-
+      selector: (row) => row.district,
       sortable: true,
       center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "postalCode"),
-      selector: row => row.postal_code,
-
+      selector: (row) => row.postal_code,
       sortable: true,
       center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "province"),
-      selector: row => row.province,
-
+      selector: (row) => row.province,
       sortable: true,
       center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "street"),
-      selector: row => row.street,
-
+      selector: (row) => row.street,
       sortable: true,
-      center: true,
-      //  width: '180px'
+      wrap: true,
     },
     {
       name: translate(languageData, "apartmentNumber"),
-      selector: row => row.apartment_number,
+      selector: (row) => row.apartment_number,
       sortable: true,
       center: true,
-      // width: '130px'
+      wrap: true,
     },
     {
       name: translate(languageData, "NipNumber"),
-      selector: row => row.nip_number,
+      selector: (row) => row.nip_number,
       sortable: true,
       center: true,
-      // width: '130px'
+      wrap: true,
     },
-
-  ]
+  ];
+  
 
   return (
     <div className='p-4'>
 
-      <h3 className='mt-3 mb-3 text-center'>Company Data</h3>
+      <h3 className='mt-3 mb-3 text-center'>{translate(languageData, "companyData")}</h3>
 
       <div className='mt-5 w-100'>
         {loading ? <div className='d-flex'>

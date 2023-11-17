@@ -97,8 +97,8 @@ const ArticleInProgress = () => {
             selector: row => row.status,
             sortable: true,
             cell: row => <div className='mt-2 mb-2'>
-                <div> <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>Waiting for content</button></div>
-                <div> <button className='btn btn-pill btn-outline-primary mt-1' style={{ fontSize: "12px" }} >New</button></div>
+                <div> <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "WaitingForContent")}</button></div>
+                <div> <button className='btn btn-pill btn-outline-primary mt-1' style={{ fontSize: "12px" }} >{translate(languageData, "new")}</button></div>
             </div>,
             width: "250px",
             style: {
@@ -135,7 +135,7 @@ const ArticleInProgress = () => {
         {
 
             cell: row => <div className='mx-2'>
-                <div><button className='btn btn-primary mt-1' style={{ fontSize: "12px" }} onClick={() => navigate('/articleDetails')}>Details</button></div>
+                <div><button className='btn btn-primary mt-1' style={{ fontSize: "12px" }} onClick={() => navigate('/articleDetails')}>{translate(languageData, "Details")}</button></div>
                 <div><button className='btn btn-primary mt-1' style={{ fontSize: "12px" }}>Submit for verification</button></div>
             </div>,
             width: "250px",

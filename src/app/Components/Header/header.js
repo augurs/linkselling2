@@ -1,10 +1,11 @@
 import React from 'react'
 import { Button, Container, Dropdown, FormControl, InputGroup, Nav, Navbar } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import LanguageSelect from '../Language/languageSelect';
+import WalletBalance from '../Wallet/Wallet';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { useCart } from '../../Context/cartListContext';
-
+import { FaHome } from 'react-icons/fa';
 // sidebar-mini sidebar-gone sidenav-toggled
 
 // sidebar_wrap-> is_expanded
@@ -34,18 +35,22 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                         {/* <Navbar.Toggle aria-label="Hide Sidebar" className="app-sidebar__toggle" data-bs-toggle="sidebar"/> */}
 
                         <Navbar.Brand className="logo-horizontal">
-                            <h2>LINK SELLING</h2>
+                            <Button
+                                className="btn btn-icon btn-light sidebar_toggle_btn"
+                                type="button"
+                                onClick={() => toggleSiderbar()}
+                            >
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                            </Button>
                         </Navbar.Brand>
                     </div>
 
-                    <Button
-                        className="btn btn-icon btn-light sidebar_toggle_btn"
-                        type="button"
-                        onClick={() => toggleSiderbar()}
-                    >
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                    </Button>
 
+                    <div className='d-flex m-2'>
+                        <Link to="/">
+                            <FaHome style={{ marginTop: "-3px" }} size={25} />
+                        </Link>
+                    </div>
                     <div className="navbar navbar-collapse responsive-navbar p-0">
                         {/* <div className="collapse navbar-collapse" id="navbarSupportedContent-4">
                             <div className="d-flex order-lg-2">
@@ -69,12 +74,16 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                             </div>
                         </div> */}
                     </div>
+
                     <div className='me-4'>
                         <LanguageSelect />
                     </div>
+                    <div className='btn btn-outline-primary me-2'>
+                    <WalletBalance />
+                    </div>
                     <div className="position-relative">
                         <AiOutlineShoppingCart size={25} className='me-4' onClick={() => navigate('/cart')} />
-                        {cartContextData?.length  > 0 && <span className="badge bg-primary rounded-circle" style={{ position: 'absolute', top: '-10px', right: '4px' }}>{cartContextData?.length}</span>}
+                        {cartContextData?.length > 0 && <span className="badge bg-primary rounded-circle" style={{ position: 'absolute', top: '-10px', right: '4px' }}>{cartContextData?.length}</span>}
                     </div>
                     <i className="fa fa-sign-out " aria-hidden="true" style={{ fontSize: "20px", cursor: "pointer" }} onClick={() => setModalShow(true)}></i>
                 </Container>

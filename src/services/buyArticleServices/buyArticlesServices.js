@@ -1,6 +1,10 @@
 import axios from "axios";
 import { baseURL2 } from "../../utility/data";
 
+
+
+
+
 export const requestArticle = (data) => {
 
   const formData = new FormData();
@@ -56,7 +60,8 @@ export const articleTypeList = () => {
 }
 
 
-export const addToCartArticles = (data) => {
+export const addToCartArticles = (data, isAddNew) => {
+
   const formData = new FormData();
   formData.append("domain_id", data?.domainId);
   formData.append("service_type", 2);
@@ -67,7 +72,13 @@ export const addToCartArticles = (data) => {
   formData.append("month_guarantee", data.monthGuarantee);
   formData.append("amount", data.amount);
   formData.append("article_amount", data.article_amount);
-  formData.append("article_id", data.article_id);
+  {!isAddNew && formData.append("article_id", data.article_id); }
+  formData.append("content", data.content);
+  formData.append("image", data.image);
+  formData.append("project", data.project);
+  formData.append("date", data.date);
+  formData.append("links", data.links);
+
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/single-add-to-card/${data.userId}`, formData)

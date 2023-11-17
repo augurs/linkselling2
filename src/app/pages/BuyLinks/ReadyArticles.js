@@ -72,7 +72,7 @@ const ReadyArticles = () => {
         {
             name: translate(languageData, "PublicationStatus"),
             selector: row => row.publicationStatus,
-            cell: row => <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>Correct</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "Correct")}</button>,
             sortable: true,
             width: "250px",
             style: {
@@ -86,7 +86,7 @@ const ReadyArticles = () => {
             name: translate(languageData, "ArticleIndexationStatus"),
             // selector: row => row.indStatus,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>OK</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "ReadyArticleOk")}</button>
             ),
             sortable: true,
             width: "250px",

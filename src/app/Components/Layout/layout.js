@@ -5,13 +5,13 @@ import Sidebar from '../Sidebar/sidebar'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate } from '../../../utility/helper'
-
+import { useSidebar } from '../../Context/togglerBarContext';
 const Layout = () => {
 
-  const [sidebarActive, setSidebarActive] = useState(false)
   const [modalShow, setModalShow] = useState(false)
   const navigate = useNavigate()
   const { languageData } = useLanguage();
+  const { sidebarActive, toggleSidebar } = useSidebar();
 
   const userData = localStorage.getItem('userData');
 
@@ -21,9 +21,7 @@ const Layout = () => {
     }
   }, [])
 
-  const toggleSiderbar = () => {
-    setSidebarActive(!sidebarActive)
-  }
+
 
   const handleLogout = () => {
     localStorage.removeItem('userData')
@@ -35,8 +33,8 @@ const Layout = () => {
     <div className={`app sidebar-mini ${sidebarActive ? "sidebar-gone sidenav-toggled" : ""} ltr`}>
       <div className='page'>
         <div className='page-main'>
-          <Header toggleSiderbar={toggleSiderbar} setModalShow={setModalShow} />
-          <Sidebar sidebarActive={sidebarActive} />
+          <Header  toggleSiderbar={toggleSidebar} setModalShow={setModalShow} />
+          <Sidebar toggleSiderbar={toggleSidebar} sidebarActive={sidebarActive} />
           <div className='app-content main-content mt-0' style={{ paddingTop: "70px" }}>
             <div className="side-app">
               <Container className="main-container" fluid>

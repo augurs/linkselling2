@@ -4,14 +4,13 @@ import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
-
 import { BsExclamationOctagon } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import "./BuyLinks.css";
-
+import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
@@ -28,16 +27,38 @@ import { getArticles } from "../../../services/articleServices/articleServices";
 import { getCart } from "../../../services/invoicesServices/invoicesServices";
 import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
+import Select1 from 'react-select'
 import { Pagination, Stack } from "@mui/material";
-
+import { projectList } from '../../../services/ProjectServices/projectServices';
+import { useSidebar } from '../../Context/togglerBarContext';
+import { dashboardpromotion } from '../../../services/HomeServices/homeService'
+import ReactQuill from "react-quill";
+import FileUpload from '../../Components/FileUpload/FileUpload'
+import { BsInfoCircle } from 'react-icons/bs';
+import { languages } from '../../../utility/data'
+import { addProjects } from '../../../services/ProjectServices/projectServices'
+import { FaPlus, FaSearch } from 'react-icons/fa';
 const BuyArticles = () => {
+
+    const initialValues = {
+        project: "",
+    };
+
+    let initialValues1 = {
+        projectName: "",
+        webAddress: "",
+        publicationLang: "",
+    }
 
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
+    const [formValues, setFormValues] = useState(initialValues);
+    const [formValues1, setFormValues1] = useState(initialValues1);
+    const [formErrors, setFormErrors] = useState({})
     const [showOfferModal, setShowOfferModal] = useState(false);
     const [showCartOptions, setShowCartOptions] = useState(false);
-    const [articleType, setArticleType] = useState(translate(languageData, "SelectOwnArticle"));
-    const [articleTypeValue, setarticleTypeValue] = useState('SelectOwnArticle')
+    const [articleType, setArticleType] = useState(translate(languageData, "RequestArticleWriting"));
+    const [articleTypeValue, setarticleTypeValue] = useState('RequestArticleWriting')
     const [traficType, setTraficType] = useState({ price: '0,00 zł', clicks: "0" })
     const [confirmTraffic, setConfirmTraffic] = useState(false)
     const [orderType, setOrderType] = useState('Basic article');
@@ -52,6 +73,11 @@ const BuyArticles = () => {
     const [cartLoading, setCartLoading] = useState(false)
     const [articleList, setArticleList] = useState([])
     const [cartList, setCartList] = useState([])
+    const [project, setProject] = useState('')
+    const [content, setContent] = useState('')
+    const [image, setImage] = useState('')
+    const [date, setDate] = useState('')
+    const [link, setLink] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
@@ -62,19 +88,54 @@ const BuyArticles = () => {
     const [selectedPublisherArticle, setSelectedPublisherArticle] = useState()
     const [selectedSubArticles, setSelectedSubArticles] = useState('')
     const [articlePackages, setArticlePackages] = useState([])
+    const [articlesData2, setArticlesData2] = useState([]);
+    const [promotionList, setPromotionList] = useState([])
+    const [checkboxes, setCheckboxes] = useState([]);
+    const [selectedProject, setSelectedProject] = useState('');
+    const [userSelectedProject, setUserSelectedProject] = useState('');
+    const [error, setError] = useState('');
+    const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
+    const { cartListServices } = useCart()
+    const { toggleSidebar1 } = useSidebar();
+    const [showModal, setShowModal] = useState(false);
+
+    const handleShowModal = () => {
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const id = queryParams.get('id');
+    const pid = queryParams.get('pid');
+
+    const handleRemoveTypeAnchor1 = () => {
+        setSearch({ ...search, doFollow: 0 });
+    };
+
+    const handleRemoveTypeAnchor2 = () => {
+        setSearch({ ...search, promotions: 0 });
+    };
+
+    const handleRemoveTypeAnchor = (type) => {
+        setTypeAnchors(typeAnchors.filter((item) => item !== type));
+    };
+
 
 
     const navigate = useNavigate()
 
     const userData = JSON.parse(localStorage.getItem('userData'));
 
-    const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
-
-    const { cartListServices } = useCart()
-
+    // console.log(search , "116");
     useEffect(() => {
         getPublisherArticlesService()
     }, [search, typeAnchors, page])
+
+
 
 
     const handleInputChange = (e) => {
@@ -83,40 +144,23 @@ const BuyArticles = () => {
     }
 
 
-    console.log(articlePackages, "82");
-    // const increasePage = () => {
-    //     if (page <= lastPage) {
-    //         return;
-    //     }
-    //     setPage(page + 1)
-    // }
-
-    // const decreasePage = () => {
-    //     if (page >= 1) {
-    //         return;
-    //     }
-    //     setPage(page - 1)
-
-    // }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues({ ...formValues, [name]: value });
+    };
 
     const handlePageChange = (event, value) => {
         setPage(value)
     }
 
-    const handleCheckChange = (e) => {
-        const { name, checked } = e.target
-        let newVal = checked ? 1 : 0;
-        setSearch({ ...search, [name]: newVal })
-    }
+
 
     // dofollow, promotion, min_dr, max_dr, min_link, max_link, min_href, max_hre
     // type_of_anchor
 
 
     useEffect(() => {
-        if (articleType === translate(languageData, "SelectOwnArticle")) {
-            setarticleTypeValue('SelectOwnArticle')
-        } else if (articleType === translate(languageData, "RequestArticleWriting")) {
+        if (articleType === translate(languageData, "RequestArticleWriting")) {
             setarticleTypeValue('RequestArticle')
         } else if (articleType === translate(languageData, "AddNewArticle")) {
             setarticleTypeValue('AddAnArticle ')
@@ -124,6 +168,13 @@ const BuyArticles = () => {
             setarticleTypeValue('SelectLater')
         }
     }, [articleType])
+
+    // useEffect(() => {
+    //     if (articleType === translate(languageData, "AddNewArticle")) {
+    //         setOrderId('')
+    //     }
+    // }, [articleType])
+
 
     useEffect(() => {
         getArticleListServices()
@@ -136,6 +187,11 @@ const BuyArticles = () => {
     useEffect(() => {
         articleTypeListService()
     }, [])
+
+
+
+
+
 
 
 
@@ -152,7 +208,13 @@ const BuyArticles = () => {
     const handleAnchorsType = (e) => {
         const value = e.target.value
         setTypeAnchors(typeof value === 'string' ? value.split(',') : value)
+        toggleSidebar1()
     }
+
+    const handletoggle = () => {
+        toggleSidebar1()
+    }
+
 
 
 
@@ -203,7 +265,7 @@ const BuyArticles = () => {
     }
 
     useEffect(() => {
-        setArticleType(translate(languageData, "SelectOwnArticle"))
+        setArticleType(translate(languageData, "RequestArticleWriting"))
     }, [showCartOptions])
 
 
@@ -242,9 +304,11 @@ const BuyArticles = () => {
                 <div className="my-2">
                     <div className="d-flex align-items-center">
                         <div>
+                            <div className="d-flex gap-2 justify-content-center">
                             <Link className="my-1" style={{ fontSize: "18px" }}>
                                 {row?.portalLink}
                             </Link>
+                            <Link to="/DomainDetails"><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
                             <span>
                                 {row?.homepage ?
                                     <Tool title="Homepage">
@@ -267,7 +331,7 @@ const BuyArticles = () => {
                             </span>
                         </div>
                     </div>
-                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} /></div>
+                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} alt="flag" /></div>
 
                 </div>
             ),
@@ -346,7 +410,7 @@ const BuyArticles = () => {
                             variant="outline-primary"
                             onClick={() => setShowCartOptions(false)}
                         >
-                            Back
+                            {translate(languageData, "back")}
                         </Button>
                     ) : (
                         row.cart === 'Yes' ?
@@ -393,13 +457,19 @@ const BuyArticles = () => {
         {
             name: (
                 <div>
-                    <div>{translate(languageData, "PortalType")}</div>
-                    <div>{translate(languageData, "Language")}</div>
+                    <div>
+                        {translate(languageData, "PortalType")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>here we described about domain name</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
                 </div>
             ),
             selector: (row) => row.protalType,
             cell: (row) => (
-                <div className="my-2">
+                <div className="my-2 d-flex align-items-center gap-1">
                     <div >
                         <div className="d-flex align-items-center">
                             <Link className="my-1" style={{ fontSize: "18px" }}>
@@ -427,7 +497,9 @@ const BuyArticles = () => {
                             </span>
                         </div>
                     </div>
-                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} /></div>
+                    <div className="btn btn-outline-primary">
+                        <Link to="/DomainDetails"><FaSearch style={{ cursor: "pointer" }}/></Link>
+                    </div>
                 </div>
             ),
             width: "250px",
@@ -436,7 +508,37 @@ const BuyArticles = () => {
             },
         },
         {
-            name: "Dr",
+            name: (
+                <div>
+                    <div>
+                        {translate(languageData, "Language")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
+                </div>
+            ),
+            selector: (row) => row.protalType,
+            center: true,
+            cell: (row) => (
+                <div >
+                    <div><img src={row.language === "pl" ? polandFlag : usFlag} width={20} alt="flag" /></div>
+                </div>
+            ),
+        },
+        {
+            name: (
+                <div>
+                    DR
+                    <OverlayTrigger placement="top" overlay={<Tooltip>Here given Domain Rating of domain </Tooltip>}>
+                        <span className="ms-2">
+                            <BsInfoCircle />
+                        </span>
+                    </OverlayTrigger>
+                </div>
+            ),
             selector: (row) => row.dr,
             center: true,
             cell: (row) => (
@@ -448,7 +550,16 @@ const BuyArticles = () => {
         },
 
         {
-            name: translate(languageData, "Ahrefs"),
+            name: (
+                <div>
+                    {translate(languageData, "Ahrefs")}
+                    <OverlayTrigger placement="top" overlay={<Tooltip>This is the Ahref rating of domain given by AHREF website</Tooltip>}>
+                        <span className="ms-2">
+                            <BsInfoCircle />
+                        </span>
+                    </OverlayTrigger>
+                </div>
+            ),
             selector: (row) => row.ahrefs,
             center: true,
             cell: (row) => (
@@ -460,7 +571,14 @@ const BuyArticles = () => {
         {
             name: (
                 <div>
-                    <div>{translate(languageData, "BestPrice")}</div>
+                    <div>
+                        {translate(languageData, "BestPrice")}
+                        <OverlayTrigger placement="top" overlay={<Tooltip>In this section price of domain are given.</Tooltip>}>
+                            <span className="ms-2">
+                                <BsInfoCircle />
+                            </span>
+                        </OverlayTrigger>
+                    </div>
                 </div>
             ),
             selector: (row) => row.bestPrice,
@@ -516,7 +634,7 @@ const BuyArticles = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
-    // console.log(orderId, "516");
+
 
 
     const addToCartArticleServices = async () => {
@@ -531,10 +649,15 @@ const BuyArticles = () => {
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
             article_amount: orderPrice?.split(',')[0],
-            article_id: orderId
+            article_id: orderId,
+            project: project,
+            content: content,
+            image: image,
+            date: date,
+            links: link,
         }
         setCartLoading(true)
-        const res = await addToCartArticles(data)
+        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
                 position: "top-right",
@@ -570,7 +693,6 @@ const BuyArticles = () => {
             getPublisherArticlesService()
         }
     }
-    console.log(selectedSubArticles, "54");
 
     const handleConfirmation = () => {
         setConfirmModal(false);
@@ -581,13 +703,32 @@ const BuyArticles = () => {
         const res = await getCart(userData?.id)
         setCartList(res?.product)
     }
-    const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
-        setArticles(res.data)
-        setLastPage(res?.last_page)
+
+    const modules = {
+        toolbar: [
+            [{ 'header': '1' }, { 'header': '2' }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ],
+    };
+    const formats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike',
+        'list', 'bullet',
+        'link', 'image'
+    ];
+
+    const handleEditorChange = (html) => {
+        setContent(html)
     }
 
+    const allowedImageExtension = ['.jpg', '.gif', '.png']
 
+    const handleFiles = (file) => {
+        setImage(file);
+    };
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
@@ -599,6 +740,202 @@ const BuyArticles = () => {
         }
     }
 
+    //slect project api and auto select option with id start
+    const articleListServices = async () => {
+        const res = await projectList(userData?.id)
+        setArticlesData2(res?.data)
+    }
+    useEffect(() => {
+        articleListServices()
+    }, [])
+
+    useEffect(() => {
+        if (pid) {
+            setProject(pid);
+        }
+    }, [pid]);
+
+
+
+
+    //slect project api and auto select option with id 
+
+    //filter article send data with cheked box start
+    const getPublisherArticlesService = async () => {
+        const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
+        setArticles(res.data)
+        setLastPage(res?.last_page)
+    }
+    //filter article send data with cheked box start
+
+    //promotion api start//
+
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            const res = await dashboardpromotion();
+
+            if (res.success === true) {
+                const data = res.data;
+                if (id) {
+                    const updatedCheckboxes = data.map(checkbox => ({
+                        ...checkbox,
+                        checked: checkbox.id === parseInt(id),
+                    }));
+                    setCheckboxes(updatedCheckboxes);
+                    setSearch({ ...search, promotions: id });
+                } else {
+                    setCheckboxes(data);
+                }
+            }
+
+            setLoading(false);
+        }
+
+        fetchData();
+    }, [id]);
+
+    const handleCheckChange = (e, checkboxId) => {
+        const { checked } = e.target;
+        const updatedCheckboxes = checkboxes.map(checkbox => ({
+            ...checkbox,
+            checked: checkbox.id === checkboxId ? checked : checkbox.checked,
+        }));
+        setCheckboxes(updatedCheckboxes);
+        setSearch({ ...search, promotions: checked ? checkboxId : 0 });
+
+
+    };
+
+    const handleCheckChange1 = (e) => {
+        const { checked } = e.target;
+        setSearch({ ...search, doFollow: checked ? 1 : 0 });
+
+    };
+
+    const numCheckboxesToDisplay = checkboxes.length;
+    const boxWidth = `${100 / numCheckboxesToDisplay}%`;
+
+    //promotion api end//
+
+    //add project modal api start
+
+    const handleChange1 = (e) => {
+        const { name, value } = e.target;
+        setFormValues1({ ...formValues1, [name]: value })
+    }
+
+    const handleSelectChange1 = (selectedOption) => {
+        setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
+        validate(formValues1)
+    }
+
+    const fieldTranslationMap = {
+        name: translate(languageData, "ProjectNameField"),
+        language: translate(languageData, "publicationLanguageField"),
+        domain: translate(languageData, "WebAddressField"),
+
+    };
+    const addProjectService = async () => {
+
+        setLoading(true)
+        const res = await addProjects(formValues1);
+
+        if (res.response === true && res.success === true) {
+            toast(res.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'success'
+            });
+            await articleListServices();
+                setProject(res.data.id);
+            setLoading(false)
+        } else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
+        } else {
+            toast(translate(languageData, "loginFailureMessage2"), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'error'
+            });
+            setLoading(false)
+        }
+        handleCloseModal();
+    }
+
+
+    const validate = (values) => {
+        let errors = {};
+        let isValid = true;
+
+        if (!values.projectName) {
+            errors.projectName = translate(languageData, "ProjectNameRequired");
+            isValid = false
+        }
+
+        if (!values.webAddress) {
+            errors.webAddress = translate(languageData, "WebAddressRequired");
+            isValid = false;
+        }
+
+        if (!values.publicationLang) {
+            errors.publicationLang = translate(languageData, "PublicationLanguageRequired")
+            isValid = false;
+        }
+
+        setFormErrors(errors);
+        return isValid;
+    }
+
+
+    const languageOption = languages.map((item) => {
+        return {
+            value: item.name,
+            label: item.name
+        }
+    })
+
+    const languagesOpts = [
+        {
+            value: "English",
+            label: "English"
+        },
+        {
+            value: "Polish",
+            label: "Polish"
+        }
+    ]
+//add project modal api end
 
     return (
         <>
@@ -657,49 +994,37 @@ const BuyArticles = () => {
                                     </span>
                                 </div>
                             </Col> */}
-                            <Col xs={12} sm={6} md={4} className="" style={{ zIndex: "100" }}>
-                                {/* <div className="form-group">
-                                    <select
-                                        name="status"
-                                        style={{ height: "45px" }}
-                                        className="form-select"
-                                        id="default-dropdown"
-                                        data-bs-placeholder="Select Status"
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        multiple
-                                    >
-                                        <option label="Type of Anchors"></option>
-                                        <option value="0" >0</option>
-                                    </select>
-                                </div> */}
-                                <FormControl fullWidth>
-                                    {/* <Label for="discountableItems">
-                                        Discountable items
-                                    </Label> */}
+                            <Col xs={12} sm={6} md={4} className="">
+                                <FormControl fullWidth onMouseEnter={handletoggle}>
+
                                     <Select
                                         labelId="typeofanchors-label"
                                         id="typeofanchors"
                                         multiple
                                         value={typeAnchors}
                                         onChange={handleAnchorsType}
-                                        input={<OutlinedInput name='typeofanchors' />}
+                                        input={<OutlinedInput name="typeofanchors" />}
                                         renderValue={(selected) => selected.join(', ')}
-                                        MenuProps={MenuProps}
                                         style={{ height: "40px" }}
                                         displayEmpty={true}
                                         IconComponent={() => (
-                                            <MdOutlineKeyboardArrowDown size={20} className='me-1 MuiSvgIcon-root MuiSelect-icon' />
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon'
+                                            />
                                         )}
                                     >
-                                        <MenuItem value="" disabled>{translate(languageData, "typeofAnchors")}</MenuItem>
-                                        {anchorTypes?.map((name, index) => (
-
-                                            <MenuItem key={index} value={name?.type} className='check_list'>
-                                                <Checkbox checked={typeAnchors?.indexOf(name?.type) > -1} />
-                                                <ListItemText primary={name?.type} />
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "Select Anchor Types")}
+                                        </MenuItem>
+                                        {anchorTypes.map((name, index) => (
+                                            <MenuItem key={index} value={name.type} className='check_list'>
+                                                <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
+                                                <ListItemText primary={name.type} />
                                             </MenuItem>
                                         ))}
                                     </Select>
+
                                 </FormControl>
                             </Col>
                             <Col xs={12} sm={6} md={4} className=''>
@@ -708,31 +1033,34 @@ const BuyArticles = () => {
                                         <Form.Check
                                             id='checkguarantee'
                                             className='pe-2'
-                                            onChange={(e) => handleCheckChange(e)}
+                                            onChange={(e) => handleCheckChange1(e)}
                                             name="doFollow"
-                                            checked={search.doFollow}
+                                            checked={search?.doFollow}
 
                                         />
-                                        <span className='mt-1'>{translate(languageData, "doFollowP")}</span>
+                                        <span className='mt-1' >{translate(languageData, "doFollowP")}</span>
                                     </label>
                                 </div>
 
                             </Col>
+                            <Col xs={12} sm={6} md={4} className='d-flex gap-2'>
+                                {checkboxes
+                                    ?.slice(0, numCheckboxesToDisplay)
+                                    .map((checkbox) => (
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
 
-                            <Col xs={12} sm={6} md={4} className=''>
-                                <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
-                                    <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                        <Form.Check
-                                            id='checkguarantee'
-                                            className='pe-2'
-                                            onChange={(e) => handleCheckChange(e)}
-                                            name="promotions"
-                                            checked={search.promotions}
-                                        />
-                                        <span className='mt-1'>{translate(languageData, "promotions")}</span>
-                                    </label>
-                                </div>
-
+                                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                                <Form.Check
+                                                    id={checkbox.id}
+                                                    className='pe-2'
+                                                    onChange={(e) => handleCheckChange(e, checkbox.id)}
+                                                    name={checkbox.name}
+                                                    checked={checkbox.checked}
+                                                />
+                                                <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
+                                            </label>
+                                        </div>
+                                    ))}
                             </Col>
 
 
@@ -843,18 +1171,63 @@ const BuyArticles = () => {
                             </Col>
                         </Row>
 
+                        <ul className="d-flex gap-2">
+                            {typeAnchors.map((type) => (
+                                <li key={type}>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemoveTypeAnchor(type)}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        {type}
+                                    </Button>
+                                </li>
+                            ))}
+                            {search?.doFollow ? <div>
 
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className="btn btn-light text-dark"
+                                    onClick={handleRemoveTypeAnchor1}
+                                >
+                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                    doFollow
+                                </Button>
+                            </div> : ""}
+                            {search?.promotions ? <div>
 
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className="btn btn-light text-dark"
+                                    onClick={handleRemoveTypeAnchor2}
+                                >
+                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                    Promotions
+                                </Button>
+                            </div> : ""}
+                        </ul>
 
                         {/* <Button variant="primary" className="mx-auto d-flex mt-4">
                             {translate(languageData, "artilstSearch")}
                         </Button> */}
                     </Card.Body>
-                    {listLoading ?
-                        <div className="d-flex">
-                            <img src={globalLoader} className='mx-auto mt-5' alt='loader1' />
-                        </div> :
-                        <DataTable columns={columns} data={data} />}
+                </Card>
+                <Card>
+
+                    <Card.Body>
+                        {listLoading ?
+                            <div className="d-flex">
+                                <img src={globalLoader} className='mx-auto mt-5' alt='loader1' />
+                            </div> :
+
+                            <DataTable columns={columns} data={data} />}
+                    </Card.Body>
+
                 </Card>
 
                 <div className={`d-flex ${checkAddedToCart ? "justify-content-between" : "justify-content-end"} mb-4`}>
@@ -899,6 +1272,34 @@ const BuyArticles = () => {
                                 {translate(languageData, "SelectionPortalOffer")}: <b>{selectedPublisherArticle?.portalLink}</b>
                             </h4>
                         </div>
+                        <div className="form-group d-flex justify-content-center gap-2">
+                            <div className="btn btn-outline-primary d-flex align-items-center" onClick={handleShowModal}>
+                            <FaPlus style={{ cursor: "pointer" }} className="me-1"/>{translate(languageData, "AddProject")}
+                            </div>
+                            <div>
+                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px"}} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
+                                    const selectedValue = e.target.value;
+                                    setProject(selectedValue);
+                                    if (selectedValue.trim() === '') {
+                                        setError(
+                                            <span className="text-danger">
+                                                {translate(languageData, 'PleaseSelectYourProject')}
+                                            </span>
+                                        );
+                                    } else {
+                                        setError('');
+                                    }
+                                }} value={project}>
+                                    <option label={translate(languageData, "artilstProject")}></option>
+                                    {articlesData2?.map((item, index) => {
+                                        return (
+                                            <option value={item?.id} key={index}>{item?.name}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                        </div>
+
                     </Modal.Header>
                     <Modal.Body>
                         <div className="d-flex jusify-content-between w-100 flex-wrap">
@@ -922,15 +1323,6 @@ const BuyArticles = () => {
                         {showCartOptions &&
                             <div>
                                 <div className="mt-5 d-flex justify-content-center flex-wrap">
-                                    <Button
-                                        className={`${articleType === translate(languageData, "SelectOwnArticle")
-                                            ? "btn-primary"
-                                            : "btn-outline-primary"
-                                            }   rounded-0`}
-                                        onClick={() => setArticleType(translate(languageData, "SelectOwnArticle"))}
-                                    >
-                                        {translate(languageData, "SelectOwnArticle")}
-                                    </Button>
                                     <Button
                                         className={`${articleType === translate(languageData, "RequestArticleWriting")
                                             ? "btn-primary"
@@ -967,26 +1359,6 @@ const BuyArticles = () => {
                                                 {/* <p className="fw-semibold ps-4">{translate(languageData, "sidebarContent")}</p> */}
                                             </div>}
                                         <div className="ps-4">
-                                            {articleType === translate(languageData, "SelectOwnArticle") &&
-                                                <Row className="mt-5 border-bottom">
-                                                    {/* <Col xs={12} md={4}>
-                                                        <span>{translate(languageData, "SelectArticle")} *</span>
-                                                    </Col> */}
-                                                    {/* <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                        <div className="form-group">
-                                                            <select name="selectArticle" style={{ height: "45px" }} class=" form-select" id="default-dropdown" onChange={(e) => setSelectArticle(e.target.value)} value={selectArticle}>
-                                                                <option label="Select"></option>
-                                                                {articleList?.map((item, index) => {
-                                                                    return (
-                                                                        <option value={item?.id} key={index}>{item?.title}</option>
-                                                                    )
-                                                                })}
-
-                                                            </select>
-                                                        </div>
-
-                                                    </Col> */}
-                                                </Row>}
 
                                             {articleType === translate(languageData, "RequestArticleWriting") &&
                                                 <div>
@@ -1007,7 +1379,7 @@ const BuyArticles = () => {
                                                                             <div></div>
                                                                         </Card.Body>
                                                                         <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
-                                                                            <img src={orderType === item.name ? green : grey} />
+                                                                            <img src={orderType === item.name ? green : grey} alt="cardimg" />
                                                                         </div>
                                                                     </Card>
                                                                 </Col>
@@ -1039,6 +1411,88 @@ const BuyArticles = () => {
                                                             </Col>
                                                         </Row>} */}
 
+                                                    {/* <Row className='align-items-center mt-5'>
+                                                    <Col xs={12} md={4}>
+                                                        <span>{translate(languageData , "Theme")} *</span>
+                                                    </Col>
+                                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                        <div className="form-group">
+                                                        <Select options={""} name='language' placeholder="Language" styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }}  />
+
+                                                        </div>
+                                                    
+                                                    </Col>
+                                                </Row> */}
+
+
+                                                </div>
+
+                                            }
+
+                                            {articleType === translate(languageData, "AddNewArticle") &&
+                                                <div>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Title *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Publication date *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='mt-4 pb-8'>
+                                                        <Col xs={12} md={4} className='mt-2'>
+                                                            <span>{translate(languageData, "sidebarContent")}</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <ReactQuill
+                                                                theme="snow"
+                                                                onChange={handleEditorChange}
+                                                                value={content}
+                                                                modules={modules}
+                                                                formats={formats}
+                                                                bounds={'.app'}
+                                                                placeholder="Write content"
+                                                                style={{ height: "300px" }}
+                                                            />
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Image *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Link *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="url" name="link" placeholder='link' style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} value={link} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
                                                     {/* <Row className='align-items-center mt-5'>
                                                     <Col xs={12} md={4}>
                                                         <span>{translate(languageData , "Theme")} *</span>
@@ -1166,6 +1620,57 @@ const BuyArticles = () => {
                         </div>
                     </Modal.Body>
                 </Modal>
+
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add Project</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row className='align-items-center'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "NameOfTheProject")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-3'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "WebAddress")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-3'>
+                            <Col lg={3} xs={12}>
+                                {translate(languageData, "publicationLanguage")} *
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <Select1 options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange1} />
+                                <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
+                            </Col>
+
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <div>
+                            <Button variant="secondary" onClick={handleCloseModal}>
+                                Close
+                            </Button>
+                        </div>
+                        <div className=''>
+                            <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
+                        </div>
+                    </Modal.Footer>
+                </Modal>
+
             </div>
         </>
     );

@@ -25,3 +25,11 @@
 
 
 
+select.btn-primary option {
+  background-color: white;
+  color: #333;
+}
+
+.closeIcon {
+  color: white;
+}

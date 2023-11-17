@@ -1,0 +1,27 @@
+.light-red-bg {
+    background-color: lightcoral;
+    color: white;
+  }
+  
+  .yellow-bg {
+    background-color: yellow;
+    
+  }
+  
+  .light-green-bg {
+    background-color: lightgreen;
+  }
+  
+  .light-blue-bg {
+    background-color: lightblue;
+  }
+  
+  .navy-blue-bg {
+    background-color: navy;
+    color: white;
+  }
+  
+  .default-bg {
+    background-color: transparent; /* Default background color */
+  }
+  

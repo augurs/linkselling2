@@ -91,13 +91,13 @@ const AddArticle = () => {
             });
         });
     };
-     //docsx reader code//*
+    //docsx reader code//*
 
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
     }
 
-  
+
 
 
     const handleArticleType = (type) => {
@@ -117,13 +117,12 @@ const AddArticle = () => {
 
         if (type === "saveandexit") {
             setLoading2(true)
-        } else {
+        } else if (type === "save") {
             setLoading(true)
         }
         const res = await addArticle(formValues, editor, userData2.id)
         if (res.response === true && res.success === true) {
-            setLoading(false)
-            toast(res.message, {
+            toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -141,7 +140,7 @@ const AddArticle = () => {
                 setLoading(false)
             }
 
-        }else if (res.success === false && res.response) {
+        } else if (res.success === false && res.response) {
             for (const field in res.response) {
                 if (res.response.hasOwnProperty(field)) {
                     const errorMessages = res.response[field].map(message => {
@@ -163,8 +162,8 @@ const AddArticle = () => {
             }
         }
         else {
-            toast("Something went wrong", {
-                position: "top-right",
+            toast(translate(languageData, "Somthing went wrong"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -173,15 +172,15 @@ const AddArticle = () => {
                 progress: undefined,
                 type: 'error'
             });
-            if (type === "saveandexit") {
-                setLoading2(false)
-            } else {
-                setLoading(false)
-            }
         }
-    }
+        if (type === "saveandexit") {
+            setLoading2(false)
+        } else if (type === "save") {
+            setLoading(false)
+        }
+    };
 
-    
+
 
 
     useEffect(() => {

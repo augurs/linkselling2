@@ -14,6 +14,7 @@ const SignUp = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: '',
     terms: "",
   };
 
@@ -76,6 +77,13 @@ const SignUp = () => {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
       isValid = false;
     }
+    if (!values.confirmPassword) {
+      error.confirmPassword = languageData && languageData?.filter((item) => item.title === 'confirmPasswordError')[0]?.value || 'confirmPasswordError';
+      isValid = false;
+    } else if (values.password !== values.confirmPassword) {
+      error.confirmPassword = languageData && languageData?.filter((item) => item.title === 'confirmPasswordMismatch')[0]?.value || 'confirmPasswordMismatch';
+      isValid = false;
+    }
     if (!values.terms) {
       error.terms = languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms';
       isValid = false;
@@ -97,12 +105,27 @@ const SignUp = () => {
 
 
   const signUpServices = async () => {
-    setSignUpLoading(true)
+    setSignUpLoading(true);
+    if (formValues.password !== formValues.confirmPassword) {
+      toast('Passwords do not match', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        type: 'error',
+      });
+      setSignUpLoading(false);
+      return;
+    }
     let values = {
       ...formValues,
       language: currLang
     }
-    const res = await signup(values , currLang);
+    const res = await signup(values, currLang);
     if (res.success === true) {
       toast(signUpSuccessMessage, {
         position: "top-right",
@@ -133,7 +156,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false })
+      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: '' })
     } else {
       toast(loginFailureMessage2, {
         position: "top-right",
@@ -147,7 +170,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false })
+      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
     }
   }
 
@@ -192,6 +215,22 @@ const SignUp = () => {
                       </span>
                     </div>
                     <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.password}</div>
+                    <div className='wrap-input100 validate-input mb-0 mt-2'>
+                      <input
+                        className='input100'
+                        type='password'
+                        name='confirmPassword'
+                        placeholder={languageData && languageData?.filter((item) => item.title === 'confirmPassword')[0]?.value || 'confirmPassword'}
+                        onChange={(e) => handleChange(e)}
+                        onKeyUp={() => validate(formValues)}
+                        value={formValues.confirmPassword}
+                      />
+                      <span className='focus-input100'></span>
+                      <span className='symbol-input100'>
+                        <i className='zmdi zmdi-lock' aria-hidden='true'></i>
+                      </span>
+                    </div>
+                    <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.confirmPassword}</div>
                     {/* <div className="text-end pt-1">
                       <p className="mb-0">
                         <a href="forgot-password.html" className="text-primary ms-1">Forgot Password?</a>

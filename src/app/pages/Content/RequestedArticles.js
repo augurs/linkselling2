@@ -8,6 +8,8 @@ import { Button, Modal } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import { toast, ToastContainer } from 'react-toastify';
 import { ColorRing } from 'react-loader-spinner';
+import { translate } from '../../../utility/helper';
+import { useLanguage } from '../../Context/languageContext';
 
 const RequestedArticles = () => {
 
@@ -18,7 +20,7 @@ const RequestedArticles = () => {
     const [viewArticle, setViewArticle] = useState()
     const [suggestion, setSuggestion] = useState('')
     const [editor, setEditor] = useState('')
-
+    const { languageData } = useLanguage();
 
     useEffect(() => {
         setEditor(viewArticle?.content)
@@ -111,52 +113,110 @@ const RequestedArticles = () => {
     const columns = [
 
         {
-            name: "S.No",
+            name: translate(languageData, "S.No."),
             selector: row => row?.id,
             sortable: true,
             center: true,
         },
         {
-            name: "Title",
+            name: translate(languageData, "artilstTitle"),
             selector: row => row?.title,
             sortable: true,
             center: true,
         },
         {
-            name: "AI",
+            name: translate(languageData, "writingAi"),
             selector: row => row?.ai,
             sortable: true,
             center: true,
         },
         {
-            name: "Content Size",
+            name: translate(languageData, "writingContentSize"),
             selector: row => row?.contentsize,
             sortable: true,
             center: true,
         },
         {
-            name: "Max Link",
+            name: translate(languageData, "maxLinks"),
             selector: row => row?.maxLink,
             center: true,
             sortable: true,
         },
         {
-            name: 'Date of Article',
+            name: translate(languageData, "writingDateOfArticle"),
             selector: row => row?.dateOfArticle,
             center: true,
             sortable: true,
         },
 
+        // {
+        //     name: translate(languageData,"writingStatus"),
+        //     cell: row => <button className='btn btn-outline-primary btn-pill ' >{row?.status}</button>,
+        //     center: true,
+        //     sortable: true,
+        //     width: '200px',
+        // },
         {
-            name: 'Status',
-            cell: row => <button className='btn btn-outline-primary btn-pill ' >{row?.status}</button>,
-            center: true,
+            name: translate(languageData, "writingStatus"),
+            selector: (row) => row?.status,
             sortable: true,
-            width: '200px',
+            center: true,
+            cell: (row) => {
+                let buttonClass = "btn btn-primary";
+                let buttonText = "";
+
+                switch (row.status) {
+                    case "Pending":
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "Pending")}</small>;
+                      break;
+                    case "AssignedToWriter":
+                      buttonClass = "btn btn-info btn-pill";
+                      buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+                      break;
+                    case "Completed":
+                      buttonClass = "btn btn-success btn-pill";
+                      buttonText = <small>{translate(languageData, "Completed")}</small>;
+                      break;
+                      case "RequestChanges":
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                      break;
+                    case "Rejected":
+                      buttonClass = "btn btn-danger btn-pill";
+                      buttonText = <small>{translate(languageData, "Rejected")}</small>;
+                      break;
+                    case "Accepted":
+                      buttonClass = "btn btn-secondary btn-pill";
+                      buttonText = <small>{translate(languageData, "Accepted")}</small>;
+                      break;
+                    case "CustomerReview":
+                      buttonClass = "btn btn-warning btn-pill";
+                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                      break;
+                    case "RejectedLink":
+                      buttonClass = "btn btn-danger btn-pill";
+                      buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+                      break;
+                    case "Published":
+                      buttonClass = "btn btn-primary btn-pill";
+                      buttonText = <small>{translate(languageData, "Published")}</small>;
+                      break;
+                    default:
+                      buttonClass = "btn btn-primary btn-pill";
+                      buttonText = row.status;
+                  }
+
+                return (
+                    <span className={`${buttonClass} d-flex justify-content-center`}>
+                        {buttonText}
+                    </span>
+                );
+            },
         },
         {
-            name: 'Action',
-            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >Edit</button>,
+            name: translate(languageData, "Action"),
+            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData, "Edit")}</button>,
             center: true,
             sortable: true,
         },
@@ -191,7 +251,7 @@ const RequestedArticles = () => {
                     <img src={globalLoader} className='mx-auto' alt='loader1' />
                 </div> :
                 <div>
-                    <h4 className='mt-1 mb-3'>Requested Articles</h4>
+                    <h4 className='mt-1 mb-3'>{translate(languageData, "requestedArticles")}</h4>
 
                     <DataTable
                         columns={columns}
