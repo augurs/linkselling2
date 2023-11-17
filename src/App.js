@@ -37,7 +37,52 @@ import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 
 function App() {
 
+  // const checkForDevTools = () => {
+  //   // Check if window.devtools is defined and has the isOpen property
+  //   if (window.devtools && typeof window.devtools.isOpen !== 'undefined') {
+  //     if (window.devtools.isOpen) {
+  //       alert("Please close the developer tools and refresh the page.");
+  //       window.location.reload();
+  //     }
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   const intervalId = setInterval(checkForDevTools, 1000);
+
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
+  // useEffect(() => {
+  //   const handleContextMenu = (e) => {
+  //     e.preventDefault();
+  //   };
+
+  //   const handleKeyDown = (e) => {
+  //     if (e.key === 'F12' || (e.ctrlKey && e.key === 'Shift' && e.keyCode === 73)) {
+  //       console.warn("Developer Tools are not allowed.");
+  //       e.preventDefault();
+  //     }
+  //   };
+
+  //   const handleDevToolsChange = () => {
+  //     if (window.devtools.isOpen) {
+  //       console.warn("Developer Tools are not allowed.");
+  //     }
+  //   };
+
+  //   document.addEventListener('contextmenu', handleContextMenu);
+  //   document.addEventListener('keydown', handleKeyDown);
+
+
+  //   window.addEventListener('devtoolschange', handleDevToolsChange);
+
+  //   return function cleanup() {
+  //     document.removeEventListener('contextmenu', handleContextMenu);
+  //     document.removeEventListener('keydown', handleKeyDown);
+  //     window.removeEventListener('devtoolschange', handleDevToolsChange);
+  //   };
+  // }, []);
 
 
   const browserRouter = createBrowserRouter([

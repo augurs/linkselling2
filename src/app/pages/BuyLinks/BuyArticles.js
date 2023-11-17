@@ -305,10 +305,10 @@ const BuyArticles = () => {
                     <div className="d-flex align-items-center">
                         <div>
                             <div className="d-flex gap-2 justify-content-center">
-                            <Link className="my-1" style={{ fontSize: "18px" }}>
-                                {row?.portalLink}
-                            </Link>
-                            <Link to="/DomainDetails"><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
+                                <Link className="my-1" style={{ fontSize: "18px" }}>
+                                    {row?.portalLink}
+                                </Link>
+                                <Link to={`https://linkanonymous.com/?https://${row?.portalLink}`}><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
                             <span>
                                 {row?.homepage ?
                                     <Tool title="Homepage">
@@ -498,8 +498,11 @@ const BuyArticles = () => {
                         </div>
                     </div>
                     <div className="btn btn-outline-primary">
-                        <Link to="/DomainDetails"><FaSearch style={{ cursor: "pointer" }}/></Link>
+                        <Link to={`https://linkanonymous.com/?https://${row?.portalLink}`}>
+                            <FaSearch style={{ cursor: "pointer" }} />
+                        </Link>
                     </div>
+
                 </div>
             ),
             width: "250px",
@@ -854,7 +857,7 @@ const BuyArticles = () => {
                 type: 'success'
             });
             await articleListServices();
-                setProject(res.data.id);
+            setProject(res.data.id);
             setLoading(false)
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
@@ -935,7 +938,7 @@ const BuyArticles = () => {
             label: "Polish"
         }
     ]
-//add project modal api end
+    //add project modal api end
 
     return (
         <>
@@ -1274,10 +1277,10 @@ const BuyArticles = () => {
                         </div>
                         <div className="form-group d-flex justify-content-center gap-2">
                             <div className="btn btn-outline-primary d-flex align-items-center" onClick={handleShowModal}>
-                            <FaPlus style={{ cursor: "pointer" }} className="me-1"/>{translate(languageData, "AddProject")}
+                                <FaPlus style={{ cursor: "pointer" }} className="me-1" />{translate(languageData, "AddProject")}
                             </div>
                             <div>
-                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px"}} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
+                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px" }} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
                                     const selectedValue = e.target.value;
                                     setProject(selectedValue);
                                     if (selectedValue.trim() === '') {

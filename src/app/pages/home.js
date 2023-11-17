@@ -46,9 +46,8 @@ const Home = () => {
         return translate(languageData, "NeedToAcceptArticle");
       case "Rejected":
         return translate(languageData, "YourPublicationWasRejected");
-      // Add more cases for other statuses
       default:
-        return status; // If no match, just return the status
+        return status;
     }
   };
 
@@ -62,10 +61,15 @@ const Home = () => {
         return translate(languageData, "Accept");
       case "Rejected":
         return translate(languageData, "Rejected");
-    
+
       default:
-        return "Action"; 
+        return "Action";
     }
+  };
+
+  const removeNotification = (index) => {
+    const updatedToDoList = [...toDoList.slice(0, index), ...toDoList.slice(index + 1)];
+    setToDoList(updatedToDoList);
   };
   //*api 1st section end
 
@@ -351,24 +355,31 @@ const Home = () => {
               <h3 className='fw-semibold'>{translate(languageData, "todo")}</h3>
             </Card.Header>
             <Card.Body >
-              <div className="px-1" style={{ maxHeight: '346px', overflowY: 'scroll', overflowX: 'hidden' }}>
-                <Row>
+              <div className="px-1" style={{ maxHeight: '240px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                <Row className='mt-1'>
                   {toDoList?.map((data, index) => (
-                    <Col xs={12} sm={4} key={index}>
-                      <Card className='mt-5 shadow-lg' >
-                        <Card.Body className='d-flex justify-content-center'>
-                          <div className='mb-4'>
-                            <h4>{data?.title.slice(0, 10)}...</h4>
-                            <small>{translate(languageData, "Action")}: {getActionText(data?.status)}</small><br />
-                            <small>{translate(languageData, "invoiceDate")}: {formatDate(data?.created_at)}</small><br />
-                            <Button className="btn btn-primary mt-2"><small>{getButtonText(data?.status)}</small></Button>
+                    <Col xs={12} sm={12} key={index}>
+                      <Card className='shadow-md' style={{ marginBottom: "0.2rem" }}>
+                        <div className='d-flex align-items-center justify-content-between p-1'>
+                          <div>
+                            <h6 style={{marginBottom: "1px"}}>{data?.title}</h6>
+                            <small>{translate(languageData, "Action")}: {getActionText(data?.status)}</small>
                           </div>
-                        </Card.Body>
+                          <div>
+                            <Button className="btn btn-primary mt-1">
+                              <small>{getButtonText(data?.status)}</small>
+                            </Button>
+                          </div>
+                        </div>
                       </Card>
                     </Col>
                   ))}
                 </Row>
+
+
+
               </div>
+
             </Card.Body>
           </Card>
         </Col>
