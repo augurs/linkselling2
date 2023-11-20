@@ -244,7 +244,7 @@ const Home = () => {
     },
     {
       name: translate(languageData, "price"),
-      selector: row => `${row.price} zł`, // Add "$" sign before row.price
+      selector: row => `${row.price} zł`,
       sortable: true,
       center: true,
       // width: '180px'
@@ -276,43 +276,43 @@ const Home = () => {
 
         switch (row.status) {
           case "Pending":
-            buttonClass = "btn btn-warning btn-pill";
+            buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "Pending")}</small>;
             break;
           case "AssignedToWriter":
-            buttonClass = "btn btn-info btn-pill";
+            buttonClass = "btn btn-outline-info btn-pill";
             buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
             break;
           case "Completed":
-            buttonClass = "btn btn-success btn-pill";
+            buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "Completed")}</small>;
             break;
-          case "RequestChanges":
-            buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+            case "RequestChanges":
+            buttonClass = "btn btn-outline-warning btn-pill";
+            buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
             break;
           case "Rejected":
-            buttonClass = "btn btn-danger btn-pill";
+            buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "Rejected")}</small>;
             break;
           case "Accepted":
-            buttonClass = "btn btn-secondary btn-pill";
+            buttonClass = "btn btn-outline-secondary btn-pill";
             buttonText = <small>{translate(languageData, "Accepted")}</small>;
             break;
           case "CustomerReview":
-            buttonClass = "btn btn-warning btn-pill";
+            buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           case "RejectedLink":
-            buttonClass = "btn btn-danger btn-pill";
+            buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
             break;
           case "Published":
-            buttonClass = "btn btn-primary btn-pill";
+            buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
           default:
-            buttonClass = "btn btn-primary btn-pill";
+            
             buttonText = row.status;
         }
 
@@ -435,9 +435,9 @@ const Home = () => {
         </Col>
         <Col xs={12} sm={5}>
           <Card className='mt-5'>
-            <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
+            <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "OrdersList")}</h3>
-              <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/orders')}>{translate(languageData, "viewAllOrders")}</Button>
+              <Button className='btn btn-primary btn-w-md me-2 mt-2 d-flex justify-content-center' onClick={() => navigate('/orders')}><small>{translate(languageData, "viewAllOrders")}</small></Button>
             </Card.Header>
             <Card.Body>
               <Row>

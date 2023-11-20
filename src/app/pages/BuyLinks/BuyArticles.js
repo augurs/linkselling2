@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
@@ -998,7 +998,7 @@ const BuyArticles = () => {
                                 </div>
                             </Col> */}
                             <Col xs={12} sm={6} md={4} className="">
-                                <FormControl fullWidth onMouseEnter={handletoggle}>
+                                {/* <FormControl fullWidth onMouseEnter={handletoggle}>
 
                                     <Select
                                         labelId="typeofanchors-label"
@@ -1028,6 +1028,56 @@ const BuyArticles = () => {
                                         ))}
                                     </Select>
 
+                                </FormControl> */}
+                                <FormControl fullWidth onMouseEnter={handletoggle}>
+                                    <Select
+                                        labelId="typeofanchors-label"
+                                        id="typeofanchors"
+                                        multiple
+                                        value={typeAnchors}
+                                        onChange={handleAnchorsType}
+                                        input={<OutlinedInput name="typeofanchors" />}
+                                        renderValue={(selected) => (
+                                            <div className="d-flex align-items-center">
+                                                <MdLink size={20} className="text-primary" />
+                                                <span className="d-flex flex-grow-1 justify-content-center text-primary">
+                                                    {selected.length > 0 ? selected.join(', ') : translate(languageData, "Anchor Types")}
+                                                </span>
+                                            </div>
+                                        )}
+                                        style={{
+                                            height: "40px",
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'grey', // Customize the default outline color
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'green', // Customize the hover outline color
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'green', // Customize the focused outline color
+                                                    boxShadow: 'none', // Remove default box-shadow on focus
+                                                },
+                                            },
+                                        }}
+                                        displayEmpty={true}
+                                        IconComponent={() => (
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon'
+                                            />
+                                        )}
+                                    >
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "Select Anchor Types")}
+                                        </MenuItem>
+                                        {anchorTypes.map((name, index) => (
+                                            <MenuItem key={index} value={name.type} className='check_list'>
+                                                <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
+                                                <ListItemText primary={name.type} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
                                 </FormControl>
                             </Col>
                             <Col xs={12} sm={6} md={4} className=''>

@@ -94,43 +94,43 @@ const Orders = () => {
 
         switch (row.status) {
           case "Pending":
-            buttonClass = "btn btn-warning btn-pill";
+            buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "Pending")}</small>;
             break;
           case "AssignedToWriter":
-            buttonClass = "btn btn-info btn-pill";
+            buttonClass = "btn btn-outline-info btn-pill";
             buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
             break;
           case "Completed":
-            buttonClass = "btn btn-success btn-pill";
+            buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "Completed")}</small>;
             break;
             case "RequestChanges":
-            buttonClass = "btn btn-warning btn-pill";
-            buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+            buttonClass = "btn btn-outline-warning btn-pill";
+            buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
             break;
           case "Rejected":
-            buttonClass = "btn btn-danger btn-pill";
+            buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "Rejected")}</small>;
             break;
           case "Accepted":
-            buttonClass = "btn btn-secondary btn-pill";
+            buttonClass = "btn btn-outline-secondary btn-pill";
             buttonText = <small>{translate(languageData, "Accepted")}</small>;
             break;
           case "CustomerReview":
-            buttonClass = "btn btn-warning btn-pill";
+            buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
             break;
           case "RejectedLink":
-            buttonClass = "btn btn-danger btn-pill";
+            buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
             break;
           case "Published":
-            buttonClass = "btn btn-primary btn-pill";
+            buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
           default:
-            buttonClass = "btn btn-primary btn-pill";
+            
             buttonText = row.status;
         }
 

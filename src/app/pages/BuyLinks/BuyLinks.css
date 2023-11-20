@@ -33,3 +33,11 @@ select.btn-primary option {
 .closeIcon {
   color: white;
 }
+
+.custom-outlined {
+  border-color: gainsboro !important; 
+}
+
+.custom-focused {
+  border-color: rgb(16, 255, 120) !important; 
+}
