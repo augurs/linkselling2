@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdLink, MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor} from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
@@ -38,6 +38,8 @@ import { BsInfoCircle } from 'react-icons/bs';
 import { languages } from '../../../utility/data'
 import { addProjects } from '../../../services/ProjectServices/projectServices'
 import { FaPlus, FaSearch } from 'react-icons/fa';
+import { IoTicketOutline } from 'react-icons/io5';
+
 const BuyArticles = () => {
 
     const initialValues = {
@@ -98,6 +100,32 @@ const BuyArticles = () => {
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
+    const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
+
+    
+    const handleMaxLinksSelection = (maxLinks) => {
+        console.log("Selected maxLinks:", maxLinks);
+        setSelectedMaxLinks(maxLinks);
+    };
+
+    const generateRows = () => {
+        const rows = [];
+        for (let i = 1; i <= selectedMaxLinks; i++) {
+          rows.push(
+            <Row key={i} className='align-items-center mt-5'>
+              <Col xs={12} md={4}>
+                <span>Link {i} *</span>
+              </Col>
+              <Col xs={12} md={8} className="mt-3 mt-md-0">
+                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                  <input className="input100" type="url" name={`link${i}`} placeholder={`Link ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} value={link} />
+                </div>
+              </Col>
+            </Row>
+          );
+        }
+        return rows;
+      };
 
     const handleShowModal = () => {
         setShowModal(true);
@@ -416,7 +444,7 @@ const BuyArticles = () => {
                         row.cart === 'Yes' ?
                             <Button
                                 variant="primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row) }}
+                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
                                 disabled
                             >
                                 {translate(languageData, "Select")}
@@ -424,7 +452,7 @@ const BuyArticles = () => {
                             :
                             <Button
                                 variant="outline-primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row) }}
+                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
                             >
                                 {translate(languageData, "Select")}
                             </Button>
@@ -451,6 +479,7 @@ const BuyArticles = () => {
 
         }
     })
+
 
 
     const columns = [
@@ -779,7 +808,7 @@ const BuyArticles = () => {
             const res = await dashboardpromotion();
 
             if (res.success === true) {
-                const data = res.data;
+                const data = res.data.reverse();
                 if (id) {
                     const updatedCheckboxes = data.map(checkbox => ({
                         ...checkbox,
@@ -1039,32 +1068,19 @@ const BuyArticles = () => {
                                         input={<OutlinedInput name="typeofanchors" />}
                                         renderValue={(selected) => (
                                             <div className="d-flex align-items-center">
-                                                <MdLink size={20} className="text-primary" />
+                                                <MdAnchor size={20} className="text-primary" />
                                                 <span className="d-flex flex-grow-1 justify-content-center text-primary">
                                                     {selected.length > 0 ? selected.join(', ') : translate(languageData, "Anchor Types")}
                                                 </span>
                                             </div>
                                         )}
-                                        style={{
-                                            height: "40px",
-                                            '& .MuiOutlinedInput-root': {
-                                                '& fieldset': {
-                                                    borderColor: 'grey', // Customize the default outline color
-                                                },
-                                                '&:hover fieldset': {
-                                                    borderColor: 'green', // Customize the hover outline color
-                                                },
-                                                '&.Mui-focused fieldset': {
-                                                    borderColor: 'green', // Customize the focused outline color
-                                                    boxShadow: 'none', // Remove default box-shadow on focus
-                                                },
-                                            },
-                                        }}
+                                        style={{ height: "40px", marginTop: "5px" }}
+                                        className="custom-select"
                                         displayEmpty={true}
                                         IconComponent={() => (
                                             <MdOutlineKeyboardArrowDown
                                                 size={20}
-                                                className='me-1 MuiSvgIcon-root MuiSelect-icon'
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon text-primary'
                                             />
                                         )}
                                     >
@@ -1081,36 +1097,42 @@ const BuyArticles = () => {
                                 </FormControl>
                             </Col>
                             <Col xs={12} sm={6} md={4} className=''>
-                                <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
-                                    <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                <div className='border border-muted d-flex align-items-center bg-white mb-3 p-3' style={{ height: "45px" }}>
+                                    <MdLink size={24} color="text-primary" />
+                                    <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
+                                        {translate(languageData, "doFollowP")}
+                                    </span>
+                                    <label className="custom-control custom-checkbox mb-1">
                                         <Form.Check
                                             id='checkguarantee'
-                                            className='pe-2'
                                             onChange={(e) => handleCheckChange1(e)}
                                             name="doFollow"
                                             checked={search?.doFollow}
-
                                         />
-                                        <span className='mt-1' >{translate(languageData, "doFollowP")}</span>
                                     </label>
                                 </div>
-
                             </Col>
                             <Col xs={12} sm={6} md={4} className='d-flex gap-2'>
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
                                     .map((checkbox) => (
-                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2' style={{ height: "45px", width: boxWidth }}>
+                                            {/* Left side: promo code icon */}
+                                            <IoTicketOutline size={24} color="primary" />
 
-                                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                            {/* Middle: checkbox text */}
+                                            <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
+                                                {translate(languageData, checkbox.name)}
+                                            </span>
+
+                                            {/* Right side: checkbox */}
+                                            <label className="custom-control custom-checkbox mb-1">
                                                 <Form.Check
                                                     id={checkbox.id}
-                                                    className='pe-2'
                                                     onChange={(e) => handleCheckChange(e, checkbox.id)}
                                                     name={checkbox.name}
                                                     checked={checkbox.checked}
                                                 />
-                                                <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
                                             </label>
                                         </div>
                                     ))}
@@ -1370,12 +1392,12 @@ const BuyArticles = () => {
                                 </span>
                             </div> */}
                         </div>
-                        <div className="mt-2 px-4">
+                        <div className="px-4">
                             <DataTable columns={modalColumns} data={modalTableData} />
                         </div>
                         {showCartOptions &&
                             <div>
-                                <div className="mt-5 d-flex justify-content-center flex-wrap">
+                                <div className="d-flex justify-content-center flex-wrap">
                                     <Button
                                         className={`${articleType === translate(languageData, "RequestArticleWriting")
                                             ? "btn-primary"
@@ -1419,19 +1441,19 @@ const BuyArticles = () => {
                                                         {articlePackages?.map((item, index) => {
                                                             return (
 
-                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='mt-2 rounded-pill'>
-                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
-                                                                        <Card.Body className='text-center'>
-                                                                            <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
-                                                                            <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                                            <h3 className='mb-3'>{item.name} </h3>
+                                                                <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill'>
+                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px"}}>
+                                                                        <Card.Body className='text-center' style={{marginTop: "-16px"}}>
+                                                                            <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
+                                                                            <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
+                                                                            <h6>{item.name} </h6>
                                                                             <Link >{item?.description}</Link>
-                                                                            <div className='mt-4'>
+                                                                            {/* <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
-                                                                            </div>
+                                                                            </div> */}
                                                                             <div></div>
                                                                         </Card.Body>
-                                                                        <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
+                                                                        <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-94px' }}>
                                                                             <img src={orderType === item.name ? green : grey} alt="cardimg" />
                                                                         </div>
                                                                     </Card>
@@ -1535,17 +1557,7 @@ const BuyArticles = () => {
                                                             <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
                                                         </Col>
                                                     </Row>
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>Link *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="url" name="link" placeholder='link' style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} value={link} />
-                                                            </div>
-
-                                                        </Col>
-                                                    </Row>
+                                                    {selectedMaxLinks && generateRows()}
                                                     {/* <Row className='align-items-center mt-5'>
                                                     <Col xs={12} md={4}>
                                                         <span>{translate(languageData , "Theme")} *</span>
@@ -1563,7 +1575,6 @@ const BuyArticles = () => {
                                                 </div>
 
                                             }
-
 
                                             <div>
                                                 {/* <p className="fw-semibold mt-5">{translate(languageData, "TrafficGuarantee")}</p>

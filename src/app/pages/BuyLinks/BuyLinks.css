@@ -34,10 +34,19 @@ select.btn-primary option {
   color: white;
 }
 
-.custom-outlined {
-  border-color: gainsboro !important; 
+.custom-select .MuiOutlinedInput-notchedOutline {
+  border-color: grey !important;
+    box-shadow: none !important;
+
 }
 
-.custom-focused {
-  border-color: rgb(16, 255, 120) !important; 
+.custom-select:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(96, 151, 8) !important;
+  box-shadow: none !important;
+
+}
+
+.custom-select.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(96, 151, 8)  !important;
+  box-shadow: none !important;
 }
