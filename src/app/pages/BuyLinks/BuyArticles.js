@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor} from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
@@ -39,6 +39,7 @@ import { languages } from '../../../utility/data'
 import { addProjects } from '../../../services/ProjectServices/projectServices'
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoTicketOutline } from 'react-icons/io5';
+import axios from "axios";
 
 const BuyArticles = () => {
 
@@ -77,7 +78,10 @@ const BuyArticles = () => {
     const [cartList, setCartList] = useState([])
     const [project, setProject] = useState('')
     const [content, setContent] = useState('')
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState(null);
+    const [pixabayUrl, setPixabayUrl] = useState('');
+    const [pixabayImages, setPixabayImages] = useState([]);
+    const [imageSource, setImageSource] = useState(null);
     const [date, setDate] = useState('')
     const [link, setLink] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
@@ -101,31 +105,42 @@ const BuyArticles = () => {
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
     const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
-
-    
+    const [provideSubject, setProvideSubject] = useState(false);
+    const [weProvideSubject, setWeProvideSubject] = useState(false);
+    const [anchorurl, setAnchorUrl] = useState('')
+    const [anchor, setAnchor] = useState('')
+    const [suggestion, setSuggestion] = useState('')
+    const [provideSubjectText, setProvideSubjectText]= useState('')
     const handleMaxLinksSelection = (maxLinks) => {
-        console.log("Selected maxLinks:", maxLinks);
         setSelectedMaxLinks(maxLinks);
     };
 
     const generateRows = () => {
         const rows = [];
         for (let i = 1; i <= selectedMaxLinks; i++) {
-          rows.push(
-            <Row key={i} className='align-items-center mt-5'>
-              <Col xs={12} md={4}>
-                <span>Link {i} *</span>
-              </Col>
-              <Col xs={12} md={8} className="mt-3 mt-md-0">
-                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                  <input className="input100" type="url" name={`link${i}`} placeholder={`Link ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} value={link} />
-                </div>
-              </Col>
-            </Row>
-          );
+            rows.push(
+                <Row key={i} className='align-items-center mt-5'>
+                    <Col xs={12} md={4}>
+                        <span>Link {i} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Link is required">
+                            <input className="input100" type="url" name={`link${i}`} placeholder={`Link ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setAnchorUrl(e.target.value)} value={anchorurl} />
+                        </div>
+                    </Col>
+                    <Col xs={12} md={4}>
+                        <span>Anchor {i} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Anchor is required">
+                            <input className="input100" type="url" name={`Anchor${i}`} placeholder={`Anchor ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setAnchor(e.target.value)} value={anchor} />
+                        </div>
+                    </Col>
+                </Row>
+            );
         }
         return rows;
-      };
+    };
 
     const handleShowModal = () => {
         setShowModal(true);
@@ -162,6 +177,18 @@ const BuyArticles = () => {
     useEffect(() => {
         getPublisherArticlesService()
     }, [search, typeAnchors, page])
+
+    useEffect(() => {
+        if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater")) {
+            setRequestArticleTitle('');
+            setDate('');
+            handleEditorChange('')
+            setImage('')
+            setImageSource('')
+
+        }
+    }, [articleType]);
+
 
 
 
@@ -670,6 +697,22 @@ const BuyArticles = () => {
 
 
     const addToCartArticleServices = async () => {
+        if (articleType !== translate(languageData, "RequestArticleWriting")) {
+            if (linkCount === 0) {
+                toast.error("Minimum 1 link is required in the article.");
+                return;
+            }
+
+            if (linkCount > 0 && linkCount > selectedMaxLinks) {
+                toast.error(`Too many links inside the article! Maximum allowed: ${selectedMaxLinks}`);
+                return;
+            }
+            if (!image) {
+
+                toast.error("Image not found. Please upload an image.");
+                return;
+            }
+        }
         const data = {
             domainId: selectedSubArticles?.id,
             userId: userData?.id,
@@ -686,7 +729,11 @@ const BuyArticles = () => {
             content: content,
             image: image,
             date: date,
-            links: link,
+            links: linkCount,
+            anchorurl: anchorurl,
+            suggestion: suggestion,
+            articlesubject: provideSubjectText,
+            anchor: anchor,
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
@@ -756,11 +803,61 @@ const BuyArticles = () => {
         setContent(html)
     }
 
+    const countLinksInEditor = (editorContent) => {
+        const parser = new DOMParser();
+        const parsedContent = parser.parseFromString(editorContent, 'text/html');
+        const linkCount = parsedContent.querySelectorAll('a').length;
+        return linkCount;
+    };
+
+    const linkCount = countLinksInEditor(content);
+
+    useEffect(() => {
+        if (linkCount > selectedMaxLinks) {
+            console.error('Too many links in editor!');
+        }
+    }, [linkCount]);
+
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
     const handleFiles = (file) => {
+        const previewUrl = URL.createObjectURL(file);
+        setImageSource({ previewUrl })
         setImage(file);
+        setPixabayImages([]);
     };
+
+    const handlePixabaySearch = () => {
+        const apiKey = '40830107-516989e1559b076d66f20b16e';
+        const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${pixabayUrl}&image_type=photo`;
+
+        axios.get(apiUrl)
+            .then(response => {
+                setPixabayImages(response.data.hits);
+            })
+            .catch(error => {
+                console.error('Error fetching images from Pixabay:', error);
+            });
+    };
+
+    const handlePixabayImageSelect = (selectedPixabayImage) => {
+        fetch(selectedPixabayImage.largeImageURL)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const blob = new Blob([buffer], { type: 'image/jpeg' });
+                const previewUrl = URL.createObjectURL(blob);
+                setImage(blob);
+                setImageSource({ previewUrl })
+                setPixabayImages([]);
+            })
+            .catch(error => {
+                console.error('Error fetching image:', error);
+            });
+    };
+
+
+
+
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
@@ -1442,8 +1539,8 @@ const BuyArticles = () => {
                                                             return (
 
                                                                 <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill'>
-                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px"}}>
-                                                                        <Card.Body className='text-center' style={{marginTop: "-16px"}}>
+                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px" }}>
+                                                                        <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
                                                                             <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
                                                                             <h6>{item.name} </h6>
@@ -1463,6 +1560,80 @@ const BuyArticles = () => {
                                                         })}
 
                                                     </Row>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Article Subject *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                                            <div className="form-check form-check-inline">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="checkbox"
+                                                                    id="provideSubjectCheckbox"
+                                                                    checked={provideSubject}
+                                                                    onChange={() => {
+                                                                        setProvideSubject(!provideSubject);
+                                                                        setWeProvideSubject(false); // Uncheck the other checkbox
+                                                                    }}
+                                                                />
+                                                                <label className="form-check-label" htmlFor="provideSubjectCheckbox">
+                                                                    Provide Article Subject
+                                                                </label>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                                            <div className="form-check form-check-inline">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="checkbox"
+                                                                    id="weProvideSubjectCheckbox"
+                                                                    checked={weProvideSubject}
+                                                                    onChange={() => {
+                                                                        setWeProvideSubject(!weProvideSubject);
+                                                                        setProvideSubject(false); // Uncheck the other checkbox
+                                                                    }}
+                                                                />
+                                                                <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
+                                                                    We Provide Article Subject
+                                                                </label>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+
+                                                    {/* Additional Fields based on checkbox state */}
+                                                    {provideSubject && (
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} md={4}>
+                                                                <span>Write Subject *</span>
+                                                            </Col>
+                                                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                    <input className="input100" type="text" name="title" placeholder='Write Subject' style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
+                                                                </div>
+
+                                                            </Col>
+                                                        </Row>
+                                                    )}
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Write Suggestion </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Suggestion is required">
+                                                                <textarea
+                                                                    className="input100"
+                                                                    name="suggestion"
+                                                                    placeholder='Write Suggestion'
+                                                                    style={{ paddingLeft: "15px", height: "200px" }}
+                                                                    onChange={(e) => setSuggestion(e.target.value)}
+                                                                    value={suggestion}
+                                                                    maxLength={300}
+                                                                />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    {selectedMaxLinks && generateRows()}
                                                     {/* <Row>
                                                         <Col xs={12} md={6}>
                                                             {translate(languageData, "OrderDetails")}
@@ -1545,19 +1716,57 @@ const BuyArticles = () => {
                                                                 placeholder="Write content"
                                                                 style={{ height: "300px" }}
                                                             />
-
+                                                            {linkCount > 0 && linkCount > selectedMaxLinks && (
+                                                                <Alert variant="danger">
+                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
+                                                                </Alert>
+                                                            )}
                                                         </Col>
                                                     </Row>
 
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>Image *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
-                                                        </Col>
-                                                    </Row>
-                                                    {selectedMaxLinks && generateRows()}
+                                                    <div>
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} md={4}>
+                                                                <span>Image *</span>
+                                                            </Col>
+                                                            <Col xs={12} md={1}>
+                                                                {imageSource && (
+                                                                    <div>
+                                                                        <img src={imageSource.previewUrl} alt="Selected" />
+                                                                    </div>
+                                                                )}
+                                                            </Col>
+
+                                                            <Col xs={12} md={2} className="mt-3 mt-md-0">
+                                                                <div>
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                </div>
+                                                            </Col>
+
+                                                            OR choose through pixabay
+
+                                                            <Col xs={12} md={3} className="mt-3 mt-md-0">
+                                                                <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Image is required">
+                                                                    <input
+                                                                        className="input100"
+                                                                        type="text"
+                                                                        name="pixabayImageUrl"
+                                                                        placeholder='Pixabay image'
+                                                                        style={{ paddingLeft: "13px" }}
+                                                                        onChange={(e) => setPixabayUrl(e.target.value)}
+                                                                        value={pixabayUrl}
+                                                                    />
+                                                                    <button onClick={handlePixabaySearch} className="btn btn-outline-primary d-flex justify-content-center align-items-center" style={{ width: "150px" }}><small>Search Pixabay</small></button>
+                                                                </div>
+
+                                                                {pixabayImages.map(pixabayImage => (
+                                                                    <div key={pixabayImage.id} onClick={() => handlePixabayImageSelect(pixabayImage)}>
+                                                                        <img src={pixabayImage.previewURL} alt={pixabayImage.tags} />
+                                                                    </div>
+                                                                ))}
+                                                            </Col>
+                                                        </Row>
+                                                    </div>
                                                     {/* <Row className='align-items-center mt-5'>
                                                     <Col xs={12} md={4}>
                                                         <span>{translate(languageData , "Theme")} *</span>
@@ -1570,6 +1779,104 @@ const BuyArticles = () => {
                                                     
                                                     </Col>
                                                 </Row> */}
+
+
+                                                </div>
+
+                                            }
+
+                                            {articleType === translate(languageData, "selectLater") &&
+                                                <div>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Title *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>Publication date *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='mt-4 pb-8'>
+                                                        <Col xs={12} md={4} className='mt-2'>
+                                                            <span>{translate(languageData, "sidebarContent")}</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <ReactQuill
+                                                                theme="snow"
+                                                                onChange={handleEditorChange}
+                                                                value={content}
+                                                                modules={modules}
+                                                                formats={formats}
+                                                                bounds={'.app'}
+                                                                placeholder="Write content"
+                                                                style={{ height: "300px" }}
+                                                            />
+                                                            {linkCount > 0 && linkCount > selectedMaxLinks && (
+                                                                <Alert variant="danger">
+                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
+                                                                </Alert>
+                                                            )}
+                                                        </Col>
+                                                    </Row>
+
+                                                    <div>
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} md={4}>
+                                                                <span>Image *</span>
+                                                            </Col>
+                                                            <Col xs={12} md={1}>
+                                                                {imageSource && (
+                                                                    <div>
+                                                                        <img src={imageSource.previewUrl} alt="Selected" />
+                                                                    </div>
+                                                                )}
+                                                            </Col>
+
+                                                            <Col xs={12} md={2} className="mt-3 mt-md-0">
+                                                                <div>
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                </div>
+                                                            </Col>
+
+                                                            OR choose through pixabay
+
+                                                            <Col xs={12} md={3} className="mt-3 mt-md-0">
+                                                                <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Image is required">
+                                                                    <input
+                                                                        className="input100"
+                                                                        type="text"
+                                                                        name="pixabayImageUrl"
+                                                                        placeholder='Pixabay image'
+                                                                        style={{ paddingLeft: "13px" }}
+                                                                        onChange={(e) => setPixabayUrl(e.target.value)}
+                                                                        value={pixabayUrl}
+                                                                    />
+                                                                    <button onClick={handlePixabaySearch} className="btn btn-outline-primary d-flex justify-content-center align-items-center" style={{ width: "150px" }}><small>Search Pixabay</small></button>
+                                                                </div>
+
+                                                                {pixabayImages.map(pixabayImage => (
+                                                                    <div key={pixabayImage.id} onClick={() => handlePixabayImageSelect(pixabayImage)}>
+                                                                        <img src={pixabayImage.previewURL} alt={pixabayImage.tags} />
+                                                                    </div>
+                                                                ))}
+                                                            </Col>
+                                                        </Row>
+                                                    </div>
 
 
                                                 </div>
