@@ -100,7 +100,7 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                <img src={portalArticleDetail[0]?.image}/>
+                                            <img src={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} crossOrigin="anonymous" />
                                             </div>
 
                                         </Col>

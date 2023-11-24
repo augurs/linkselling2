@@ -67,10 +67,10 @@ const Home = () => {
     }
   };
 
-  const removeNotification = (index) => {
-    const updatedToDoList = [...toDoList.slice(0, index), ...toDoList.slice(index + 1)];
-    setToDoList(updatedToDoList);
-  };
+  // const removeNotification = (index) => {
+  //   const updatedToDoList = [...toDoList.slice(0, index), ...toDoList.slice(index + 1)];
+  //   setToDoList(updatedToDoList);
+  // };
   //*api 1st section end
 
   //api 2nd section start
@@ -366,9 +366,10 @@ const Home = () => {
                             <small>{translate(languageData, "Action")}: {getActionText(data?.status)}</small>
                           </div>
                           <div>
+                            <Link to={`/resubmitarticle/${data?.id}`}>
                             <Button className="btn btn-primary mt-1">
                               <small>{getButtonText(data?.status)}</small>
-                            </Button>
+                            </Button></Link>
                           </div>
                         </div>
                       </Card>

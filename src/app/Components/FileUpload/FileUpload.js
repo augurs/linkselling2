@@ -2,13 +2,22 @@ import React, { useRef, useState } from 'react';
 import "./fileupload.css"
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
-const FileUpload = ({ allowedFileExtensions, getData, name }) => {
+import { useEffect } from 'react';
+const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
 
     const fileInputRef = useRef(null);
 
     const { languageData  } = useLanguage();
+
+    useEffect(() => {
+        if(selectedImage){
+            setUploadedFilesName(selectedImage)
+        }
+      
+    }, [selectedImage])
+    
 
     const handleDragEnter = (e) => {
         e.preventDefault();

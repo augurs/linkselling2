@@ -72,12 +72,13 @@ const AddArticle = () => {
     const resubmitArticleServices = async () => {
         const res = await resubmitarticle(id)
         if (res.success === true) {
+            const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
                 ...formValues,
                 id: res.data[0].id,
                 title: res.data[0].title,
                 link: res.data[0].max_links,
-                image: res.data[0].image,
+                image: dynamicImageUrl,
                 comment: res.data[0].comment,
                 content: res.data[0].content,
                 date: formatDate(res.data[0].created_at)
@@ -85,7 +86,6 @@ const AddArticle = () => {
             });
         }
     }
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -196,9 +196,9 @@ const AddArticle = () => {
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <textarea className="input100" type="text" name="comment" style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.comment} />
+                                    <textarea className="input100" type="text" name="comment" style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.comment} />
                                 </div>
-                                <div className='text-danger text-center mt-1'>{formErrors.comment}</div>
+                                <div className='text-danger text-center mt-1'>{formErrors?.comment}</div>
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
@@ -235,7 +235,7 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "image")}</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" value={formValues?.image} /></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" selectedImage = {formValues?.image} /></div>
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>

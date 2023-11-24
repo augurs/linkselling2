@@ -107,12 +107,25 @@ const BuyArticles = () => {
     const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
     const [provideSubject, setProvideSubject] = useState(false);
     const [weProvideSubject, setWeProvideSubject] = useState(false);
-    const [anchorurl, setAnchorUrl] = useState('')
-    const [anchor, setAnchor] = useState('')
+    const [linkValues, setLinkValues] = useState([]);
+    const [anchorValues, setAnchorValues] = useState([]);
     const [suggestion, setSuggestion] = useState('')
-    const [provideSubjectText, setProvideSubjectText]= useState('')
+    const [provideSubjectText, setProvideSubjectText] = useState('')
+
     const handleMaxLinksSelection = (maxLinks) => {
         setSelectedMaxLinks(maxLinks);
+    };
+
+    const handleLinkChange = (index, value) => {
+        const newLinkValues = [...linkValues];
+        newLinkValues[index] = value;
+        setLinkValues(newLinkValues);
+    };
+
+    const handleAnchorChange = (index, value) => {
+        const newAnchorValues = [...anchorValues];
+        newAnchorValues[index] = value;
+        setAnchorValues(newAnchorValues);
     };
 
     const generateRows = () => {
@@ -121,19 +134,35 @@ const BuyArticles = () => {
             rows.push(
                 <Row key={i} className='align-items-center mt-5'>
                     <Col xs={12} md={4}>
-                        <span>Link {i} *</span>
+                        <span>{translate(languageData, "link")} {i} *</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Link is required">
-                            <input className="input100" type="url" name={`link${i}`} placeholder={`Link ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setAnchorUrl(e.target.value)} value={anchorurl} />
+                            <input
+                                className="input100"
+                                type="url"
+                                name={`link${i}`}
+                                placeholder={`${translate(languageData, "link")} ${i}`}
+                                style={{ paddingLeft: "15px" }}
+                                onChange={(e) => handleLinkChange(i - 1, e.target.value)}
+                                value={linkValues[i - 1] || ''}
+                            />
                         </div>
                     </Col>
                     <Col xs={12} md={4}>
-                        <span>Anchor {i} *</span>
+                        <span>{translate(languageData, "requestanchor")} {i} *</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Anchor is required">
-                            <input className="input100" type="url" name={`Anchor${i}`} placeholder={`Anchor ${i}`} style={{ paddingLeft: "15px" }} onChange={(e) => setAnchor(e.target.value)} value={anchor} />
+                            <input
+                                className="input100"
+                                type="url"
+                                name={`Anchor${i}`}
+                                placeholder={`${translate(languageData, "requestanchor")} ${i}`}
+                                style={{ paddingLeft: "15px" }}
+                                onChange={(e) => handleAnchorChange(i - 1, e.target.value)}
+                                value={anchorValues[i - 1] || ''}
+                            />
                         </div>
                     </Col>
                 </Row>
@@ -698,21 +727,26 @@ const BuyArticles = () => {
 
     const addToCartArticleServices = async () => {
         if (articleType !== translate(languageData, "RequestArticleWriting")) {
+            if (!requestArticleTitle) {
+                toast.error(translate(languageData, "TitleofArticleField"));
+                return;
+            }
             if (linkCount === 0) {
-                toast.error("Minimum 1 link is required in the article.");
+                toast.error(translate(languageData, "Minimum1link"));
                 return;
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast.error(`Too many links inside the article! Maximum allowed: ${selectedMaxLinks}`);
+                toast.error(translate(languageData, "Toomanylinks") `: ${selectedMaxLinks}`);
                 return;
             }
             if (!image) {
 
-                toast.error("Image not found. Please upload an image.");
+                toast.error(translate(languageData, "ImageField"));
                 return;
             }
         }
+        const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
         const data = {
             domainId: selectedSubArticles?.id,
             userId: userData?.id,
@@ -730,10 +764,10 @@ const BuyArticles = () => {
             image: image,
             date: date,
             links: linkCount,
-            anchorurl: anchorurl,
+            anchorurl: linkValues,
             suggestion: suggestion,
-            articlesubject: provideSubjectText,
-            anchor: anchor,
+            articlesubject: articlesubjectValue,
+            anchor: anchorValues,
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
@@ -1167,7 +1201,7 @@ const BuyArticles = () => {
                                             <div className="d-flex align-items-center">
                                                 <MdAnchor size={20} className="text-primary" />
                                                 <span className="d-flex flex-grow-1 justify-content-center text-primary">
-                                                    {selected.length > 0 ? selected.join(', ') : translate(languageData, "Anchor Types")}
+                                                    {selected.length > 0 ? selected.join(', ') : translate(languageData, "anchorTypes")}
                                                 </span>
                                             </div>
                                         )}
@@ -1182,7 +1216,7 @@ const BuyArticles = () => {
                                         )}
                                     >
                                         <MenuItem value="" disabled>
-                                            {translate(languageData, "Select Anchor Types")}
+                                            {translate(languageData, "selectAnchorTypes")}
                                         </MenuItem>
                                         {anchorTypes.map((name, index) => (
                                             <MenuItem key={index} value={name.type} className='check_list'>
@@ -1562,7 +1596,7 @@ const BuyArticles = () => {
                                                     </Row>
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Article Subject *</span>
+                                                            <span>{translate(languageData, "articleSubject")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={4} className="mt-3 mt-md-0">
                                                             <div className="form-check form-check-inline">
@@ -1577,7 +1611,7 @@ const BuyArticles = () => {
                                                                     }}
                                                                 />
                                                                 <label className="form-check-label" htmlFor="provideSubjectCheckbox">
-                                                                    Provide Article Subject
+                                                                    {translate(languageData, "provideArticleSubject")}
                                                                 </label>
                                                             </div>
                                                         </Col>
@@ -1594,7 +1628,7 @@ const BuyArticles = () => {
                                                                     }}
                                                                 />
                                                                 <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
-                                                                    We Provide Article Subject
+                                                                    {translate(languageData, "weProvideArticleSubject")}
                                                                 </label>
                                                             </div>
                                                         </Col>
@@ -1604,11 +1638,11 @@ const BuyArticles = () => {
                                                     {provideSubject && (
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
-                                                                <span>Write Subject *</span>
+                                                                <span>{translate(languageData, "writeSubject")} *</span>
                                                             </Col>
                                                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                    <input className="input100" type="text" name="title" placeholder='Write Subject' style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
+                                                                    <input className="input100" type="text" name="title" placeholder={translate(languageData, "writeSubject")} style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
                                                                 </div>
 
                                                             </Col>
@@ -1616,14 +1650,14 @@ const BuyArticles = () => {
                                                     )}
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Write Suggestion </span>
+                                                            <span>{translate(languageData, "writeSuggestion")} </span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Suggestion is required">
                                                                 <textarea
                                                                     className="input100"
                                                                     name="suggestion"
-                                                                    placeholder='Write Suggestion'
+                                                                    placeholder={translate(languageData, "writeSuggestion")}
                                                                     style={{ paddingLeft: "15px", height: "200px" }}
                                                                     onChange={(e) => setSuggestion(e.target.value)}
                                                                     value={suggestion}
@@ -1680,11 +1714,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Title *</span>
+                                                            <span>{translate(languageData, "artilstTitle")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                                <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
                                                             </div>
 
                                                         </Col>
@@ -1692,11 +1726,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Publication date *</span>
+                                                            <span>{translate(languageData, "PublicationDate")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                                <input className="input100" type="date" name="date" placeholder={translate(languageData, "PublicationDate")} style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
                                                             </div>
 
                                                         </Col>
@@ -1727,7 +1761,7 @@ const BuyArticles = () => {
                                                     <div>
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
-                                                                <span>Image *</span>
+                                                                <span>{translate(languageData, "image")} *</span>
                                                             </Col>
                                                             <Col xs={12} md={1}>
                                                                 {imageSource && (
@@ -1743,20 +1777,23 @@ const BuyArticles = () => {
                                                                 </div>
                                                             </Col>
 
-                                                            OR choose through pixabay
+                                                            {translate(languageData, "orselectviapixabay")}
 
                                                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                                                <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Image is required">
+                                                                <div className="input-group mb-0">
+                                                                    <span className="input-group-text">
+                                                                        <Button onClick={handlePixabaySearch} className="btn btn-outline-primary" style={{ width: "30px", height: "30px", padding: "0" }}>
+                                                                            <FaSearch />
+                                                                        </Button>
+                                                                    </span>
                                                                     <input
-                                                                        className="input100"
+                                                                        className="form-control"
                                                                         type="text"
                                                                         name="pixabayImageUrl"
-                                                                        placeholder='Pixabay image'
-                                                                        style={{ paddingLeft: "13px" }}
+                                                                        placeholder={translate(languageData, "pixabayImage")}
                                                                         onChange={(e) => setPixabayUrl(e.target.value)}
                                                                         value={pixabayUrl}
                                                                     />
-                                                                    <button onClick={handlePixabaySearch} className="btn btn-outline-primary d-flex justify-content-center align-items-center" style={{ width: "150px" }}><small>Search Pixabay</small></button>
                                                                 </div>
 
                                                                 {pixabayImages.map(pixabayImage => (
@@ -1790,11 +1827,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Title *</span>
+                                                            <span>{translate(languageData, "artilstTitle")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                                <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
                                                             </div>
 
                                                         </Col>
@@ -1802,11 +1839,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Publication date *</span>
+                                                            <span>{translate(languageData, "PublicationDate")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                                <input className="input100" type="date" name="date" placeholder={translate(languageData, "PublicationDate")} style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
                                                             </div>
 
                                                         </Col>
@@ -1837,7 +1874,7 @@ const BuyArticles = () => {
                                                     <div>
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
-                                                                <span>Image *</span>
+                                                                <span>{translate(languageData, "image")} *</span>
                                                             </Col>
                                                             <Col xs={12} md={1}>
                                                                 {imageSource && (
@@ -1853,20 +1890,23 @@ const BuyArticles = () => {
                                                                 </div>
                                                             </Col>
 
-                                                            OR choose through pixabay
+                                                            {translate(languageData, "orselectviapixabay")}
 
                                                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                                                <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Image is required">
+                                                                <div className="input-group mb-0">
+                                                                    <span className="input-group-text">
+                                                                        <Button onClick={handlePixabaySearch} className="btn btn-outline-primary" style={{ width: "30px", height: "30px", padding: "0" }}>
+                                                                            <FaSearch />
+                                                                        </Button>
+                                                                    </span>
                                                                     <input
-                                                                        className="input100"
+                                                                        className="form-control"
                                                                         type="text"
                                                                         name="pixabayImageUrl"
-                                                                        placeholder='Pixabay image'
-                                                                        style={{ paddingLeft: "13px" }}
+                                                                        placeholder={translate(languageData, "pixabayImage")}
                                                                         onChange={(e) => setPixabayUrl(e.target.value)}
                                                                         value={pixabayUrl}
                                                                     />
-                                                                    <button onClick={handlePixabaySearch} className="btn btn-outline-primary d-flex justify-content-center align-items-center" style={{ width: "150px" }}><small>Search Pixabay</small></button>
                                                                 </div>
 
                                                                 {pixabayImages.map(pixabayImage => (

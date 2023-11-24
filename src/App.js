@@ -6,6 +6,9 @@ import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
 import Portalarticledetails from './app/pages/auth/portalarticledetails.js'
 import Portalarticleupdate from './app/pages/auth/portallinkupdatewithid.js'
+import Requestarticledetails from './app/pages/auth/requestarticledetails.js'
+import Requestarticleupdate from './app/pages/auth/requestarticlewithid.js'
+import Uploadimagerequestarticle from './app/pages/auth/uploadrequestarticleimage.js'
 import { useEffect } from "react";
 import Home from "./app/pages/home.js";
 import { ToastContainer } from "react-toastify";
@@ -107,6 +110,11 @@ function App() {
     },
     { path: '/portalarticledetails/:id', element: <Portalarticleupdate /> },
     {
+      path: '/requestarticledetail/requestarticle/:id/',
+      element: <Requestarticledetails />
+    },
+    { path: '/requestarticledetails/requestarticle/:id', element: <Requestarticleupdate /> },
+    {
       path: "/",
       element: <Layout />,
       children: [
@@ -128,6 +136,7 @@ function App() {
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
         { path: 'DomainDetails', element: <Domaindetails /> },
+        { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {
           path: '/resubmitarticle/:id',
           element: <Resubmnittedarticle />

@@ -17,6 +17,19 @@ export const resubmitarticle = (id) => {
 };
 
 
+export const uploadimagereqarticle = (id, imgid) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${id}/${imgid}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
 export const updaterResubmitarticle = (data, id) => {
 
   const formData = new FormData();
@@ -39,10 +52,38 @@ export const updaterResubmitarticle = (data, id) => {
     });
 };
 
+export const updaterimagrequestedarticle = (data, id) => {
+
+  const formData = new FormData();
+  formData.append("image", data.image);
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-image-article/${id}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
 
 export const portalArticleDetails = (id) => {
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/newarticle/${id}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const requestArticleDetails = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/requestarticle/${id}`)
     .then((res) => {
       return res?.data;
     })
@@ -53,10 +94,12 @@ export const portalArticleDetails = (id) => {
 };
 
 
-export const portallinksubmit = (link, id) => {
+
+export const portallinksubmit = (link, id, requestarticle) => {
 
   const formData = new FormData();
   formData.append("link", link);
+  formData.append("type", requestarticle);
 
 
   return axios
