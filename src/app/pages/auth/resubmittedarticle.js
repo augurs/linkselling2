@@ -34,6 +34,7 @@ const AddArticle = () => {
     const [lead, setLead] = useState('');
     const [fileName, setFileName] = useState('');
     const [resubmitArticles, setResubmitArticle] = useState([])
+    const [displayedImage, setDisplayedImage] = useState('');
     const { languageData } = useLanguage();
     const navigate = useNavigate();
     const content = formValues.content;
@@ -55,6 +56,17 @@ const AddArticle = () => {
         setFormValues({ ...formValues, [name]: file });
     }
 
+    useEffect(() => {
+        if (formValues.image instanceof File) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setDisplayedImage(reader.result);
+            };
+            reader.readAsDataURL(formValues.image);
+        } else {
+            setDisplayedImage(formValues.image);
+        }
+    }, [formValues.image]);
 
     const fieldTranslationMap = {
         content: translate(languageData, "ContentField"),
@@ -136,9 +148,21 @@ const AddArticle = () => {
         'link', 'image'
     ];
 
+
+
     const updateResubmitArticleServices = async () => {
         setLoading(true)
-        const res = await updaterResubmitarticle(formValues, 1)
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const linkCount = (editor.match(urlRegex) || []).length;
+        if (linkCount > 0 && linkCount > formValues?.link) {
+            toast.error(translate(languageData, "Toomanylinks"));
+            return;
+        }
+        if (linkCount === 0) {
+            toast.error(translate(languageData, "Minimum1link"));
+            return;
+        }
+        const res = await updaterResubmitarticle(formValues, formValues?.id)
         if (res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
@@ -234,17 +258,20 @@ const AddArticle = () => {
                             <Col xs={12} md={4}>
                                 <span>{translate(languageData, "image")}</span>
                             </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" selectedImage = {formValues?.image} /></div>
+                            <Col xs={12} md={2} className="mt-3 mt-md-0">
+                                <div><img src={displayedImage} alt="Displayed" /></div>
+                            </Col>
+                            <Col xs={12} md={6} className="mt-3 mt-md-0">
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "link")} *</span>
+                                <span>{translate(languageData, "maxLinks")} *</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <input className="input100" type="url" name="link" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} value={formValues?.link} onChange={(e) => handleChange(e)} />
+                                {formValues?.link} 
                                 </div>
 
                             </Col>
@@ -252,7 +279,7 @@ const AddArticle = () => {
                     </Card.Body>
 
                     <div className='d-flex mb-5 mt-5'>
-                        <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => validate(formValues) ? updateResubmitArticleServices() : ""}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "submit")} </Button>
+                        <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => updateResubmitArticleServices()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "submit")} </Button>
                     </div>
                 </Card>
             </div>

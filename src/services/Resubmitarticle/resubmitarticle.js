@@ -35,7 +35,9 @@ export const updaterResubmitarticle = (data, id) => {
   const formData = new FormData();
   formData.append("title", data.title);
   formData.append("content", data.content);
-  formData.append("image", data.image);
+  if (data.image instanceof File) {
+    formData.append("image", data.image);
+  }
   formData.append("publication_date", data.date);
   formData.append("max_links", data.link);
   formData.append("comment", data.comment);
@@ -55,7 +57,11 @@ export const updaterResubmitarticle = (data, id) => {
 export const updaterimagrequestedarticle = (data, id) => {
 
   const formData = new FormData();
-  formData.append("image", data.image);
+  if (data.image instanceof File) {
+    formData.append("image", data.image);
+  } else {
+    formData.append("image", "");
+  }
 
 
   return axios

@@ -105,7 +105,7 @@ const BuyArticles = () => {
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
     const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
-    const [provideSubject, setProvideSubject] = useState(false);
+    const [provideSubject, setProvideSubject] = useState(true);
     const [weProvideSubject, setWeProvideSubject] = useState(false);
     const [linkValues, setLinkValues] = useState([]);
     const [anchorValues, setAnchorValues] = useState([]);
@@ -726,7 +726,7 @@ const BuyArticles = () => {
 
 
     const addToCartArticleServices = async () => {
-        if (articleType !== translate(languageData, "RequestArticleWriting")) {
+        if (articleType === translate(languageData, "AddNewArticle")) {
             if (!requestArticleTitle) {
                 toast.error(translate(languageData, "TitleofArticleField"));
                 return;
@@ -737,15 +737,25 @@ const BuyArticles = () => {
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast.error(translate(languageData, "Toomanylinks") `: ${selectedMaxLinks}`);
+                toast.error(translate(languageData, "Toomanylinks"));
                 return;
             }
             if (!image) {
-
                 toast.error(translate(languageData, "ImageField"));
                 return;
             }
         }
+        if (articleType === translate(languageData, "RequestArticleWriting")) {
+            if (linkValues == 0) {
+                toast.error(translate(languageData, "Minimum1link"));
+                return;
+            }
+            if (anchorValues == 0) {
+                toast.error(translate(languageData, "Min1anchor"));
+                return;
+            }
+        }
+
         const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
         const data = {
             domainId: selectedSubArticles?.id,
@@ -1602,12 +1612,12 @@ const BuyArticles = () => {
                                                             <div className="form-check form-check-inline">
                                                                 <input
                                                                     className="form-check-input"
-                                                                    type="checkbox"
+                                                                    type="radio"
                                                                     id="provideSubjectCheckbox"
                                                                     checked={provideSubject}
                                                                     onChange={() => {
                                                                         setProvideSubject(!provideSubject);
-                                                                        setWeProvideSubject(false); // Uncheck the other checkbox
+                                                                        setWeProvideSubject(false);
                                                                     }}
                                                                 />
                                                                 <label className="form-check-label" htmlFor="provideSubjectCheckbox">
@@ -1619,7 +1629,7 @@ const BuyArticles = () => {
                                                             <div className="form-check form-check-inline">
                                                                 <input
                                                                     className="form-check-input"
-                                                                    type="checkbox"
+                                                                    type="radio"
                                                                     id="weProvideSubjectCheckbox"
                                                                     checked={weProvideSubject}
                                                                     onChange={() => {
@@ -1822,106 +1832,7 @@ const BuyArticles = () => {
 
                                             }
 
-                                            {articleType === translate(languageData, "selectLater") &&
-                                                <div>
 
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "artilstTitle")} *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
-                                                            </div>
-
-                                                        </Col>
-                                                    </Row>
-
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "PublicationDate")} *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="date" name="date" placeholder={translate(languageData, "PublicationDate")} style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
-                                                            </div>
-
-                                                        </Col>
-                                                    </Row>
-                                                    <Row className='mt-4 pb-8'>
-                                                        <Col xs={12} md={4} className='mt-2'>
-                                                            <span>{translate(languageData, "sidebarContent")}</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <ReactQuill
-                                                                theme="snow"
-                                                                onChange={handleEditorChange}
-                                                                value={content}
-                                                                modules={modules}
-                                                                formats={formats}
-                                                                bounds={'.app'}
-                                                                placeholder="Write content"
-                                                                style={{ height: "300px" }}
-                                                            />
-                                                            {linkCount > 0 && linkCount > selectedMaxLinks && (
-                                                                <Alert variant="danger">
-                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
-                                                                </Alert>
-                                                            )}
-                                                        </Col>
-                                                    </Row>
-
-                                                    <div>
-                                                        <Row className='align-items-center mt-5'>
-                                                            <Col xs={12} md={4}>
-                                                                <span>{translate(languageData, "image")} *</span>
-                                                            </Col>
-                                                            <Col xs={12} md={1}>
-                                                                {imageSource && (
-                                                                    <div>
-                                                                        <img src={imageSource.previewUrl} alt="Selected" />
-                                                                    </div>
-                                                                )}
-                                                            </Col>
-
-                                                            <Col xs={12} md={2} className="mt-3 mt-md-0">
-                                                                <div>
-                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
-                                                                </div>
-                                                            </Col>
-
-                                                            {translate(languageData, "orselectviapixabay")}
-
-                                                            <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                                                <div className="input-group mb-0">
-                                                                    <span className="input-group-text">
-                                                                        <Button onClick={handlePixabaySearch} className="btn btn-outline-primary" style={{ width: "30px", height: "30px", padding: "0" }}>
-                                                                            <FaSearch />
-                                                                        </Button>
-                                                                    </span>
-                                                                    <input
-                                                                        className="form-control"
-                                                                        type="text"
-                                                                        name="pixabayImageUrl"
-                                                                        placeholder={translate(languageData, "pixabayImage")}
-                                                                        onChange={(e) => setPixabayUrl(e.target.value)}
-                                                                        value={pixabayUrl}
-                                                                    />
-                                                                </div>
-
-                                                                {pixabayImages.map(pixabayImage => (
-                                                                    <div key={pixabayImage.id} onClick={() => handlePixabayImageSelect(pixabayImage)}>
-                                                                        <img src={pixabayImage.previewURL} alt={pixabayImage.tags} />
-                                                                    </div>
-                                                                ))}
-                                                            </Col>
-                                                        </Row>
-                                                    </div>
-
-
-                                                </div>
-
-                                            }
 
                                             <div>
                                                 {/* <p className="fw-semibold mt-5">{translate(languageData, "TrafficGuarantee")}</p>

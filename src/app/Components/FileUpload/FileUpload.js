@@ -12,11 +12,14 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) =>
     const { languageData  } = useLanguage();
 
     useEffect(() => {
-        if(selectedImage){
-            setUploadedFilesName(selectedImage)
+        if (selectedImage) {
+            if (selectedImage instanceof File) {
+                setUploadedFilesName(selectedImage.name);
+            } else {
+                setUploadedFilesName(selectedImage);
+            }
         }
-      
-    }, [selectedImage])
+    }, [selectedImage]);
     
 
     const handleDragEnter = (e) => {

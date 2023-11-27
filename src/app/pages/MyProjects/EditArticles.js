@@ -52,8 +52,8 @@ const EditProjects = () => {
         setUpdateLoader(true)
         const res = await editProject(formValues, id)
         if (res.success === true && res.response === 1) {
-            toast(res.message, {
-                position: "top-right",
+            toast(translate(languageData, "Projectaddedsucessfully"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
