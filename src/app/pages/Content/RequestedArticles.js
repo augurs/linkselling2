@@ -167,45 +167,49 @@ const RequestedArticles = () => {
 
                 switch (row.status) {
                     case "Pending":
-                      buttonClass = "btn btn-warning btn-pill";
-                      buttonText = <small>{translate(languageData, "Pending")}</small>;
-                      break;
+                        buttonClass = "btn btn-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "pending")}</small>;
+                        break;
                     case "AssignedToWriter":
-                      buttonClass = "btn btn-info btn-pill";
-                      buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
-                      break;
+                        buttonClass = "btn btn-info btn-pill";
+                        buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+                        break;
                     case "Completed":
-                      buttonClass = "btn btn-success btn-pill";
-                      buttonText = <small>{translate(languageData, "Completed")}</small>;
-                      break;
-                      case "RequestChanges":
-                      buttonClass = "btn btn-warning btn-pill";
-                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
-                      break;
+                        buttonClass = "btn btn-success btn-pill";
+                        buttonText = <small>{translate(languageData, "Completed")}</small>;
+                        break;
+                    case "RequestChanges":
+                        buttonClass = "btn btn-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                        break;
                     case "Rejected":
-                      buttonClass = "btn btn-danger btn-pill";
-                      buttonText = <small>{translate(languageData, "Rejected")}</small>;
-                      break;
+                        buttonClass = "btn btn-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "Rejected")}</small>;
+                        break;
                     case "Accepted":
-                      buttonClass = "btn btn-secondary btn-pill";
-                      buttonText = <small>{translate(languageData, "Accepted")}</small>;
-                      break;
+                        buttonClass = "btn btn-secondary btn-pill";
+                        buttonText = <small>{translate(languageData, "Accepted")}</small>;
+                        break;
                     case "CustomerReview":
-                      buttonClass = "btn btn-warning btn-pill";
-                      buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
-                      break;
+                        buttonClass = "btn btn-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                        break;
                     case "RejectedLink":
-                      buttonClass = "btn btn-danger btn-pill";
-                      buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
-                      break;
+                        buttonClass = "btn btn-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+                        break;
                     case "Published":
-                      buttonClass = "btn btn-primary btn-pill";
-                      buttonText = <small>{translate(languageData, "Published")}</small>;
-                      break;
+                        buttonClass = "btn btn-primary btn-pill";
+                        buttonText = <small>{translate(languageData, "Published")}</small>;
+                        break;
+                    case "PendingForAssing":
+                        buttonClass = "btn btn-secondary btn-pill";
+                        buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
+                        break;
                     default:
-                      buttonClass = "btn btn-primary btn-pill";
-                      buttonText = row.status;
-                  }
+                        buttonClass = "btn btn-primary btn-pill";
+                        buttonText = row.status;
+                }
 
                 return (
                     <span className={`${buttonClass} d-flex justify-content-center`}>

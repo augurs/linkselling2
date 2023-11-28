@@ -277,7 +277,7 @@ const Home = () => {
         switch (row.status) {
           case "Pending":
             buttonClass = "btn btn-outline-warning btn-pill";
-            buttonText = <small>{translate(languageData, "Pending")}</small>;
+            buttonText = <small>{translate(languageData, "pending")}</small>;
             break;
           case "AssignedToWriter":
             buttonClass = "btn btn-outline-info btn-pill";
@@ -310,6 +310,10 @@ const Home = () => {
           case "Published":
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
+            break;
+            case "PendingForAssing":
+            buttonClass = "btn btn-outline-warning btn-pill";
+            buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
           default:
             

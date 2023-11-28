@@ -35,11 +35,11 @@ export const updaterResubmitarticle = (data, id) => {
   const formData = new FormData();
   formData.append("title", data.title);
   formData.append("content", data.content);
-  if (data.image instanceof File) {
+  if (data.image && (data.image instanceof File || data.image instanceof Blob)) {
     formData.append("image", data.image);
-  }
+}
   formData.append("publication_date", data.date);
-  formData.append("max_links", data.link);
+
   formData.append("comment", data.comment);
 
 
@@ -57,9 +57,9 @@ export const updaterResubmitarticle = (data, id) => {
 export const updaterimagrequestedarticle = (data, id) => {
 
   const formData = new FormData();
-  if (data.image instanceof File) {
+  if (data.image && (data.image instanceof File || data.image instanceof Blob)) {
     formData.append("image", data.image);
-  } else {
+} else {
     formData.append("image", "");
   }
 

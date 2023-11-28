@@ -723,7 +723,14 @@ const BuyArticles = () => {
     }
 
 
-
+    const isValidUrl = (url) => {
+        try {
+          new URL(url);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      };
 
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
@@ -754,6 +761,10 @@ const BuyArticles = () => {
                 toast.error(translate(languageData, "Min1anchor"));
                 return;
             }
+            if (linkValues.some((link) => !isValidUrl(link))) {
+                toast.error(translate(languageData, "InvalidLink"));
+                return;
+              }
         }
 
         const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
@@ -1606,7 +1617,7 @@ const BuyArticles = () => {
                                                     </Row>
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "articleSubject")} *</span>
+                                                            <span>{translate(languageData, "articleSubject")} </span>
                                                         </Col>
                                                         <Col xs={12} md={4} className="mt-3 mt-md-0">
                                                             <div className="form-check form-check-inline">
@@ -1648,7 +1659,7 @@ const BuyArticles = () => {
                                                     {provideSubject && (
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
-                                                                <span>{translate(languageData, "writeSubject")} *</span>
+                                                                <span>{translate(languageData, "writeSubject")} </span>
                                                             </Col>
                                                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
