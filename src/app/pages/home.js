@@ -315,6 +315,10 @@ const Home = () => {
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
+            case "Accept":
+              buttonClass = "btn btn-outline-dark btn-pill";
+              buttonText = <small>{translate(languageData, "Accept")}</small>;
+              break;
           default:
             
             buttonText = row.status;
@@ -367,7 +371,7 @@ const Home = () => {
                         <div className='d-flex align-items-center justify-content-between p-1'>
                           <div>
                             <h6 style={{marginBottom: "1px"}}>{data?.title}</h6>
-                            <small>{translate(languageData, "Action")}: {getActionText(data?.status)}</small>
+                            <small className='d-flex'><div  className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
                           </div>
                           <div>
                             <Link to={`/resubmitarticle/${data?.id}`}>

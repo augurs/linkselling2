@@ -167,44 +167,48 @@ const RequestedArticles = () => {
 
                 switch (row.status) {
                     case "Pending":
-                        buttonClass = "btn btn-warning btn-pill";
+                        buttonClass = "btn btn-outline-warning btn-pill";
                         buttonText = <small>{translate(languageData, "pending")}</small>;
                         break;
                     case "AssignedToWriter":
-                        buttonClass = "btn btn-info btn-pill";
+                        buttonClass = "btn btn-outline-info btn-pill";
                         buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
                         break;
                     case "Completed":
-                        buttonClass = "btn btn-success btn-pill";
+                        buttonClass = "btn btn-outline-success btn-pill";
                         buttonText = <small>{translate(languageData, "Completed")}</small>;
                         break;
                     case "RequestChanges":
-                        buttonClass = "btn btn-warning btn-pill";
+                        buttonClass = "btn btn-outline-warning btn-pill";
                         buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
                         break;
                     case "Rejected":
-                        buttonClass = "btn btn-danger btn-pill";
+                        buttonClass = "btn btn-outline-danger btn-pill";
                         buttonText = <small>{translate(languageData, "Rejected")}</small>;
                         break;
                     case "Accepted":
-                        buttonClass = "btn btn-secondary btn-pill";
+                        buttonClass = "btn btn-outline-secondary btn-pill";
                         buttonText = <small>{translate(languageData, "Accepted")}</small>;
                         break;
                     case "CustomerReview":
-                        buttonClass = "btn btn-warning btn-pill";
+                        buttonClass = "btn btn-outline-warning btn-pill";
                         buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
                         break;
                     case "RejectedLink":
-                        buttonClass = "btn btn-danger btn-pill";
+                        buttonClass = "btn btn-outline-danger btn-pill";
                         buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
                         break;
                     case "Published":
-                        buttonClass = "btn btn-primary btn-pill";
+                        buttonClass = "btn btn-outline-primary btn-pill";
                         buttonText = <small>{translate(languageData, "Published")}</small>;
                         break;
                     case "PendingForAssing":
-                        buttonClass = "btn btn-secondary btn-pill";
+                        buttonClass = "btn btn-outline-secondary btn-pill";
                         buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
+                        break;
+                    case "Accept":
+                        buttonClass = "btn btn-outline-dark btn-pill";
+                        buttonText = <small>{translate(languageData, "Accept")}</small>;
                         break;
                     default:
                         buttonClass = "btn btn-primary btn-pill";
@@ -212,7 +216,7 @@ const RequestedArticles = () => {
                 }
 
                 return (
-                    <span className={`${buttonClass} d-flex justify-content-center`}>
+                    <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '140px', minHeight: "35px" }}>
                         {buttonText}
                     </span>
                 );

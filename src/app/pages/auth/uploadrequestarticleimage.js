@@ -2,17 +2,14 @@ import React from 'react'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import FileUpload from '../../Components/FileUpload/FileUpload'
 import { useState } from 'react'
-import { FaInfoCircle } from 'react-icons/fa';
-import { addArticle } from '../../../services/articleServices/articleServices';
 import { ToastContainer, toast } from 'react-toastify';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import globalLoader from '../../../assets/images/loader.svg'
-import ReactQuill from 'react-quill';
 import { translate, formatDate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import { uploadimagereqarticle, updaterimagrequestedarticle } from '../../../services/Resubmitarticle/resubmitarticle';
 import { useEffect } from 'react';
-import LanguageSelect from '../../Components/Language/languageSelect';
+import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 
 const AddArticle = () => {
 
@@ -22,8 +19,7 @@ const AddArticle = () => {
 
     const [formValues, setFormValues] = useState(initialValues);
     const [loading, setLoading] = useState(false)
-    const [title, setTitle] = useState('');
-    const [fileName, setFileName] = useState('');
+    const [displayedImage, setDisplayedImage] = useState(null);
 
     const { languageData } = useLanguage();
 
@@ -31,15 +27,31 @@ const AddArticle = () => {
     const userData2 = JSON.parse(localStorage.getItem("userData"))
 
 
-    useEffect(() => {
-        setFormValues({ ...formValues, title: title })
-    }, [title, fileName])
+    const handlePixabayImageSelect = (selectedPixabayImage) => {
+        fetch(selectedPixabayImage.largeImageURL)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const blob = new Blob([buffer], { type: 'image/jpeg' });
+                const previewUrl = URL.createObjectURL(blob);
+                setFormValues({
+                    ...formValues,
+                    image: blob,
+                });
+
+                setDisplayedImage(previewUrl);
+            })
+            .catch(error => {
+                console.error('Error fetching image:', error);
+            });
+    };
 
 
 
-    const {id}= useParams();
 
-  
+
+    const { id } = useParams();
+
+
 
 
 
@@ -64,15 +76,20 @@ const AddArticle = () => {
             });
         }
     }
+
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
-    }
-   
-   
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setDisplayedImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
-   
+
 
     const updateResubmitArticleServices = async () => {
         setLoading(true)
@@ -119,23 +136,23 @@ const AddArticle = () => {
                         <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
                         <Row className='align-items-center'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "artilstTitle")}*</span>
+                                <span>{translate(languageData, "artilstTitle")}</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                {formValues?.title}
-                                     </div>
+                                    {formValues?.title}
+                                </div>
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
+                                <span>{translate(languageData, "CommentsAndRecommendations")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                {formValues?.comment}
+                                    {formValues?.comment}
                                 </div>
-                                
+
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
@@ -143,8 +160,8 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "PublicationDate")}</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                {formValues?.date}
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    {formValues?.date}
                                 </div>
 
                             </Col>
@@ -160,22 +177,31 @@ const AddArticle = () => {
                         </Row>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "link")} *</span>
+                                <span>{translate(languageData, "link")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                {formValues?.link}
+                                    {formValues?.link}
                                 </div>
 
                             </Col>
                         </Row>
-                        <h2 className='mt-5'>Update Image *</h2>
+                        <h2 className='mt-5'>{translate(languageData, "UpdateImage")} *</h2>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
                                 <span>{translate(languageData, "image")}</span>
                             </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image"  /></div>
+                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                            {displayedImage ? <div> <img src={displayedImage} alt='Displayed' /></div> : <div className= "border border-primary text-center">Image Preview</div>}
+                            </Col>
+                            <Col xs={12} md={3} className="mt-3 mt-md-0">
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
+                            </Col>
+                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                <div>{translate(languageData, "orselectviapixabay")}</div>
+                            </Col>
+                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
                     </Card.Body>

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, Card, Col, Row } from 'react-bootstrap';
 import FileUpload from '../../Components/FileUpload/FileUpload';
-import { FaSearch } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg';
 import ReactQuill from 'react-quill';
-import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import { translate, formatDate } from '../../../utility/helper';
 import { resubmitarticle, updaterResubmitarticle } from '../../../services/Resubmitarticle/resubmitarticle';
-
+import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const AddArticle = () => {
     const [formValues, setFormValues] = useState({
         date: "",
@@ -22,13 +20,9 @@ const AddArticle = () => {
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [editor, setEditor] = useState();
-    const [pixabayUrl, setPixabayUrl] = useState('');
-    const [pixabayImages, setPixabayImages] = useState([]);
     const [displayedImage, setDisplayedImage] = useState(null);
-    const [image, setImage] = useState(null);
 
     const { languageData } = useLanguage();
-    const navigate = useNavigate();
     const { id } = useParams();
 
     useEffect(() => {
@@ -52,30 +46,16 @@ const AddArticle = () => {
                 const previewUrl = URL.createObjectURL(blob);
                 setFormValues({
                     ...formValues,
-                    image: blob, 
+                    image: blob,
                 });
-    
+
                 setDisplayedImage(previewUrl);
-                setPixabayImages([]);
             })
             .catch(error => {
                 console.error('Error fetching image:', error);
             });
     };
-    
 
-    const handlePixabaySearch = () => {
-        const apiKey = '40830107-516989e1559b076d66f20b16e';
-        const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${pixabayUrl}&image_type=photo`;
-
-        axios.get(apiUrl)
-            .then(response => {
-                setPixabayImages(response.data.hits);
-            })
-            .catch(error => {
-                console.error('Error fetching images from Pixabay:', error);
-            });
-    };
 
     useEffect(() => {
         resubmitArticleServices();
@@ -299,7 +279,7 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "image")}</span>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                <div><img src={displayedImage} alt='Displayed' /></div>
+                                <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
                             </Col>
                             <Col xs={12} md={3} className='mt-3 mt-md-0'>
                                 <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' /></div>
@@ -309,30 +289,7 @@ const AddArticle = () => {
                             </Col>
 
                             <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                <div className='input-group mb-0'>
-                                    <span className='input-group-text'>
-                                        <Button
-                                            className='btn btn-outline-primary'
-                                            onClick={handlePixabaySearch}
-                                            style={{ width: "30px", height: "30px", padding: "0" }}
-                                        >
-                                            <FaSearch />
-                                        </Button>
-                                    </span>
-                                    <input
-                                        className='form-control'
-                                        type='text'
-                                        name='pixabayImageUrl'
-                                        placeholder={translate(languageData, "pixabayImage")}
-                                        onChange={(e) => setPixabayUrl(e.target.value)}
-                                        value={pixabayUrl}
-                                    />
-                                </div>
-                                {pixabayImages.map(pixabayImage => (
-                                    <div key={pixabayImage.id} onClick={() => handlePixabayImageSelect(pixabayImage)}>
-                                        <img src={pixabayImage.previewURL} alt={pixabayImage.tags} />
-                                    </div>
-                                ))}
+                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
                     </Card.Body>

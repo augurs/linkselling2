@@ -133,6 +133,10 @@ const Orders = () => {
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
+            case "Accept":
+            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonText = <small>{translate(languageData, "Accept")}</small>;
+            break;
           default:
             
             buttonText = row.status;
@@ -140,7 +144,7 @@ const Orders = () => {
 
         return (
           <span className={`${buttonClass} d-flex justify-content-center align-items-center`}>
-            {buttonText}
+            <small>{buttonText}</small>
           </span>
         );
       },

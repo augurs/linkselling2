@@ -426,7 +426,7 @@ const OrderArticle = () => {
                         <Col lg={7} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>Placing a link *</span>
+                                    <span>{translate(languageData, "PlacingLink")}*</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
@@ -439,7 +439,7 @@ const OrderArticle = () => {
                         <Col lg={7} className='mt-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>Attachments needed for the work</span>
+                                    <span>{translate(languageData, "AttachmentsNeededForWork")}</span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0">
                                     <div className='w-100'><FileUpload allowedFileExtensions={allowedAttachmentExtension} getData={handleFiles} name="attachment" /></div>

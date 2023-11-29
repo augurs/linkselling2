@@ -62,6 +62,10 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) =>
         fileInputRef.current.click();
     };
 
+    const clear = () => {
+        setUploadedFilesName('');
+      };
+
     return (
         <div
             className={`file-upload ${isDragging ? 'dragging' : ''} w-100`}

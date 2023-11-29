@@ -39,8 +39,7 @@ import { languages } from '../../../utility/data'
 import { addProjects } from '../../../services/ProjectServices/projectServices'
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoTicketOutline } from 'react-icons/io5';
-import axios from "axios";
-
+import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const BuyArticles = () => {
 
     const initialValues = {
@@ -79,8 +78,6 @@ const BuyArticles = () => {
     const [project, setProject] = useState('')
     const [content, setContent] = useState('')
     const [image, setImage] = useState(null);
-    const [pixabayUrl, setPixabayUrl] = useState('');
-    const [pixabayImages, setPixabayImages] = useState([]);
     const [imageSource, setImageSource] = useState(null);
     const [date, setDate] = useState('')
     const [link, setLink] = useState('')
@@ -725,12 +722,12 @@ const BuyArticles = () => {
 
     const isValidUrl = (url) => {
         try {
-          new URL(url);
-          return true;
+            new URL(url);
+            return true;
         } catch (error) {
-          return false;
+            return false;
         }
-      };
+    };
 
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
@@ -764,7 +761,7 @@ const BuyArticles = () => {
             if (linkValues.some((link) => !isValidUrl(link))) {
                 toast.error(translate(languageData, "InvalidLink"));
                 return;
-              }
+            }
         }
 
         const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
@@ -879,20 +876,6 @@ const BuyArticles = () => {
         const previewUrl = URL.createObjectURL(file);
         setImageSource({ previewUrl })
         setImage(file);
-        setPixabayImages([]);
-    };
-
-    const handlePixabaySearch = () => {
-        const apiKey = '40830107-516989e1559b076d66f20b16e';
-        const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${pixabayUrl}&image_type=photo`;
-
-        axios.get(apiUrl)
-            .then(response => {
-                setPixabayImages(response.data.hits);
-            })
-            .catch(error => {
-                console.error('Error fetching images from Pixabay:', error);
-            });
     };
 
     const handlePixabayImageSelect = (selectedPixabayImage) => {
@@ -903,7 +886,6 @@ const BuyArticles = () => {
                 const previewUrl = URL.createObjectURL(blob);
                 setImage(blob);
                 setImageSource({ previewUrl })
-                setPixabayImages([]);
             })
             .catch(error => {
                 console.error('Error fetching image:', error);
@@ -1800,28 +1782,8 @@ const BuyArticles = () => {
 
                                                             {translate(languageData, "orselectviapixabay")}
 
-                                                            <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                                                <div className="input-group mb-0">
-                                                                    <span className="input-group-text">
-                                                                        <Button onClick={handlePixabaySearch} className="btn btn-outline-primary" style={{ width: "30px", height: "30px", padding: "0" }}>
-                                                                            <FaSearch />
-                                                                        </Button>
-                                                                    </span>
-                                                                    <input
-                                                                        className="form-control"
-                                                                        type="text"
-                                                                        name="pixabayImageUrl"
-                                                                        placeholder={translate(languageData, "pixabayImage")}
-                                                                        onChange={(e) => setPixabayUrl(e.target.value)}
-                                                                        value={pixabayUrl}
-                                                                    />
-                                                                </div>
-
-                                                                {pixabayImages.map(pixabayImage => (
-                                                                    <div key={pixabayImage.id} onClick={() => handlePixabayImageSelect(pixabayImage)}>
-                                                                        <img src={pixabayImage.previewURL} alt={pixabayImage.tags} />
-                                                                    </div>
-                                                                ))}
+                                                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                                                             </Col>
                                                         </Row>
                                                     </div>

@@ -13,6 +13,7 @@ import { useLanguage } from '../../Context/languageContext';
 import { projectList } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import JSZip from 'jszip';
+import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const AddArticle = () => {
 
     const initialValues = {
@@ -34,8 +35,9 @@ const AddArticle = () => {
     const [lead, setLead] = useState('');
     const [content, setContent] = useState('');
     const [fileName, setFileName] = useState('');
-
+    const [displayedImage, setDisplayedImage] = useState(null);
     const userData2 = JSON.parse(localStorage.getItem("userData"))
+    
     const { languageData } = useLanguage();
     const navigate = useNavigate()
     useEffect(() => {
@@ -46,9 +48,27 @@ const AddArticle = () => {
         setFormValues({ ...formValues, title: title, lead: lead })
     }, [title, fileName, lead])
 
+    //pixabay Image selct start//
 
+    const handlePixabayImageSelect = (selectedPixabayImage) => {
+        fetch(selectedPixabayImage.largeImageURL)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const blob = new Blob([buffer], { type: 'image/jpeg' });
+                const previewUrl = URL.createObjectURL(blob);
+                setFormValues({
+                    ...formValues,
+                    image: blob,
+                });
 
-
+                setDisplayedImage(previewUrl);
+            })
+            .catch(error => {
+                console.error('Error fetching image:', error);
+            });
+    };
+    
+    //pixabay Image selct end//
 
     const allowedDocExtensions = ['.docx', '.doc', '.odt', '.html'];
     const allowedImageExtension = ['.jpg', '.gif', '.png']
@@ -85,7 +105,6 @@ const AddArticle = () => {
                 const textContent = docXml.replace(/<[^>]+>/g, '');
                 setContent(textContent);
 
-
                 setTitle(textContent.substr(0, 50));
                 setLead(textContent.substr(50, 50));
             });
@@ -95,7 +114,12 @@ const AddArticle = () => {
 
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
-    }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setDisplayedImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
 
 
 
@@ -294,7 +318,7 @@ const AddArticle = () => {
                                         name="document"
                                     />
                                 </div>
-                                <div className='text-danger text-center mt-1'>{formErrors.document}</div>
+                                <div className='text-danger text-center mt-1'>{formErrors.document} {title}</div>
                             </Col>
                         </Row>
 
@@ -363,9 +387,18 @@ const AddArticle = () => {
                             <Col xs={12} md={4}>
                                 <span>{translate(languageData, "AddArtiMainImage")}</span>
                             </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                <div><img src={displayedImage} alt='Displayed' /></div>
+                            </Col>
+                            <Col xs={12} md={3} className="mt-3 mt-md-0">
                                 <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
+                            </Col>
+                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                <div>{translate(languageData, "orselectviapixabay")}</div>
+                            </Col>
+                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
                         {/* <Row className='align-items-center mt-4'>
