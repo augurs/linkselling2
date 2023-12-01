@@ -6,14 +6,16 @@ const Thankyou = () => {
   const [thankreg, setThankreg] = useState([]);
   const [language, setLanguage] = useState(localStorage.getItem("lang"));
 
+  useEffect(() => {
+    thankafterreg();
+  }, []);
+
   const thankafterreg = async () => {
     const res = await thankupage();
     setThankreg(res?.data);
   };
 
-  useEffect(() => {
-    thankafterreg();
-  }, []);
+
 
   const playVideo = () => {
     const videoLink = thankreg[0]?.video_link;

@@ -13,7 +13,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { Button, Modal } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../Context/cartListContext'
-
+import { walletBalance } from "../../../services/walletServices/walletService"
 
 const Cart = () => {
 
@@ -26,12 +26,33 @@ const Cart = () => {
     const [buyNowId, setBuyNowId] = useState('')
     const [purchasedData, setPurchasedData] = useState([])
     const [rowId, setRowId] = useState('')
-
+    const [balance, setBalance] = useState('');
 
 
 
     const userData = JSON.parse(localStorage.getItem('userData'))
     const { cartListServices } = useCart()
+
+    useEffect(() => {
+        showWalletServices()
+    }, [])
+
+    const showWalletServices = async () => {
+        setLoading(true);
+        try {
+            const res = await walletBalance(userData?.id);
+            if (res.success === true) {
+                setBalance(res.data.wallet_amount);
+                setLoading(false);
+            } else {
+                console.error('API call failed:', res);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         getCartServices()
@@ -316,9 +337,10 @@ const Cart = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <p className='mb-1'><strong>{translate(languageData, "linkName")}:</strong>{purchasedData?.allProduct?.map((item) => item?.links ? item?.links?.name : item?.articles?.url)} </p>
-                        <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total}</span></p>
+                        <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
+                        <p className='mb-1'><strong>{translate(languageData, "Walletamount")}:</strong> {balance} PLN</p>
                         {/* <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>1%</span>  {translate(languageData, "linkFee")}:</strong> {purchasedData?.total + purchasedData?.fee}</p> */}
-                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")}:</strong> {purchasedData?.total + purchasedData?.tax}</p>
+                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")}:</strong> {purchasedData?.payable_amount}</p>
                         <p className='mb-1'><strong>{translate(languageData, "netPayableAmount")} :</strong> {purchasedData?.payable_amount}</p>
 
 

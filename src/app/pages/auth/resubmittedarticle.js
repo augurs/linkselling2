@@ -4,7 +4,7 @@ import FileUpload from '../../Components/FileUpload/FileUpload';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg';
 import ReactQuill from 'react-quill';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import { translate, formatDate } from '../../../utility/helper';
 import { resubmitarticle, updaterResubmitarticle } from '../../../services/Resubmitarticle/resubmitarticle';
@@ -24,7 +24,7 @@ const AddArticle = () => {
 
     const { languageData } = useLanguage();
     const { id } = useParams();
-
+    const navigate = useNavigate()
     useEffect(() => {
         setEditor(formValues.content);
     }, [formValues.content]);
@@ -165,6 +165,9 @@ const AddArticle = () => {
                     progress: undefined,
                     type: 'success',
                 });
+                setTimeout(() => {
+                    navigate('/orders')
+                }, 1000);
             } else {
                 toast(translate(languageData, "loginFailureMessage2"), {
                     position: "top-center",

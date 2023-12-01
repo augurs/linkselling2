@@ -32,7 +32,7 @@ function Portallinkupdatewithid() {
 
   const submitlinkportal = async () => {
     setLoading(true)
-    const res = await portallinksubmit(link, id, "addnewarticle")
+    const res = await portallinksubmit(link, id, "addnewarticle", language)
     if (res.success === true) {
         toast(translate(languageData, "LinkAddedSuccessfully"), {
             position: "top-center",
@@ -45,7 +45,7 @@ function Portallinkupdatewithid() {
             type: 'success'
         });
         setTimeout(() => {
-            navigate('#')
+            navigate('/thanksPage')
         }, 1000);
         setLoading(false)
     } else {

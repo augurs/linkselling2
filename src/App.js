@@ -1,6 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from './app/pages/auth/login.js'
 import Thanks from './app/pages/auth/thankyou.js'
+import Thanksarticle from './app/pages/auth/thankforarticle.js'
 import SignUp from './app/pages/auth/signup.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
@@ -96,6 +97,10 @@ function App() {
     {
       path: '/RegistrationDone',
       element: <Thanks />
+    },
+    {
+      path: '/thanksPage',
+      element: <Thanksarticle />
     },
     {
       path: '/signUp',

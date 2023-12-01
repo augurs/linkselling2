@@ -101,11 +101,12 @@ export const requestArticleDetails = (id) => {
 
 
 
-export const portallinksubmit = (link, id, requestarticle) => {
+export const portallinksubmit = (link, id, requestarticle, language) => {
 
   const formData = new FormData();
   formData.append("link", link);
   formData.append("type", requestarticle);
+  formData.append("language", language);
 
 
   return axios
