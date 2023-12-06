@@ -102,8 +102,8 @@ const BuyArticles = () => {
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
     const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
-    const [provideSubject, setProvideSubject] = useState(true);
-    const [weProvideSubject, setWeProvideSubject] = useState(false);
+    const [provideSubject, setProvideSubject] = useState(false);
+    const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [linkValues, setLinkValues] = useState([]);
     const [anchorValues, setAnchorValues] = useState([]);
     const [suggestion, setSuggestion] = useState('')
@@ -750,6 +750,10 @@ const BuyArticles = () => {
             }
         }
         if (articleType === translate(languageData, "RequestArticleWriting")) {
+            if (provideSubject && (!provideSubjectText || provideSubjectText.trim() === '')) {
+                toast.error(translate(languageData, "SubjectFieldNotEmpty"));
+                return;
+            }
             if (linkValues == 0) {
                 toast.error(translate(languageData, "Minimum1link"));
                 return;
@@ -1606,6 +1610,23 @@ const BuyArticles = () => {
                                                                 <input
                                                                     className="form-check-input"
                                                                     type="radio"
+                                                                    id="weProvideSubjectCheckbox"
+                                                                    checked={weProvideSubject}
+                                                                    onChange={() => {
+                                                                        setWeProvideSubject(!weProvideSubject);
+                                                                        setProvideSubject(false);
+                                                                    }}
+                                                                />
+                                                                <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
+                                                                    {translate(languageData, "weProvideArticleSubject")}
+                                                                </label>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                                            <div className="form-check form-check-inline">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
                                                                     id="provideSubjectCheckbox"
                                                                     checked={provideSubject}
                                                                     onChange={() => {
@@ -1615,23 +1636,6 @@ const BuyArticles = () => {
                                                                 />
                                                                 <label className="form-check-label" htmlFor="provideSubjectCheckbox">
                                                                     {translate(languageData, "provideArticleSubject")}
-                                                                </label>
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
-                                                            <div className="form-check form-check-inline">
-                                                                <input
-                                                                    className="form-check-input"
-                                                                    type="radio"
-                                                                    id="weProvideSubjectCheckbox"
-                                                                    checked={weProvideSubject}
-                                                                    onChange={() => {
-                                                                        setWeProvideSubject(!weProvideSubject);
-                                                                        setProvideSubject(false); // Uncheck the other checkbox
-                                                                    }}
-                                                                />
-                                                                <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
-                                                                    {translate(languageData, "weProvideArticleSubject")}
                                                                 </label>
                                                             </div>
                                                         </Col>
@@ -1647,10 +1651,15 @@ const BuyArticles = () => {
                                                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
                                                                     <input className="input100" type="text" name="title" placeholder={translate(languageData, "writeSubject")} style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
                                                                 </div>
-
+                                                                {/* {provideSubject && (!provideSubjectText || provideSubjectText.trim() === '') && (
+                                                                    <div>
+                                                                        <span className="text-danger">{translate(languageData, "SubjectFieldNotEmpty")}</span>
+                                                                    </div>
+                                                                )} */}
                                                             </Col>
                                                         </Row>
                                                     )}
+
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "writeSuggestion")} </span>

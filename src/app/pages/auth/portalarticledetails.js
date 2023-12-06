@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import "./login.css"
 import globalLoader from '../../../assets/images/loader.svg'
 import { ToastContainer, toast } from 'react-toastify';
 import LanguageSelect from '../../Components/Language/languageSelect';
-import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { portalArticleDetails } from "../../../services/Resubmitarticle/resubmitarticle"
+import { FaCopy } from 'react-icons/fa';
 
 function Portalarticledetails() {
 
@@ -17,15 +17,14 @@ function Portalarticledetails() {
 
     const [loading, setLoading] = useState(false)
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
+    const [showModal, setShowModal] = useState(false);
 
-    const navigate = useNavigate();
 
-    const { t } = useTranslation();
+
     const { languageData } = useLanguage();
 
 
-    const language = localStorage.getItem('lang')
-    const {id}= useParams();
+    const { id } = useParams();
 
     useEffect(() => {
         ordersListServices()
@@ -40,6 +39,31 @@ function Portalarticledetails() {
         }
     }
 
+    const handleCopyClick = (content) => {
+        const tempInput = document.createElement('textarea');
+        const textContent = new DOMParser().parseFromString(content, 'text/html').body.textContent;
+
+        tempInput.value = textContent;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        toast.success('Content copied to clipboard');
+    };
+
+    const handleRejectClick = () => {
+        setShowModal(true);
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+    };
+
+    const handleRejectSubmit = () => {
+        // Handle the submission of comments and recommendations
+        // Add your logic here
+        setShowModal(false);
+    };
 
     return (
         <div className='ltr login-img'>
@@ -66,6 +90,9 @@ function Portalarticledetails() {
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
                                                 {portalArticleDetail[0]?.title}
+                                                <button className="copy-button" onClick={() => handleCopyClick(portalArticleDetail[0]?.title)}>
+                                                    <FaCopy />
+                                                </button>
                                             </div>
 
                                         </Col>
@@ -76,8 +103,11 @@ function Portalarticledetails() {
                                             <span>{translate(languageData, "sidebarContent")}</span>
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required" >
-                                            <div dangerouslySetInnerHTML={{__html: portalArticleDetail[0]?.content}} />        
+                                            <div id='contentToCopy' className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required" >
+                                                <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
+                                                <button className="copy-button" onClick={() => handleCopyClick(portalArticleDetail[0]?.content)} style={{ marginTop: "-14px" }}>
+                                                    <FaCopy />
+                                                </button>
                                             </div>
                                         </Col>
 
@@ -87,7 +117,7 @@ function Portalarticledetails() {
                                             <span>{translate(languageData, "PublicationDate")}</span>
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                            <div className="wrap-input100 validate-input mb-0 " data-bs-validate="Password is required">
                                                 {portalArticleDetail[0]?.date_of_publication}
                                             </div>
 
@@ -100,11 +130,11 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <img src={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} crossOrigin="anonymous" />
+                                                <a href={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} download>
+                                                    <img src={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} alt="Article Image" className='w-25' />
+                                                </a>
                                             </div>
-
                                         </Col>
-
                                     </Row>
                                     <Row className='mt-5'>
                                         <Col xs={12} md={4}>
@@ -132,14 +162,41 @@ function Portalarticledetails() {
                                     </Row>
                                 </div>
                             </Card.Body>
-                            <Card.Footer>
-                            <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
+                            <Card.Footer className='d-flex gap-2'>
+                                <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
+                                <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
                             </Card.Footer>
                         </Card>
                     </Col>
 
                 </Row>
             }
+            <Modal show={showModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{translate(languageData, "CommentsAndRecommendations")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row className='align-items-center mt-2'>
+                        <Col xs={12} md={4}>
+                            <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} />
+                            </div>
+                            {/* <div className='text-danger text-center mt-1'>{formErrors.comment}</div> */}
+                        </Col>
+                    </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleModalClose}>
+                        {translate(languageData, "Close")}
+                    </Button>
+                    <Button variant="primary" onClick={handleRejectSubmit}>
+                        {translate(languageData, "Submit")}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div >
 
 

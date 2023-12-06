@@ -39,6 +39,13 @@ const PixabayImageSearch = ({ onSelectImage }) => {
 
   return (
     <div className='input-group'>
+      <input
+        className='form-control'
+        type='text'
+        placeholder={translate(languageData, "searchPixabay")}
+        onChange={(e) => setPixabayUrl(e.target.value)}
+        value={pixabayUrl}
+      />
       <span className='input-group-text'>
         <button
           className='btn btn-outline-primary'
@@ -48,13 +55,6 @@ const PixabayImageSearch = ({ onSelectImage }) => {
           <FaSearch />
         </button>
       </span>
-      <input
-        className='form-control'
-        type='text'
-        placeholder={translate(languageData, "searchPixabay")}
-        onChange={(e) => setPixabayUrl(e.target.value)}
-        value={pixabayUrl}
-      />
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{translate(languageData, "SelectPixabayImage")}</Modal.Title>
