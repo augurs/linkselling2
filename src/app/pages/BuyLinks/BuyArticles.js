@@ -1966,7 +1966,7 @@ const BuyArticles = () => {
                     <Modal.Footer>
                         <div>
                             <Button variant="secondary" onClick={handleCloseModal}>
-                                Close
+                            {translate(languageData, "close")}
                             </Button>
                         </div>
                         <div className=''>

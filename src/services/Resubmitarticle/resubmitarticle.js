@@ -119,3 +119,23 @@ export const portallinksubmit = (link, id, requestarticle, language) => {
       return error.response.data;
     });
 };
+
+
+
+export const portalArticleDetailsReject = (id, article, comment) => {
+
+  const formData = new FormData();
+  formData.append("comment", comment);
+  formData.append("type", article);
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/portal-reject-article/${id}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
