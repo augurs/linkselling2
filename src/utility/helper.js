@@ -5,7 +5,7 @@
 
 export const translate = (languageData, title) => {
 
-   const translatedData = languageData && languageData?.filter((item) => item.title === title)[0]?.value || title;
+   const translatedData = (languageData && languageData?.filter((item) => item.title === title)[0]?.value) || title;
    return translatedData;
 
 }

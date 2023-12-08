@@ -31,7 +31,7 @@ import { baseURL2 } from "../../utility/data";
 
   export const todolists = (id) => {
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/dashboard-articles-review/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/dashboard-todo-articles/${id}`)
       .then((res) => {
         return res?.data;
       })

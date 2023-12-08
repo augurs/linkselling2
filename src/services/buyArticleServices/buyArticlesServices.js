@@ -72,12 +72,17 @@ export const addToCartArticles = (data, isAddNew) => {
   formData.append("month_guarantee", data.monthGuarantee);
   formData.append("amount", data.amount);
   formData.append("article_amount", data.article_amount);
-  {!isAddNew && formData.append("article_id", data.article_id); }
+  {(!isAddNew && data.articleType !== 'SelectLater') && formData.append("article_id", data.article_id); }
   formData.append("content", data.content);
   formData.append("image", data.image);
   formData.append("project", data.project);
   formData.append("date", data.date);
   formData.append("links", data.links);
+  formData.append("anchorurl", data.anchorurl);
+  formData.append("anchor", data.anchor);
+  formData.append("suggestion", data.suggestion);
+  formData.append("articlesubject", data.articlesubject);
+
 
 
   return axios

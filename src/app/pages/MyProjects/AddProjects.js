@@ -51,8 +51,8 @@ const AddProjects = () => {
         const res = await addProjects(formValues);
 
         if (res.response === true && res.success === true) {
-            toast(res.message, {
-                position: "top-right",
+            toast(translate(languageData, "Projectaddedsucessfully"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

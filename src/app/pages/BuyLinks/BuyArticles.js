@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg"
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
@@ -38,6 +38,8 @@ import { BsInfoCircle } from 'react-icons/bs';
 import { languages } from '../../../utility/data'
 import { addProjects } from '../../../services/ProjectServices/projectServices'
 import { FaPlus, FaSearch } from 'react-icons/fa';
+import { IoTicketOutline } from 'react-icons/io5';
+import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const BuyArticles = () => {
 
     const initialValues = {
@@ -75,7 +77,8 @@ const BuyArticles = () => {
     const [cartList, setCartList] = useState([])
     const [project, setProject] = useState('')
     const [content, setContent] = useState('')
-    const [image, setImage] = useState('')
+    const [image, setImage] = useState(null);
+    const [imageSource, setImageSource] = useState(null);
     const [date, setDate] = useState('')
     const [link, setLink] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
@@ -98,6 +101,72 @@ const BuyArticles = () => {
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
+    const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
+    const [provideSubject, setProvideSubject] = useState(false);
+    const [weProvideSubject, setWeProvideSubject] = useState(true);
+    const [linkValues, setLinkValues] = useState([]);
+    const [anchorValues, setAnchorValues] = useState([]);
+    const [suggestion, setSuggestion] = useState('')
+    const [provideSubjectText, setProvideSubjectText] = useState('')
+
+    const handleMaxLinksSelection = (maxLinks) => {
+        setSelectedMaxLinks(maxLinks);
+    };
+
+    const handleLinkChange = (index, value) => {
+        const newLinkValues = [...linkValues];
+        newLinkValues[index] = value;
+        setLinkValues(newLinkValues);
+    };
+
+    const handleAnchorChange = (index, value) => {
+        const newAnchorValues = [...anchorValues];
+        newAnchorValues[index] = value;
+        setAnchorValues(newAnchorValues);
+    };
+
+    const generateRows = () => {
+        const rows = [];
+        for (let i = 1; i <= selectedMaxLinks; i++) {
+            rows.push(
+                <Row key={i} className='align-items-center mt-5'>
+                    <Col xs={12} md={4}>
+                        <span>{translate(languageData, "link")} {i} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Link is required">
+                            <input
+                                className="input100"
+                                type="url"
+                                name={`link${i}`}
+                                placeholder={`${translate(languageData, "link")} ${i}`}
+                                style={{ paddingLeft: "15px" }}
+                                onChange={(e) => handleLinkChange(i - 1, e.target.value)}
+                                value={linkValues[i - 1] || ''}
+                            />
+                        </div>
+                    </Col>
+                    <Col xs={12} md={4}>
+                        <span>{translate(languageData, "requestanchor")} {i} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Anchor is required">
+                            <input
+                                className="input100"
+                                type="url"
+                                name={`Anchor${i}`}
+                                placeholder={`${translate(languageData, "requestanchor")} ${i}`}
+                                style={{ paddingLeft: "15px" }}
+                                onChange={(e) => handleAnchorChange(i - 1, e.target.value)}
+                                value={anchorValues[i - 1] || ''}
+                            />
+                        </div>
+                    </Col>
+                </Row>
+            );
+        }
+        return rows;
+    };
 
     const handleShowModal = () => {
         setShowModal(true);
@@ -134,6 +203,18 @@ const BuyArticles = () => {
     useEffect(() => {
         getPublisherArticlesService()
     }, [search, typeAnchors, page])
+
+    useEffect(() => {
+        if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater")) {
+            setRequestArticleTitle('');
+            setDate('');
+            handleEditorChange('')
+            setImage('')
+            setImageSource('')
+
+        }
+    }, [articleType]);
+
 
 
 
@@ -305,10 +386,10 @@ const BuyArticles = () => {
                     <div className="d-flex align-items-center">
                         <div>
                             <div className="d-flex gap-2 justify-content-center">
-                            <Link className="my-1" style={{ fontSize: "18px" }}>
-                                {row?.portalLink}
-                            </Link>
-                            <Link to="/DomainDetails"><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
+                                <Link className="my-1" style={{ fontSize: "18px" }}>
+                                    {row?.portalLink}
+                                </Link>
+                                <Link to={`https://linkanonymous.com/?https://${row?.portalLink}`}><Button className="mt-2 btn btn-outline-primary"><FaSearch /></Button></Link></div>
                             <span>
                                 {row?.homepage ?
                                     <Tool title="Homepage">
@@ -416,7 +497,7 @@ const BuyArticles = () => {
                         row.cart === 'Yes' ?
                             <Button
                                 variant="primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row) }}
+                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
                                 disabled
                             >
                                 {translate(languageData, "Select")}
@@ -424,7 +505,7 @@ const BuyArticles = () => {
                             :
                             <Button
                                 variant="outline-primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row) }}
+                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
                             >
                                 {translate(languageData, "Select")}
                             </Button>
@@ -451,6 +532,7 @@ const BuyArticles = () => {
 
         }
     })
+
 
 
     const columns = [
@@ -498,8 +580,11 @@ const BuyArticles = () => {
                         </div>
                     </div>
                     <div className="btn btn-outline-primary">
-                        <Link to="/DomainDetails"><FaSearch style={{ cursor: "pointer" }}/></Link>
+                        <Link to={`https://linkanonymous.com/?https://${row?.portalLink}`}>
+                            <FaSearch style={{ cursor: "pointer" }} />
+                        </Link>
                     </div>
+
                 </div>
             ),
             width: "250px",
@@ -635,9 +720,55 @@ const BuyArticles = () => {
     }
 
 
-
+    const isValidUrl = (url) => {
+        try {
+            new URL(url);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
 
     const addToCartArticleServices = async () => {
+        if (articleType === translate(languageData, "AddNewArticle")) {
+            if (!requestArticleTitle) {
+                toast.error(translate(languageData, "TitleofArticleField"));
+                return;
+            }
+            if (linkCount === 0) {
+                toast.error(translate(languageData, "Minimum1link"));
+                return;
+            }
+
+            if (linkCount > 0 && linkCount > selectedMaxLinks) {
+                toast.error(translate(languageData, "Toomanylinks"));
+                return;
+            }
+            if (!image) {
+                toast.error(translate(languageData, "ImageField"));
+                return;
+            }
+        }
+        if (articleType === translate(languageData, "RequestArticleWriting")) {
+            if (provideSubject && (!provideSubjectText || provideSubjectText.trim() === '')) {
+                toast.error(translate(languageData, "SubjectFieldNotEmpty"));
+                return;
+            }
+            if (linkValues == 0) {
+                toast.error(translate(languageData, "Minimum1link"));
+                return;
+            }
+            if (anchorValues == 0) {
+                toast.error(translate(languageData, "Min1anchor"));
+                return;
+            }
+            if (linkValues.some((link) => !isValidUrl(link))) {
+                toast.error(translate(languageData, "InvalidLink"));
+                return;
+            }
+        }
+
+        const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
         const data = {
             domainId: selectedSubArticles?.id,
             userId: userData?.id,
@@ -654,7 +785,11 @@ const BuyArticles = () => {
             content: content,
             image: image,
             date: date,
-            links: link,
+            links: linkCount,
+            anchorurl: linkValues,
+            suggestion: suggestion,
+            articlesubject: articlesubjectValue,
+            anchor: anchorValues,
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
@@ -724,11 +859,46 @@ const BuyArticles = () => {
         setContent(html)
     }
 
+    const countLinksInEditor = (editorContent) => {
+        const parser = new DOMParser();
+        const parsedContent = parser.parseFromString(editorContent, 'text/html');
+        const linkCount = parsedContent.querySelectorAll('a').length;
+        return linkCount;
+    };
+
+    const linkCount = countLinksInEditor(content);
+
+    useEffect(() => {
+        if (linkCount > selectedMaxLinks) {
+            console.error('Too many links in editor!');
+        }
+    }, [linkCount]);
+
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
     const handleFiles = (file) => {
+        const previewUrl = URL.createObjectURL(file);
+        setImageSource({ previewUrl })
         setImage(file);
     };
+
+    const handlePixabayImageSelect = (selectedPixabayImage) => {
+        fetch(selectedPixabayImage.largeImageURL)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                const blob = new Blob([buffer], { type: 'image/jpeg' });
+                const previewUrl = URL.createObjectURL(blob);
+                setImage(blob);
+                setImageSource({ previewUrl })
+            })
+            .catch(error => {
+                console.error('Error fetching image:', error);
+            });
+    };
+
+
+
+
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
@@ -776,7 +946,7 @@ const BuyArticles = () => {
             const res = await dashboardpromotion();
 
             if (res.success === true) {
-                const data = res.data;
+                const data = res.data.reverse();
                 if (id) {
                     const updatedCheckboxes = data.map(checkbox => ({
                         ...checkbox,
@@ -854,7 +1024,7 @@ const BuyArticles = () => {
                 type: 'success'
             });
             await articleListServices();
-                setProject(res.data.id);
+            setProject(res.data.id);
             setLoading(false)
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
@@ -935,7 +1105,7 @@ const BuyArticles = () => {
             label: "Polish"
         }
     ]
-//add project modal api end
+    //add project modal api end
 
     return (
         <>
@@ -995,7 +1165,7 @@ const BuyArticles = () => {
                                 </div>
                             </Col> */}
                             <Col xs={12} sm={6} md={4} className="">
-                                <FormControl fullWidth onMouseEnter={handletoggle}>
+                                {/* <FormControl fullWidth onMouseEnter={handletoggle}>
 
                                     <Select
                                         labelId="typeofanchors-label"
@@ -1025,39 +1195,82 @@ const BuyArticles = () => {
                                         ))}
                                     </Select>
 
+                                </FormControl> */}
+                                <FormControl fullWidth onMouseEnter={handletoggle}>
+                                    <Select
+                                        labelId="typeofanchors-label"
+                                        id="typeofanchors"
+                                        multiple
+                                        value={typeAnchors}
+                                        onChange={handleAnchorsType}
+                                        input={<OutlinedInput name="typeofanchors" />}
+                                        renderValue={(selected) => (
+                                            <div className="d-flex align-items-center">
+                                                <MdAnchor size={20} className="text-primary" />
+                                                <span className="d-flex flex-grow-1 justify-content-center text-primary">
+                                                    {selected.length > 0 ? selected.join(', ') : translate(languageData, "anchorTypes")}
+                                                </span>
+                                            </div>
+                                        )}
+                                        style={{ height: "40px", marginTop: "5px" }}
+                                        className="custom-select"
+                                        displayEmpty={true}
+                                        IconComponent={() => (
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon text-primary'
+                                            />
+                                        )}
+                                    >
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "selectAnchorTypes")}
+                                        </MenuItem>
+                                        {anchorTypes.map((name, index) => (
+                                            <MenuItem key={index} value={name.type} className='check_list'>
+                                                <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
+                                                <ListItemText primary={name.type} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
                                 </FormControl>
                             </Col>
                             <Col xs={12} sm={6} md={4} className=''>
-                                <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
-                                    <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                <div className='border border-muted d-flex align-items-center bg-white mb-3 p-3' style={{ height: "45px" }}>
+                                    <MdLink size={24} color="text-primary" />
+                                    <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
+                                        {translate(languageData, "doFollowP")}
+                                    </span>
+                                    <label className="custom-control custom-checkbox mb-1">
                                         <Form.Check
                                             id='checkguarantee'
-                                            className='pe-2'
                                             onChange={(e) => handleCheckChange1(e)}
                                             name="doFollow"
                                             checked={search?.doFollow}
-
                                         />
-                                        <span className='mt-1' >{translate(languageData, "doFollowP")}</span>
                                     </label>
                                 </div>
-
                             </Col>
                             <Col xs={12} sm={6} md={4} className='d-flex gap-2'>
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
                                     .map((checkbox) => (
-                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px", width: boxWidth }}>
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2' style={{ height: "45px", width: boxWidth }}>
+                                            {/* Left side: promo code icon */}
+                                            <IoTicketOutline size={24} color="primary" />
 
-                                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
+                                            {/* Middle: checkbox text */}
+                                            <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
+                                                {translate(languageData, checkbox.name)}
+                                            </span>
+
+                                            {/* Right side: checkbox */}
+                                            <label className="custom-control custom-checkbox mb-1">
                                                 <Form.Check
                                                     id={checkbox.id}
-                                                    className='pe-2'
                                                     onChange={(e) => handleCheckChange(e, checkbox.id)}
                                                     name={checkbox.name}
                                                     checked={checkbox.checked}
                                                 />
-                                                <span className='mt-1'>{translate(languageData, checkbox.name)}</span>
                                             </label>
                                         </div>
                                     ))}
@@ -1274,10 +1487,10 @@ const BuyArticles = () => {
                         </div>
                         <div className="form-group d-flex justify-content-center gap-2">
                             <div className="btn btn-outline-primary d-flex align-items-center" onClick={handleShowModal}>
-                            <FaPlus style={{ cursor: "pointer" }} className="me-1"/>{translate(languageData, "AddProject")}
+                                <FaPlus style={{ cursor: "pointer" }} className="me-1" />{translate(languageData, "AddProject")}
                             </div>
                             <div>
-                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px"}} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
+                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px" }} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
                                     const selectedValue = e.target.value;
                                     setProject(selectedValue);
                                     if (selectedValue.trim() === '') {
@@ -1317,12 +1530,12 @@ const BuyArticles = () => {
                                 </span>
                             </div> */}
                         </div>
-                        <div className="mt-2 px-4">
+                        <div className="px-4">
                             <DataTable columns={modalColumns} data={modalTableData} />
                         </div>
                         {showCartOptions &&
                             <div>
-                                <div className="mt-5 d-flex justify-content-center flex-wrap">
+                                <div className="d-flex justify-content-center flex-wrap">
                                     <Button
                                         className={`${articleType === translate(languageData, "RequestArticleWriting")
                                             ? "btn-primary"
@@ -1366,19 +1579,19 @@ const BuyArticles = () => {
                                                         {articlePackages?.map((item, index) => {
                                                             return (
 
-                                                                <Col xs={12} lg={4} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='mt-2 rounded-pill'>
-                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer" }}>
-                                                                        <Card.Body className='text-center'>
-                                                                            <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
-                                                                            <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                                            <h3 className='mb-3'>{item.name} </h3>
+                                                                <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill'>
+                                                                    <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px" }}>
+                                                                        <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
+                                                                            <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
+                                                                            <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
+                                                                            <h6>{item.name} </h6>
                                                                             <Link >{item?.description}</Link>
-                                                                            <div className='mt-4'>
+                                                                            {/* <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
-                                                                            </div>
+                                                                            </div> */}
                                                                             <div></div>
                                                                         </Card.Body>
-                                                                        <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-59px' }}>
+                                                                        <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-94px' }}>
                                                                             <img src={orderType === item.name ? green : grey} alt="cardimg" />
                                                                         </div>
                                                                     </Card>
@@ -1388,6 +1601,85 @@ const BuyArticles = () => {
                                                         })}
 
                                                     </Row>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "articleSubject")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                                            <div className="form-check form-check-inline">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    id="weProvideSubjectCheckbox"
+                                                                    checked={weProvideSubject}
+                                                                    onChange={() => {
+                                                                        setWeProvideSubject(!weProvideSubject);
+                                                                        setProvideSubject(false);
+                                                                    }}
+                                                                />
+                                                                <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
+                                                                    {translate(languageData, "weProvideArticleSubject")}
+                                                                </label>
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                                            <div className="form-check form-check-inline">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    id="provideSubjectCheckbox"
+                                                                    checked={provideSubject}
+                                                                    onChange={() => {
+                                                                        setProvideSubject(!provideSubject);
+                                                                        setWeProvideSubject(false);
+                                                                    }}
+                                                                />
+                                                                <label className="form-check-label" htmlFor="provideSubjectCheckbox">
+                                                                    {translate(languageData, "provideArticleSubject")}
+                                                                </label>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+
+                                                    {/* Additional Fields based on checkbox state */}
+                                                    {provideSubject && (
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} md={4}>
+                                                                <span>{translate(languageData, "writeSubject")} </span>
+                                                            </Col>
+                                                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                    <input className="input100" type="text" name="title" placeholder={translate(languageData, "writeSubject")} style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
+                                                                </div>
+                                                                {/* {provideSubject && (!provideSubjectText || provideSubjectText.trim() === '') && (
+                                                                    <div>
+                                                                        <span className="text-danger">{translate(languageData, "SubjectFieldNotEmpty")}</span>
+                                                                    </div>
+                                                                )} */}
+                                                            </Col>
+                                                        </Row>
+                                                    )}
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "writeSuggestion")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Suggestion is required">
+                                                                <textarea
+                                                                    className="input100"
+                                                                    name="suggestion"
+                                                                    placeholder={translate(languageData, "writeSuggestion")}
+                                                                    style={{ paddingLeft: "15px", height: "200px" }}
+                                                                    onChange={(e) => setSuggestion(e.target.value)}
+                                                                    value={suggestion}
+                                                                    maxLength={300}
+                                                                />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    {selectedMaxLinks && generateRows()}
                                                     {/* <Row>
                                                         <Col xs={12} md={6}>
                                                             {translate(languageData, "OrderDetails")}
@@ -1434,11 +1726,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Title *</span>
+                                                            <span>{translate(languageData, "artilstTitle")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                                <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
                                                             </div>
 
                                                         </Col>
@@ -1446,11 +1738,11 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>Publication date *</span>
+                                                            <span>{translate(languageData, "PublicationDate")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="date" name="date" placeholder='date' style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                                <input className="input100" type="date" name="date" placeholder={translate(languageData, "PublicationDate")} style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
                                                             </div>
 
                                                         </Col>
@@ -1470,29 +1762,40 @@ const BuyArticles = () => {
                                                                 placeholder="Write content"
                                                                 style={{ height: "300px" }}
                                                             />
-
+                                                            {linkCount > 0 && linkCount > selectedMaxLinks && (
+                                                                <Alert variant="danger">
+                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
+                                                                </Alert>
+                                                            )}
                                                         </Col>
                                                     </Row>
 
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>Image *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span>Link *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                <input className="input100" type="url" name="link" placeholder='link' style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} value={link} />
-                                                            </div>
+                                                    <div>
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} md={4}>
+                                                                <span>{translate(languageData, "image")} *</span>
+                                                            </Col>
+                                                            <Col xs={12} md={1}>
+                                                                {imageSource && (
+                                                                    <div>
+                                                                        <img src={imageSource.previewUrl} alt="Selected" />
+                                                                    </div>
+                                                                )}
+                                                            </Col>
 
-                                                        </Col>
-                                                    </Row>
+                                                            <Col xs={12} md={2} className="mt-3 mt-md-0">
+                                                                <div>
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                </div>
+                                                            </Col>
+
+                                                            {translate(languageData, "orselectviapixabay")}
+
+                                                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
+                                                            </Col>
+                                                        </Row>
+                                                    </div>
                                                     {/* <Row className='align-items-center mt-5'>
                                                     <Col xs={12} md={4}>
                                                         <span>{translate(languageData , "Theme")} *</span>
@@ -1510,6 +1813,7 @@ const BuyArticles = () => {
                                                 </div>
 
                                             }
+
 
 
                                             <div>
@@ -1662,7 +1966,7 @@ const BuyArticles = () => {
                     <Modal.Footer>
                         <div>
                             <Button variant="secondary" onClick={handleCloseModal}>
-                                Close
+                            {translate(languageData, "close")}
                             </Button>
                         </div>
                         <div className=''>

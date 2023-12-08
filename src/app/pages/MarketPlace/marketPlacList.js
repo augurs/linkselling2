@@ -38,8 +38,8 @@ const MarketPlace = () => {
         setClickedButton(id)
         const res = await addToCart(userData.id, id , "1")
         if (res.success === true) {
-            toast(res.result, {
-                position: "top-right",
+            toast(translate(languageData, "addedCartSuccessfully"), {
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

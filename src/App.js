@@ -1,11 +1,15 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from './app/pages/auth/login.js'
 import Thanks from './app/pages/auth/thankyou.js'
+import Thanksarticle from './app/pages/auth/thankforarticle.js'
 import SignUp from './app/pages/auth/signup.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
 import Portalarticledetails from './app/pages/auth/portalarticledetails.js'
 import Portalarticleupdate from './app/pages/auth/portallinkupdatewithid.js'
+import Requestarticledetails from './app/pages/auth/requestarticledetails.js'
+import Requestarticleupdate from './app/pages/auth/requestarticlewithid.js'
+import Uploadimagerequestarticle from './app/pages/auth/uploadrequestarticleimage.js'
 import { useEffect } from "react";
 import Home from "./app/pages/home.js";
 import { ToastContainer } from "react-toastify";
@@ -37,7 +41,52 @@ import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 
 function App() {
 
+  // const checkForDevTools = () => {
+  //   // Check if window.devtools is defined and has the isOpen property
+  //   if (window.devtools && typeof window.devtools.isOpen !== 'undefined') {
+  //     if (window.devtools.isOpen) {
+  //       alert("Please close the developer tools and refresh the page.");
+  //       window.location.reload();
+  //     }
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   const intervalId = setInterval(checkForDevTools, 1000);
+
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
+  // useEffect(() => {
+  //   const handleContextMenu = (e) => {
+  //     e.preventDefault();
+  //   };
+
+  //   const handleKeyDown = (e) => {
+  //     if (e.key === 'F12' || (e.ctrlKey && e.key === 'Shift' && e.keyCode === 73)) {
+  //       console.warn("Developer Tools are not allowed.");
+  //       e.preventDefault();
+  //     }
+  //   };
+
+  //   const handleDevToolsChange = () => {
+  //     if (window.devtools.isOpen) {
+  //       console.warn("Developer Tools are not allowed.");
+  //     }
+  //   };
+
+  //   document.addEventListener('contextmenu', handleContextMenu);
+  //   document.addEventListener('keydown', handleKeyDown);
+
+
+  //   window.addEventListener('devtoolschange', handleDevToolsChange);
+
+  //   return function cleanup() {
+  //     document.removeEventListener('contextmenu', handleContextMenu);
+  //     document.removeEventListener('keydown', handleKeyDown);
+  //     window.removeEventListener('devtoolschange', handleDevToolsChange);
+  //   };
+  // }, []);
 
 
   const browserRouter = createBrowserRouter([
@@ -48,6 +97,10 @@ function App() {
     {
       path: '/RegistrationDone',
       element: <Thanks />
+    },
+    {
+      path: '/thanksPage',
+      element: <Thanksarticle />
     },
     {
       path: '/signUp',
@@ -61,6 +114,11 @@ function App() {
       element: <Portalarticledetails />
     },
     { path: '/portalarticledetails/:id', element: <Portalarticleupdate /> },
+    {
+      path: '/requestarticledetail/requestarticle/:id/',
+      element: <Requestarticledetails />
+    },
+    { path: '/requestarticledetails/requestarticle/:id', element: <Requestarticleupdate /> },
     {
       path: "/",
       element: <Layout />,
@@ -83,6 +141,7 @@ function App() {
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
         { path: 'DomainDetails', element: <Domaindetails /> },
+        { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {
           path: '/resubmitarticle/:id',
           element: <Resubmnittedarticle />

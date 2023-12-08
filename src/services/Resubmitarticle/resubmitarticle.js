@@ -17,14 +17,29 @@ export const resubmitarticle = (id) => {
 };
 
 
+export const uploadimagereqarticle = (id, imgid) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${id}/${imgid}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
 export const updaterResubmitarticle = (data, id) => {
 
   const formData = new FormData();
   formData.append("title", data.title);
   formData.append("content", data.content);
-  formData.append("image", data.image);
+  if (data.image && (data.image instanceof File || data.image instanceof Blob)) {
+    formData.append("image", data.image);
+}
   formData.append("publication_date", data.date);
-  formData.append("max_links", data.link);
+
   formData.append("comment", data.comment);
 
 
@@ -39,10 +54,42 @@ export const updaterResubmitarticle = (data, id) => {
     });
 };
 
+export const updaterimagrequestedarticle = (data, id) => {
+
+  const formData = new FormData();
+  if (data.image && (data.image instanceof File || data.image instanceof Blob)) {
+    formData.append("image", data.image);
+} else {
+    formData.append("image", "");
+  }
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-image-article/${id}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
 
 export const portalArticleDetails = (id) => {
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/newarticle/${id}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const requestArticleDetails = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-portal-article-detail/requestarticle/${id}`)
     .then((res) => {
       return res?.data;
     })
@@ -53,14 +100,37 @@ export const portalArticleDetails = (id) => {
 };
 
 
-export const portallinksubmit = (link, id) => {
+
+export const portallinksubmit = (link, id, requestarticle, language) => {
 
   const formData = new FormData();
   formData.append("link", link);
+  formData.append("type", requestarticle);
+  formData.append("language", language);
 
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/update-portal-link/${id}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+
+export const portalArticleDetailsReject = (id, article, comment) => {
+
+  const formData = new FormData();
+  formData.append("comment", comment);
+  formData.append("type", article);
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/portal-reject-article/${id}`, formData)
     .then((res) => {
       return res.data;
     })
