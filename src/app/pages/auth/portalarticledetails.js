@@ -48,14 +48,24 @@ function Portalarticledetails() {
     const handleCopyClick = (content) => {
         const tempInput = document.createElement('textarea');
         const textContent = new DOMParser().parseFromString(content, 'text/html').body.textContent;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
 
         tempInput.value = textContent;
         document.body.appendChild(tempInput);
-        tempInput.select();
+        document.body.appendChild(tempDiv);
+        const range = document.createRange();
+        range.selectNodeContents(tempDiv);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
         document.execCommand('copy');
         document.body.removeChild(tempInput);
-        toast.success('Content copied to clipboard');
+        document.body.removeChild(tempDiv);
+    
+        toast.success(translate(languageData, "Contentcopiedtoclipboard"));
     };
+    
 
     const handleRejectClick = () => {
         setShowModal(true);
@@ -138,9 +148,9 @@ function Portalarticledetails() {
                                             <span>{translate(languageData, "sidebarContent")}</span>
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                            <div id='contentToCopy' className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required">
+                                            <div className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required">
                                                 <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
-                                                <button className="copy-button position-relative" onClick={handleCopyClick}>
+                                                <button className="copy-button position-relative" onClick={() => handleCopyClick(portalArticleDetail[0]?.content)}>
                                                     <FaCopy />
                                                 </button>
                                             </div>
