@@ -10,16 +10,18 @@ import { useLanguage } from '../../Context/languageContext';
 import { uploadimagereqarticle, updaterimagrequestedarticle } from '../../../services/Resubmitarticle/resubmitarticle';
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
-
+import Select from 'react-select'
 const AddArticle = () => {
 
     const initialValues = {
         image: "",
+        userStatus: "",
     };
 
     const [formValues, setFormValues] = useState(initialValues);
     const [loading, setLoading] = useState(false)
     const [displayedImage, setDisplayedImage] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(true);
 
     const { languageData } = useLanguage();
 
@@ -46,14 +48,22 @@ const AddArticle = () => {
     };
 
 
-
-
-
     const { id } = useParams();
 
+    const languagesOpts = [
+        {
+            value: "AcceptPublication",
+            label: translate(languageData, "AcceptPublication")
+        },
+        {
+            value: "RejectPublication",
+            label: translate(languageData, "RejectPublication")
+        }
+    ]
 
-
-
+    const handleSelectChange = (selectedOption) => {
+        setFormValues({ ...formValues, userStatus: selectedOption?.value })
+    }
 
     useEffect(() => {
         resubmitimg()
@@ -68,12 +78,16 @@ const AddArticle = () => {
                 id: res.data[0].id,
                 title: res.data[0].title,
                 link: res.data[0].max_links,
+                url: res.data[0].url,
                 image: dynamicImageUrl,
                 comment: res.data[0].comments,
                 content: res.data[0].content,
                 date: formatDate(res.data[0].created_at)
 
             });
+            setShowDropdown(res.data[0].status === 'Published');
+        } else {
+            setShowDropdown(false);
         }
     }
 
@@ -119,8 +133,6 @@ const AddArticle = () => {
             });
             setLoading(false)
         }
-
-        console.log(res, "116");
     }
 
     return (
@@ -166,22 +178,32 @@ const AddArticle = () => {
 
                             </Col>
                         </Row>
-                        <Row className='mt-4 pb-8'>
+                        <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4} className='mt-2'>
                                 <span>{translate(languageData, "sidebarContent")}</span>
                             </Col>
+                            <Col xs={12} md={8} className="mt-3">
+                                <div dangerouslySetInnerHTML={{ __html: formValues?.content }} />
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "maxLinks")} </span>
+                            </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                {formValues?.content}
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    {formValues?.link}
+                                </div>
 
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "link")} </span>
+                                <span>{translate(languageData, "writingUrl")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.link}
+                                <div className="wrap-input100 validate-input mb-0">
+                                    {formValues?.url}
                                 </div>
 
                             </Col>
@@ -192,7 +214,7 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "image")}</span>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                            {displayedImage ? <div> <img src={displayedImage} alt='Displayed' /></div> : <div className= "border border-primary text-center">Image Preview</div>}
+                                {displayedImage ? <div> <img src={displayedImage} alt='Displayed' /></div> : <div className="border border-primary text-center">Image Preview</div>}
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
                                 <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
@@ -204,6 +226,16 @@ const AddArticle = () => {
                                 <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
+                        {showDropdown && (
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "Status")}</span>
+                                </Col>
+                                <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                                </Col>
+
+                            </Row>)}
                     </Card.Body>
 
                     <div className='d-flex mb-5 mt-5'>

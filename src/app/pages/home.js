@@ -36,6 +36,16 @@ const Home = () => {
     }
   }
 
+  const handleRedirect = (data) => {
+    if (data.type === 'addnewarticle') {
+      return `/resubmitarticle/${data?.id}`;
+    } else if (data.type === 'requestarticle') {
+      return `/uploadimagerequestarticle/${data?.article_id}`;
+    }
+    return '#';
+  };
+  
+
   const getActionText = (status) => {
     switch (status) {
       case "CustomerReview":
@@ -374,7 +384,7 @@ const Home = () => {
                             <small className='d-flex'><div  className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
                           </div>
                           <div>
-                            <Link to={`/resubmitarticle/${data?.id}`}>
+                            <Link to={handleRedirect(data)}>
                             <Button className="btn btn-primary mt-1">
                               <small>{getButtonText(data?.status)}</small>
                             </Button></Link>

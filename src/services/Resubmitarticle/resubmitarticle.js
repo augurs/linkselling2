@@ -64,7 +64,9 @@ export const updaterimagrequestedarticle = (data, id) => {
 } else {
     formData.append("image", "");
   }
-
+  if (data.userStatus) {
+    formData.append("user_status", data.userStatus);
+}
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/update-image-article/${id}`, formData)
