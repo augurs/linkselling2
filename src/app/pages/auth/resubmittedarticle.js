@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Card, Col, Row } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Dropdown, Row } from 'react-bootstrap';
 import FileUpload from '../../Components/FileUpload/FileUpload';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg';
@@ -9,6 +9,7 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate, formatDate } from '../../../utility/helper';
 import { resubmitarticle, updaterResubmitarticle } from '../../../services/Resubmitarticle/resubmitarticle';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
+import Select from 'react-select'
 const AddArticle = () => {
     const [formValues, setFormValues] = useState({
         date: "",
@@ -16,12 +17,13 @@ const AddArticle = () => {
         image: "",
         comment: "",
         content: "",
+        userStatus: "",
     });
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [editor, setEditor] = useState();
     const [displayedImage, setDisplayedImage] = useState(null);
-
+    const [showDropdown, setShowDropdown] = useState(true);
     const { languageData } = useLanguage();
     const { id } = useParams();
     const navigate = useNavigate()
@@ -57,6 +59,22 @@ const AddArticle = () => {
     };
 
 
+    const handleSelectChange = (selectedOption) => {
+        setFormValues({ ...formValues, userStatus: selectedOption?.value })
+        validate(formValues)
+    }
+
+    const languagesOpts = [
+        {
+            value: "AcceptPublication",
+            label: translate(languageData, "AcceptPublication")
+        },
+        {
+            value: "RejectPublication",
+            label: translate(languageData, "RejectPublication")
+        }
+    ]
+
     useEffect(() => {
         resubmitArticleServices();
     }, []);
@@ -70,12 +88,17 @@ const AddArticle = () => {
                 id: res.data[0].id,
                 title: res.data[0].title,
                 link: res.data[0].max_links,
+                url: res.data[0].link,
                 image: dynamicImageUrl,
                 comment: res.data[0].comment,
                 content: res.data[0].content,
+                status: res.data[0].status,
                 date: formatDate(res.data[0].created_at),
             });
             setDisplayedImage(dynamicImageUrl);
+            setShowDropdown(res.data[0].status === 'Published');
+        } else {
+            setShowDropdown(false);
         }
     };
 
@@ -295,12 +318,37 @@ const AddArticle = () => {
                                 <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "link")}</span>
+                            </Col>
+                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                    {formValues.url}
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.title}</div>
+                            </Col>
+                        </Row>
+                        {showDropdown && (
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "Status")}</span>
+                                </Col>
+                                <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                                    <div className='text-danger text-center mt-1'>{formErrors.userStatus}</div>
+                                </Col>
+
+                            </Row>)}
                     </Card.Body>
-                    <div className='d-flex mb-5 mt-5'>
-                        {loading ? <img src={globalLoader} className='mx-auto'/>:
-                        <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => updateResubmitArticleServices()}>
-                            { translate(languageData, "submit")}
-                        </Button>}
+                    <div className='d-flex justify-content-end'>
+                        {loading ? <img src={globalLoader} className='mx-auto' /> :
+                            <div className='d-flex gap-2 mx-4 my-3'>
+                                <Button className='btn btn-primary' onClick={() => updateResubmitArticleServices()}>
+                                    {translate(languageData, "submit")}
+                                </Button>
+                            </div>
+                        }
                     </div>
                 </Card>
             </div>

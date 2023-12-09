@@ -39,7 +39,9 @@ export const updaterResubmitarticle = (data, id) => {
     formData.append("image", data.image);
 }
   formData.append("publication_date", data.date);
-
+  if (data.userStatus) {
+    formData.append("user_status", data.userStatus);
+}
   formData.append("comment", data.comment);
 
 
