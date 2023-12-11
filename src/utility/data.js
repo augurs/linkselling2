@@ -474,12 +474,12 @@ export const MenuProps = {
 };
 
 export const anchorTypes = [
-    { type: "1" },
-   { type: "2" },
-    { type: "3" },
-    { type: "4" },
-    { type: "5" },
-    { type: "6" },
-    { type: "7" },
+    { type: "1", label: "EMA"},
+   { type: "2", label: "BRAND/URL" },
+    { type: "3", label: "MIXED" },
+    // { type: "4" },
+    // { type: "5" },
+    // { type: "6" },
+    // { type: "7" },
 
 ]

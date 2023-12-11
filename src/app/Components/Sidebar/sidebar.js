@@ -55,7 +55,7 @@ const Sidebar = ({toggleSiderbar, sidebarActive }) => {
                         type="button"
                         onClick={() => toggleSiderbar()}
                     >
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                     </Button>
                 </div>
                 <div className="main-sidemenu">
@@ -65,48 +65,17 @@ const Sidebar = ({toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                        {/* <li className="slide" style={{ cursor: "pointer" }}>
-                            <a className="side-menu__item has-link" data-bs-toggle="slide">
-                                <span className="side-menu__icon"><BiBookContent size={20} /></span>
-                                <span className="side-menu__label ">Treści</span>
-                            </a>
-                        </li> */}
-                        <li className={`slide ${menuType === "articles" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("articles")}>
-                            <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
-                                <span className="side-menu__icon"><PiArticleLight size={20} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">{translate(languageData, "sidebarContent")}</span><i class="angle fa fa-angle-right"></i>
-                            </a>
-                            <ul class="slide-menu">
-                                <li class="side-menu-label1"><a href="javascript:void(0)">lista artykułów</a></li>
-                                <li><Link to="/articleList" class="slide-item" onClick={() => handleLinkPath("/articleList")}>{translate(languageData, "sidebarListArticle")}</Link></li>
-                                <li><Link to="/addArticle" class="slide-item" onClick={() => handleLinkPath("/addArticle")}>{translate(languageData, "SidebarAddArticle")}</Link></li>
-                                <li><Link to="/orderArticle" class="slide-item" onClick={() => handleLinkPath("/orderArticle")}>{translate(languageData, "SidebarOrderArticle")}</Link></li>
-                                <li><Link to="/requestedArticles" class="slide-item" onClick={() => handleLinkPath("/requestedArticles")}>View Requested Article</Link></li>
-                            </ul>
-                        </li>
-                        {/* <li className="slide" style={{ cursor: "pointer" }}>
-                            <a className="side-menu__item has-link" data-bs-toggle="slide">
-                                <span className="side-menu__icon"><FaEdit size={20} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">Zamów artykuł</span>
-                            </a>
-                        </li> */}
-
-                        {/* <li className="slide" style={{ cursor: "pointer" }}>
-                            <a className="side-menu__item has-link" data-bs-toggle="slide">
-                                <span className="side-menu__icon"><RiBillFill size={20} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">Informacje rozliczeniowe</span>
-                            </a>
-                        </li> */}
+                        
                         <li className={`slide ${menuType === "buylinks" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("buylinks")}>
-                            <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
+                            <Link to="/articlesInProgress" className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                 <span className="side-menu__icon"><PiLinkSimpleThin size={20} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">{translate(languageData, "SidebarBuyLink")}</span><i class="angle fa fa-angle-right"></i>
-                            </a>
-                            <ul class="slide-menu">
+                                <span className="side-menu__label">{translate(languageData, "SidebarBuyLink")}</span><i className="angle fa fa-angle-right"></i>
+                            </Link>
+                            <ul className="slide-menu">
                                 {/* <li class="side-menu-label1"><a href="javascript:void(0)">lista artykułów</a></li> */}
-                                <li><Link to="/articlesInProgress" class="slide-item" onClick={() => handleLinkPath("/articlesInProgress")}>{translate(languageData, "SidebarArticleProgress")}</Link></li>
-                                <li><Link to="/readyArticles" class="slide-item" onClick={() => handleLinkPath("/readyArticles")}>{translate(languageData, "SidebarPublishedArticle")}</Link></li>
-                                <li><Link to="/buyArticles" class="slide-item" onClick={() => handleLinkPath("/buyArticles")}>{translate(languageData, "SidebarPurchaseItem")}</Link></li>
+                                <li><Link to="/articlesInProgress" className="slide-item" onClick={() => handleLinkPath("/articlesInProgress")}>{translate(languageData, "SidebarArticleProgress")}</Link></li>
+                                <li><Link to="/readyArticles" className="slide-item" onClick={() => handleLinkPath("/readyArticles")}>{translate(languageData, "SidebarPublishedArticle")}</Link></li>
+                                <li><Link to="/buyArticles" className="slide-item" onClick={() => handleLinkPath("/buyArticles")}>{translate(languageData, "SidebarPurchaseItem")}</Link></li>
                                 {/* <li><Link to="/addArticle" class="slide-item" onClick={() => handleLinkPath("/addArticle")}>Dodaj artykuł</Link></li>
                                 <li><Link to="/orderArticle" class="slide-item" onClick={() => handleLinkPath("/orderArticle")}>Zamów artykuł</Link></li> */}
                             </ul>

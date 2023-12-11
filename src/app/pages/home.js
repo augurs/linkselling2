@@ -44,7 +44,6 @@ const Home = () => {
     }
     return '#';
   };
-  
 
   const getActionText = (status) => {
     switch (status) {
@@ -232,7 +231,8 @@ const Home = () => {
       project: item?.project,
       date: date?.toLocaleString(),
       status: item?.status,
-      name: item?.name
+      name: item?.name,
+      id: item?.id
     }
   })
 
@@ -273,7 +273,7 @@ const Home = () => {
 
       sortable: true,
       center: true,
-      //  width: '180px'
+       width: '180px'
     },
     {
       name: translate(languageData, "artilstStatus"),
@@ -281,7 +281,7 @@ const Home = () => {
       sortable: true,
       center: true,
       cell: (row) => {
-        let buttonClass = "btn btn-primary btn-pill";
+        let buttonClass = "btn btn-outline-primary btn-pill";
         let buttonText = "";
 
         switch (row.status) {
@@ -326,9 +326,17 @@ const Home = () => {
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
             case "Accept":
-              buttonClass = "btn btn-outline-dark btn-pill";
-              buttonText = <small>{translate(languageData, "Accept")}</small>;
-              break;
+            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonText = <small>{translate(languageData, "Accept")}</small>;
+            break;
+            case "RejectPublication":
+            buttonClass = "btn btn-outline-danger btn-pill";
+            buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
+            break;
+            case "AcceptPublication":
+            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+            break;
           default:
             
             buttonText = row.status;
@@ -347,15 +355,15 @@ const Home = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          <a href={row.link} target='_blank'>
+          <Link to={row.link}>
             <FaLink className="icon-link" />
-          </a>
-          <a href={row.viewLink} target='_blank'>
+          </Link>
+          <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
-          </a>
-          <a href={row.invoice} target='_blank'>
+          </Link>
+          {/* <a href={row.invoice} target='_blank'>
             <FaPlus className="icon-add" />
-          </a>
+          </a> */}
         </div>
       ),
     }
@@ -367,7 +375,7 @@ const Home = () => {
     <div className="inner-body" id="content">
       <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
       <Row>
-        <Col xs={12} sm={7}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "todo")}</h3>
@@ -402,7 +410,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={5}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
@@ -429,7 +437,7 @@ const Home = () => {
       </Row>
 
       <Row>
-        <Col xs={12} sm={7}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "promotionalList")}</h3>
@@ -452,7 +460,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={5}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "OrdersList")}</h3>

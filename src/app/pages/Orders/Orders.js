@@ -8,6 +8,7 @@ import { useLanguage } from '../../Context/languageContext'
 import DataTable from 'react-data-table-component'
 import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
 import "./Orders.css";
+import { Link } from 'react-router-dom'
 const Orders = () => {
 
   const userData = JSON.parse(localStorage.getItem('userData'))
@@ -39,7 +40,8 @@ const Orders = () => {
       project: item?.project,
       date: date?.toLocaleString(),
       status: item?.status,
-      name: item?.name
+      name: item?.name,
+      id: item?.id
     }
   })
 
@@ -89,7 +91,7 @@ const Orders = () => {
       sortable: true,
       center: true,
       cell: (row) => {
-        let buttonClass = "btn btn-primary btn-pill";
+        let buttonClass = "btn btn-outline-primary btn-pill";
         let buttonText = "";
 
         switch (row.status) {
@@ -137,6 +139,14 @@ const Orders = () => {
             buttonClass = "btn btn-outline-dark btn-pill";
             buttonText = <small>{translate(languageData, "Accept")}</small>;
             break;
+            case "RejectPublication":
+            buttonClass = "btn btn-outline-danger btn-pill";
+            buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
+            break;
+            case "AcceptPublication":
+            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+            break;
           default:
             
             buttonText = row.status;
@@ -157,15 +167,12 @@ const Orders = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          <a href={row.link} target='_blank'>
+          <Link to={row.link}>
             <FaLink className="icon-link" />
-          </a>
-          <a href={row.viewLink} target='_blank'>
+          </Link>
+          <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
-          </a>
-          <a href={row.invoice} target='_blank'>
-            <FaPlus className="icon-add" />
-          </a>
+          </Link>
         </div>
       ),
     }

@@ -37,7 +37,7 @@ import Orders from "./app/pages/Orders/Orders.js";
 import CustomCartContext from "./app/Context/cartListContext.js";
 import '../src/assets/css/custom.css'
 import { SidebarProvider } from "./app/Context/togglerBarContext.js";
-
+import VieworderArticle from "./app/pages/ViewOderArticle/vieworderArticle.js";
 
 function App() {
 
@@ -141,6 +141,7 @@ function App() {
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
         { path: 'DomainDetails', element: <Domaindetails /> },
+        { path: 'viewArticle/:id', element: <VieworderArticle /> },
         { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {
           path: '/resubmitarticle/:id',
