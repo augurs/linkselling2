@@ -232,7 +232,8 @@ const Home = () => {
       date: date?.toLocaleString(),
       status: item?.status,
       name: item?.name,
-      id: item?.id
+      id: item?.id,
+      link: item?.link
     }
   })
 
@@ -273,7 +274,7 @@ const Home = () => {
 
       sortable: true,
       center: true,
-       width: '180px'
+      width: '180px'
     },
     {
       name: translate(languageData, "artilstStatus"),
@@ -297,7 +298,7 @@ const Home = () => {
             buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "Completed")}</small>;
             break;
-            case "RequestChanges":
+          case "RequestChanges":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
             break;
@@ -321,24 +322,28 @@ const Home = () => {
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
-            case "PendingForAssing":
+          case "PendingForAssing":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
-            case "Accept":
+          case "Accept":
             buttonClass = "btn btn-outline-dark btn-pill";
             buttonText = <small>{translate(languageData, "Accept")}</small>;
             break;
-            case "RejectPublication":
+          case "RejectPublication":
             buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
             break;
-            case "AcceptPublication":
-            buttonClass = "btn btn-outline-dark btn-pill";
+          case "AcceptPublication":
+            buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
             break;
+          case "ReadyToPublish":
+            buttonClass = "btn btn-outline-primary btn-pill";
+            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            break;
           default:
-            
+
             buttonText = row.status;
         }
 
@@ -355,15 +360,13 @@ const Home = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          <Link to={row.link}>
+          {row.status === "AcceptPublication" && (<Link to={row.link}>
             <FaLink className="icon-link" />
-          </Link>
+          </Link>)}
+
           <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>
-          {/* <a href={row.invoice} target='_blank'>
-            <FaPlus className="icon-add" />
-          </a> */}
         </div>
       ),
     }
@@ -388,14 +391,14 @@ const Home = () => {
                       <Card className='shadow-md' style={{ marginBottom: "0.2rem" }}>
                         <div className='d-flex align-items-center justify-content-between p-1'>
                           <div>
-                            <h6 style={{marginBottom: "1px"}}>{data?.title}</h6>
-                            <small className='d-flex'><div  className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
+                            <h6 style={{ marginBottom: "1px" }}>{data?.title}</h6>
+                            <small className='d-flex'><div className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
                           </div>
                           <div>
                             <Link to={handleRedirect(data)}>
-                            <Button className="btn btn-primary mt-1">
-                              <small>{getButtonText(data?.status)}</small>
-                            </Button></Link>
+                              <Button className="btn btn-primary mt-1">
+                                <small>{getButtonText(data?.status)}</small>
+                              </Button></Link>
                           </div>
                         </div>
                       </Card>

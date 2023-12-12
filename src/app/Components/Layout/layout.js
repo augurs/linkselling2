@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Header from '../Header/header'
 import { Button, Container, Modal } from 'react-bootstrap'
 import Sidebar from '../Sidebar/sidebar'
+import "./layout.css";
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate } from '../../../utility/helper'

@@ -41,7 +41,8 @@ const Orders = () => {
       date: date?.toLocaleString(),
       status: item?.status,
       name: item?.name,
-      id: item?.id
+      id: item?.id,
+      link: item?.link
     }
   })
 
@@ -144,8 +145,12 @@ const Orders = () => {
             buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
             break;
             case "AcceptPublication":
-            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+            break;
+            case "ReadyToPublish":
+            buttonClass = "btn btn-outline-primary btn-pill";
+            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
             break;
           default:
             
@@ -158,8 +163,7 @@ const Orders = () => {
           </span>
         );
       },
-    }
-    ,
+    },
 
     {
       name: translate(languageData, "writingAction"),
@@ -167,9 +171,9 @@ const Orders = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          <Link to={row.link}>
+          {row.status === "Accept" && (<Link to={row.link}>
             <FaLink className="icon-link" />
-          </Link>
+          </Link>)}
           <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>
