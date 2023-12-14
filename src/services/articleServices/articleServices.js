@@ -37,6 +37,30 @@ export const getArticles = (id) => {
     });
 };
 
+export const readyArticleList = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-ready-articles/${id}`,)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const articlesInProgressList = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-inprogress-articles/${id}`,)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
 
 export const getRequestedArticles = (id) => {
   return axios

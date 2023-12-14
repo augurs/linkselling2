@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BiBookContent } from 'react-icons/bi';
+import { BiUserCircle } from 'react-icons/bi';
 import { PiArticleLight } from 'react-icons/pi';
 import { FaEdit } from 'react-icons/fa';
 import { BsPencil, BsFillBagCheckFill } from 'react-icons/bs';
@@ -15,6 +15,7 @@ import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
+    const userData = localStorage.getItem('userData');
 
     const location = useLocation()
 
@@ -39,8 +40,10 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         setMenuType("")
     }
 
+
+
     const popoverContent = (
-        <Popover id="popover-content" className="custom-popover">
+        <Popover id="popover-content">
             <Popover.Body>
                 <div>
                     <div className="side-menu-label1">lista artykułów</div>
@@ -79,7 +82,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
         <div className={`sticky ${sidebarActive ? "is_expanded" : ""}`}>
             <div className="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
-            <div className="app-sidebar">
+            <div className="app-sidebar d-flex flex-column justify-content-between">
                 <div className="side-header">
                     {!sidebarActive && <h3 className='mx-auto text-dark'>{translate(languageData, "title")}</h3>}
                     <Button
@@ -97,7 +100,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                        <OverlayTrigger trigger="hover" delay={{ show: 470, hide: 490 }} placement="right" overlay={sidebarActive ? popoverContent : <div />} rootClose>
+                        <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="right" overlay={sidebarActive ? popoverContent : <div />} rootClose>
                             <li className={`slide ${menuType === "articles" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("articles")}>
                                 <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiArticleLight size={20} style={{ color: "gray!important" }} /></span>
@@ -111,7 +114,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                                     <li><Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath("/requestedArticles")}>View Requested Article</Link></li>
                                 </ul>
                             </li></OverlayTrigger>
-                        <OverlayTrigger trigger="hover" delay={{ show: 470, hide: 490 }} placement="right" overlay={sidebarActive ? popoverBuylinks : <div />} rootClose>
+                        <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="right" overlay={sidebarActive ? popoverBuylinks : <div />} rootClose>
                             <li className={`slide ${menuType === "buylinks" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("buylinks")}>
                                 <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiLinkSimpleThin size={20} style={{ color: "gray!important" }} /></span>
@@ -172,6 +175,17 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                 </div>
+                <div>
+                    <ul className="side-menu mt-3 border-top border-3">
+                        <li className="slide" style={{ cursor: "pointer" }}>
+                            <Link to='/orders' className="side-menu__item has-link d-flex justify-content-center align-items-center gap-3" data-bs-toggle="slide">
+
+                                <span className="side-menu__icon"><BiUserCircle size={30} style={{ color: "gray!important" }} /></span>
+                                <span className="side-menu__label">Welcome Marcin </span>
+
+                            </Link>
+                        </li>
+                    </ul></div>
             </div>
         </div>
 

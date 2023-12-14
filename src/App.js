@@ -130,7 +130,7 @@ function App() {
         { path: 'projectList', element: <ProjectList /> },
         { path: 'addProject', element: <AddProjects /> },
         { path: 'editProject/:id', element: <EditProjects /> },
-        { path: 'marketPlace', element: <MarketPlace /> },
+        // { path: 'marketPlace', element: <MarketPlace /> },
         { path: 'articlesInProgress', element: <ArticleInProgress /> },
         { path: 'articleDetails', element: <ArticleDetails /> },
         { path: 'readyArticles', element: <ReadyArticles /> },

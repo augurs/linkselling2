@@ -24,6 +24,6 @@
     padding: 20px;
 }
 
-.custom-popover {
+#popover-content {
     z-index: 9999 !important;
 }

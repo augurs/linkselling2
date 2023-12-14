@@ -171,9 +171,11 @@ const Orders = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          {row.status === "Accept" && (<Link to={row.link}>
-            <FaLink className="icon-link" />
-          </Link>)}
+          {(row.status === "AcceptPublication" || row.status === "Published") && (
+            <Link to={row.link}>
+              <FaLink className="icon-link" />
+            </Link>
+          )}
           <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>

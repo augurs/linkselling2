@@ -280,10 +280,10 @@ const OrderArticle = () => {
                                 <Col xs={12} md={4}>
                                     <span>{translate(languageData, "ArticleType")} *</span>
                                 </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <Col xs={12} md={8} className="mt-3 mt-md-0 d-flex justify-content-center">
                                     <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData, "artilistPaidArticle")}</Button>
-                                    <Button className={`btn ${articleType === 'guest' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("guest")}>{translate(languageData, "artilistGuestArticle")}</Button>
-                                    <Button className={`btn ${articleType === 'personal' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("personal")}>{translate(languageData, "artilistArticlePersonalUse")}</Button>
+                                    {/* <Button className={`btn ${articleType === 'guest' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("guest")}>{translate(languageData, "artilistGuestArticle")}</Button>
+                                    <Button className={`btn ${articleType === 'personal' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("personal")}>{translate(languageData, "artilistArticlePersonalUse")}</Button> */}
                                 </Col>
                             </Row>
                         </Col>
