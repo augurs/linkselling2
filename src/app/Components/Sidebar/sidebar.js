@@ -1,27 +1,26 @@
 import React, { useState } from 'react'
 import { BiUserCircle } from 'react-icons/bi';
 import { PiArticleLight } from 'react-icons/pi';
-import { FaEdit } from 'react-icons/fa';
 import { BsPencil, BsFillBagCheckFill } from 'react-icons/bs';
-import { RiBillFill } from 'react-icons/ri';
-import { AiOutlineProject, AiOutlineShopping } from 'react-icons/ai';
+import { AiOutlineProject,} from 'react-icons/ai';
 import { PiLinkSimpleThin } from 'react-icons/pi';
-import { LiaFileInvoiceDollarSolid, LiaFileInvoiceSolid } from 'react-icons/lia';
+import { LiaFileInvoiceDollarSolid} from 'react-icons/lia';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import "./sidebar.css";
 import { translate } from '../../../utility/helper';
-import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
-
+import { Button, OverlayTrigger, Popover, Row } from 'react-bootstrap';
+import UserProfileModal from './userProfileModal';
+import { ToastContainer } from 'react-toastify';
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
-    const userData = localStorage.getItem('userData');
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     const location = useLocation()
 
     const [menuType, setMenuType] = useState("")
     const [currentPath, setcurrentPath] = useState('')
-
+    const [isModalOpen, setModalOpen] = useState(false);
     const { languageData } = useLanguage()
 
 
@@ -40,6 +39,9 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         setMenuType("")
     }
 
+    const handleEditClick = () => {
+        setModalOpen(true);
+    };
 
 
     const popoverContent = (
@@ -57,7 +59,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         {translate(languageData, 'SidebarOrderArticle')}
                     </Link>
                     <Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath('/requestedArticles')}>
-                        View Requested Article
+                    {translate(languageData, "viewRequestedArticle")}
                     </Link>
                 </div>
             </Popover.Body>
@@ -78,9 +80,24 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         </Popover>
     );
 
+    const popoverUserProfile = (
+        <Popover id="popover-content" >
+            <Popover.Body className='d-flex flex-column justify-content-center align-items-center'>
+                <div className='mb-2 border-bottom border-2'>
+                <h3 className='border-bottom border-3 text-center'>{translate(languageData, "UserProfile")}</h3>
+                    <Link className="slide-item" >{`${translate(languageData, "emailSignUp")} : ${userData.email}`}</Link>
+                    <Link className="slide-item" >{userData.alternative_number !== null ? `${translate(languageData, "PhoneNumber")} : ${userData.alternative_number}` : `${translate(languageData, "PhoneNumber")} :  --`}</Link>
+                </div>
+                <div><Button className='btn btn-outline-primary' onClick={handleEditClick}>{translate(languageData, "edituserprofile")}</Button></div>
+            </Popover.Body>
+
+        </Popover>
+    );
+
     return (
 
         <div className={`sticky ${sidebarActive ? "is_expanded" : ""}`}>
+
             <div className="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
             <div className="app-sidebar d-flex flex-column justify-content-between">
                 <div className="side-header">
@@ -100,7 +117,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                        <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="right" overlay={sidebarActive ? popoverContent : <div />} rootClose>
+                        <OverlayTrigger trigger="click" show={menuType === "articles" ? "is-expanded active" : ""} placement="right" overlay={sidebarActive ? popoverContent : <div />} rootClose>
                             <li className={`slide ${menuType === "articles" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("articles")}>
                                 <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiArticleLight size={20} style={{ color: "gray!important" }} /></span>
@@ -111,12 +128,12 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                                     <li><Link to="/articleList" className="slide-item" onClick={() => handleLinkPath("/articleList")}>{translate(languageData, "sidebarListArticle")}</Link></li>
                                     <li><Link to="/addArticle" className="slide-item" onClick={() => handleLinkPath("/addArticle")}>{translate(languageData, "SidebarAddArticle")}</Link></li>
                                     <li><Link to="/orderArticle" className="slide-item" onClick={() => handleLinkPath("/orderArticle")}>{translate(languageData, "SidebarOrderArticle")}</Link></li>
-                                    <li><Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath("/requestedArticles")}>View Requested Article</Link></li>
+                                    <li><Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath("/requestedArticles")}>{translate(languageData, "viewRequestedArticle")}</Link></li>
                                 </ul>
                             </li></OverlayTrigger>
-                        <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="right" overlay={sidebarActive ? popoverBuylinks : <div />} rootClose>
+                        <OverlayTrigger trigger="click" show={menuType === "buylinks" ? "is-expanded" : ""} placement="right" overlay={sidebarActive ? popoverBuylinks : <div />} rootClose>
                             <li className={`slide ${menuType === "buylinks" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("buylinks")}>
-                                <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
+                                <a className={`side-menu__item has-link ${menuType === "buylinks" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiLinkSimpleThin size={20} style={{ color: "gray!important" }} /></span>
                                     <span className="side-menu__label">{translate(languageData, "SidebarBuyLink")}</span><i className="angle fa fa-angle-right"></i>
                                 </a>
@@ -135,12 +152,12 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                                 <span className="side-menu__label">{translate(languageData, "SidebarMyProject")}</span>
                             </Link>
                         </li>
-                        <li className="slide" style={{ cursor: "pointer" }}>
+                        {/* <li className="slide" style={{ cursor: "pointer" }}>
                             <Link to='/marketPlace' className="side-menu__item has-link" data-bs-toggle="slide">
                                 <span className="side-menu__icon"><AiOutlineShopping size={20} style={{ color: "gray!important" }} /></span>
                                 <span className="side-menu__label mt-1">{translate(languageData, "marketPlace")}</span>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="slide" style={{ cursor: "pointer" }}>
                             <Link to='/invoices' className="side-menu__item has-link" data-bs-toggle="slide">
 
@@ -177,16 +194,18 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                 </div>
                 <div>
                     <ul className="side-menu mt-3 border-top border-3">
-                        <li className="slide" style={{ cursor: "pointer" }}>
-                            <Link to='/orders' className="side-menu__item has-link d-flex justify-content-center align-items-center gap-3" data-bs-toggle="slide">
-
-                                <span className="side-menu__icon"><BiUserCircle size={30} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">Welcome Marcin </span>
-
-                            </Link>
-                        </li>
+                        <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="top" overlay={popoverUserProfile} rootClose>
+                            <li className="slide" style={{ cursor: "pointer" }}>
+                                <div className="side-menu__item has-link d-flex justify-content-center align-items-center gap-3" data-bs-toggle="slide">
+                                    <span className="side-menu__icon"><BiUserCircle size={30} style={{ color: "gray!important" }} /></span>
+                                    <span className="side-menu__label">{translate(languageData, "welcome")} {userData.first_name} </span>
+                                </div>
+                            </li>
+                        </OverlayTrigger>
                     </ul></div>
             </div>
+            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} />
+            <ToastContainer />
         </div>
 
     )
