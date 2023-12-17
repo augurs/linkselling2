@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Form, Row } from 'react-bootstrap'
-import { getArticles } from '../../../services/articleServices/articleServices'
+import { getArticles, articlesInProgressList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
-import { translate } from '../../../utility/helper'
+import { translate, formatDate } from '../../../utility/helper'
+import { FaEye, FaLink } from 'react-icons/fa'
 
 const ArticleInProgress = () => {
 
-
+    const [loading, setLoading] = useState(false)
+    const [data, setData] = useState([])
     const navigate = useNavigate();
 
     const [articleList, setArticleList] = useState([])
@@ -22,148 +24,217 @@ const ArticleInProgress = () => {
         handleArticleList()
     }, [])
 
+    useEffect(() => {
+        articlesInProgressServices()
+    }, [])
+
+
+    const articlesInProgressServices = async () => {
+        setLoading(true)
+        const res = await articlesInProgressList(userData?.id)
+        if (res.success === true) {
+            setData(res?.data)
+            setLoading(false)
+        }
+    }
+
+    const tableData = data?.map((item) => {
+        const date = new Date(item?.created_at);
+        return {
+            portal: item?.portal,
+            price: item?.price,
+            project: item?.project,
+            date1: date?.toLocaleString(),
+            status: item?.status,
+            name: item?.name,
+            id: item?.id,
+            link: item?.link,
+            title: item?.title,
+            type: item?.type
+        }
+    })
+
     const columns = [
 
         {
             name: (
-                <div>
-                    <div>{translate(languageData , "TitleOfArticle")}</div>
-                    <div className='text-muted fw-normal lh-1'>{translate(languageData , "SidebarMyProject")}</div>
-                    <div className='text-muted fw-normal lh-1'>{translate(languageData , "PublisherPortal")}</div>
+                <div className='mt-1 mb-2'>
+                    <div>{translate(languageData, "TitleOfArticle")}</div>
+                    <div className='text-muted fw-normal'>{translate(languageData, "SidebarMyProject")}</div>
+                    <div className='text-muted fw-normal'>{translate(languageData, "PublisherPortal")}</div>
                 </div>
             ),
             selector: row => row.title,
+            selector: row => row.project,
+            selector: row => row.portal,
             cell: (row) => (
-                <div>
+                <div className='mt-2 mb-2'>
                     <Link to={`http://${row.title}`} target="_blank" style={{ textDecoration: "underline" }}>
                         {row.title}
                     </Link>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.title2}</div>
+                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.project}</div>
+                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.portal}</div>
                 </div>
             ),
             sortable: true,
-            width: "250px",
+            wrap: true,
+            width: "190px",
             style: {
 
-                width: "250px"
+                width: "190px"
             },
 
 
         },
         {
-            name: translate(languageData , "Views"),
-            selector: row => row.view,
+            name: translate(languageData, "price"),
+            selector: row => row.price,
+            cell: row => `${row.price} zł`,
             sortable: true,
-            width: "250px",
+            center: true,
+            wrap: true,
+            width: "150px",
             style: {
 
-                width: "250px"
+                width: "150px"
             },
 
 
         },
         {
-            name: (
-                <div>
-                    <div>{ translate(languageData , "DeadlineForPublication")}</div>
-                    <div className='text-muted fw-normal lh-1'>{translate(languageData , "DeadlineForWriting")}</div>
-                </div>
-            ),
-            selector: row => row.deadline,
+            name: translate(languageData, "artilstStatus"),
+            selector: (row) => row.status,
+            sortable: true,
+            center: true,
+            cell: (row) => {
+                let buttonClass = "btn btn-outline-primary btn-pill";
+                let buttonText = "";
+
+                switch (row.status) {
+                    case "Pending":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "pending")}</small>;
+                        break;
+                    case "AssignedToWriter":
+                        buttonClass = "btn btn-outline-info btn-pill";
+                        buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+                        break;
+                    case "Completed":
+                        buttonClass = "btn btn-outline-success btn-pill";
+                        buttonText = <small>{translate(languageData, "Completed")}</small>;
+                        break;
+                    case "RequestChanges":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
+                        break;
+                    case "Rejected":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "Rejected")}</small>;
+                        break;
+                    case "Accepted":
+                        buttonClass = "btn btn-outline-secondary btn-pill";
+                        buttonText = <small>{translate(languageData, "Accepted")}</small>;
+                        break;
+                    case "CustomerReview":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                        break;
+                    case "RejectedLink":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+                        break;
+                    case "Published":
+                        buttonClass = "btn btn-outline-primary btn-pill";
+                        buttonText = <small>{translate(languageData, "Published")}</small>;
+                        break;
+                    case "PendingForAssing":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
+                        break;
+                    case "Accept":
+                        buttonClass = "btn btn-outline-dark btn-pill";
+                        buttonText = <small>{translate(languageData, "Accept")}</small>;
+                        break;
+                    case "RejectPublication":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
+                        break;
+                    case "AcceptPublication":
+                        buttonClass = "btn btn-outline-success btn-pill";
+                        buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+                        break;
+                    case "ReadyToPublish":
+                        buttonClass = "btn btn-outline-primary btn-pill";
+                        buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+                        break;
+                    default:
+
+                        buttonText = row.status;
+                }
+
+                return (
+                    <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '140px', minHeight: "35px" }}>
+                        {buttonText}
+                    </span>
+                );
+            },
+        },
+        {
+            name: translate(languageData, "dateOfOrder"),
+            selector: row => row.date1,
             cell: (row) => (
-                <div>
-                    <div target="_blank">
-                        {row.deadline}
-                    </div>
-                    <div className='text-muted' style={{ fontSize: "12px!important" }}>{row.deadline2}</div>
-                </div>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date1)}</button>
             ),
             sortable: true,
-            width: "250px",
+            center: true,
+            wrap: true,
+            width: "150px",
             style: {
 
-                width: "250px"
+                width: "150px"
             },
 
 
         },
         {
-            name: (
-                <div>
-                    <div>{translate(languageData , "artilstStatus")}</div>
-                    <div className='text-muted fw-normal lh-1'>{ translate(languageData , "CurrentStatus")}</div>
-                </div>
-            ),
-            selector: row => row.status,
-            sortable: true,
-            cell: row => <div className='mt-2 mb-2'>
-                <div> <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "WaitingForContent")}</button></div>
-                <div> <button className='btn btn-pill btn-outline-primary mt-1' style={{ fontSize: "12px" }} >{translate(languageData, "new")}</button></div>
-            </div>,
-            width: "250px",
-            style: {
-
-                width: "250px"
-            },
-
-
-        },
-        {
-            name: (
-                <div>
-                    <div>{translate(languageData , "ArtilistPublicationCost")}</div>
-                    <div className='text-muted fw-normal lh-1'>{translate(languageData , "WritingCostNet")}</div>
-                </div>
-            ),
-            selector: row => row.cost,
+            name: translate(languageData, "link"),
+            selector: row => row.link,
             cell: (row) => (
-                <div>
-                    <div target="_blank">
-                        {row.cost}
-                    </div>
-                    <div className='text-muted' style={{ fontSize: "12px!important" }}>{row.cost2}</div>
-                </div>
+                <Link to={row.link}>{row.link}</Link>
             ),
             sortable: true,
+            center: true,
 
-            width: "250px",
+            width: "180px",
             style: {
 
-                width: "250px"
+                width: "180px"
             },
+
+
         },
         {
+            name: translate(languageData, "writingAction"),
+            sortable: true,
+            center: true,
+            cell: (row) => (
+                <div className='d-flex gap-2'>
+                    {(row.status === "AcceptPublication" || row.status === "Published") && (
+                        <Link to={row.link}>
+                            <FaLink className="icon-link" />
+                        </Link>
+                    )}
 
-            cell: row => <div className='mx-2'>
-                <div><button className='btn btn-primary mt-1' style={{ fontSize: "12px" }} onClick={() => navigate('/articleDetails')}>{translate(languageData, "Details")}</button></div>
-                <div><button className='btn btn-primary mt-1' style={{ fontSize: "12px" }}>Submit for verification</button></div>
-            </div>,
-            width: "250px",
-            style: {
-
-                width: "250px"
-            },
-
-        },
+                    <Link to={`/viewArticle/${row.id}`}>
+                        <FaEye className="icon-view" />
+                    </Link>
+                </div>
+            ),
+        }
     ];
 
-    const data = [
-        {
-            title: "(brak tytułu)",
-            title2: "meskiswiat.pl",
-            view: "-",
-            deadline: "07/09/23",
-            deadline2: "07/09/23",
-            cost: "103,50 zł",
-            cost2: "0.00 zł"
 
-
-
-        }
-    ]
-
-
-    const userData= JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     const handleArticleList = async () => {
         const res = await getArticles(userData?.id)
@@ -171,29 +242,29 @@ const ArticleInProgress = () => {
     }
 
     const status = [
-        translate(languageData , "All"),
-        translate(languageData , "WaitingForContent"),
-        translate(languageData , "PublisherWrites"),
-        translate(languageData , "PublisherWrites"),
-        translate(languageData , "ComplainToPublisher"),
-        translate(languageData , "PublicationInProgress"),
-        translate(languageData , "PublicationOverdue"),
-        translate(languageData , "PublisherComments"),
-        translate(languageData , "PublishedInVerification"),
-        translate(languageData , "AdvertisersComments")
+        translate(languageData, "All"),
+        translate(languageData, "WaitingForContent"),
+        translate(languageData, "PublisherWrites"),
+        translate(languageData, "PublisherWrites"),
+        translate(languageData, "ComplainToPublisher"),
+        translate(languageData, "PublicationInProgress"),
+        translate(languageData, "PublicationOverdue"),
+        translate(languageData, "PublisherComments"),
+        translate(languageData, "PublishedInVerification"),
+        translate(languageData, "AdvertisersComments")
 
     ]
 
 
     return (
         <div className='p-4'>
-            <div><h3 className='semi-bold mt-1'>{translate(languageData , "InProgressArticles")}</h3></div>
+            <div><h3 className='semi-bold mt-1'>{translate(languageData, "InProgressArticles")}</h3></div>
             <div className=' mt-4'>
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country">
-                                <option label={translate(languageData , "artilstProject")}></option>
+                                <option label={translate(languageData, "artilstProject")}></option>
                                 {articleList.map((item, index) => {
                                     return (
                                         <option value={item.project} key={index}>{item.project}</option>
@@ -206,7 +277,7 @@ const ArticleInProgress = () => {
                     </Col>
                     <Col xs={12} sm={6} md={4} className='mb-3'>
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                            <input className="input100" type="text" name="search" placeholder={translate(languageData , "EnterNameTitle")} />
+                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
                                 <i className="zmdi zmdi-search" aria-hidden="true"></i>
@@ -216,7 +287,7 @@ const ArticleInProgress = () => {
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
-                                <option label={translate(languageData , "artilstStatus")}></option>
+                                <option label={translate(languageData, "artilstStatus")}></option>
                                 {status.map((item, index) => {
                                     return (
                                         <option value={item} key={index}>{item}</option>
@@ -234,7 +305,7 @@ const ArticleInProgress = () => {
                                     id='checkguarantee'
                                     className='pe-2'
                                 />
-                                <span className='mt-1'> {translate(languageData , "36MonthGuarantee")}</span>
+                                <span className='mt-1'> {translate(languageData, "36MonthGuarantee")}</span>
                             </label>
                         </div>
 
@@ -246,7 +317,7 @@ const ArticleInProgress = () => {
                                     id='checkguarantee'
                                     className='pe-2'
                                 />
-                                <span className='mt-1'> {translate(languageData , "PromotionOnFacebook")}</span>
+                                <span className='mt-1'> {translate(languageData, "PromotionOnFacebook")}</span>
 
                             </label>
                         </div>
@@ -264,7 +335,7 @@ const ArticleInProgress = () => {
                 <DataTable
                     // selectableRowsComponent={Checkbox}
                     columns={columns}
-                    data={data}
+                    data={tableData}
                     customStyles={{
                         rows: {
                             style: {

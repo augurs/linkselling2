@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button, ButtonGroup, Col, Dropdown, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { getArticles } from '../../../services/articleServices/articleServices'
+import { getArticles, readyArticleList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
-import { translate } from '../../../utility/helper'
+import { translate, formatDate } from '../../../utility/helper'
+import { FaEye, FaLink } from 'react-icons/fa'
 
 const ReadyArticles = () => {
 
@@ -12,6 +13,8 @@ const ReadyArticles = () => {
     const navigate = useNavigate();
 
     const [articleList, setArticleList] = useState([])
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(false)
     const [showIndexationModal, setShowIndexationModal] = useState(false)
 
     const { languageData } = useLanguage()
@@ -19,6 +22,37 @@ const ReadyArticles = () => {
     useEffect(() => {
         handleArticleList()
     }, [])
+
+
+
+    useEffect(() => {
+        readyArticleListServices()
+    }, [])
+
+
+    const readyArticleListServices = async () => {
+        setLoading(true)
+        const res = await readyArticleList(userData?.id)
+        if (res.success === true) {
+            setData(res?.data)
+            setLoading(false)
+        }
+    }
+
+    const tableData = data?.map((item) => {
+        const date = new Date(item?.created_at);
+        return {
+            portal: item?.portal,
+            price: item?.price,
+            project: item?.project,
+            date: date?.toLocaleString(),
+            status: item?.status,
+            name: item?.name,
+            id: item?.id,
+            link: item?.link,
+            title: item?.title,
+        }
+    })
 
     const columns = [
 
@@ -31,12 +65,15 @@ const ReadyArticles = () => {
                 </div>
             ),
             selector: row => row.title,
+            selector: row => row.project,
+            selector: row => row.portal,
             cell: (row) => (
                 <div className='mt-2 mb-2'>
                     <Link to={`http://${row.title}`} target="_blank" style={{ textDecoration: "underline" }}>
                         {row.title}
                     </Link>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.title2}</div>
+                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.project}</div>
+                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.portal}</div>
                     <div className='d-flex mt-1'>
                         <Link to={"https://twitter.com"} target="_blank">
                             <img src='data:image/png;base64,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' width="25" />
@@ -48,63 +85,134 @@ const ReadyArticles = () => {
                 </div>
             ),
             sortable: true,
-            width: "250px",
+            wrap: true,
+            width: "190px",
             style: {
 
-                width: "250px"
+                width: "190px"
             },
 
 
         },
         {
-            name: translate(languageData, "Views"),
-            selector: row => row.publicationStatus,
-            cell: row => <button className='btn btn-primary' style={{ fontSize: "12px", width: "20px" }}>100</button>,
+            name: translate(languageData, "price"),
+            selector: row => row.price,
+            cell: row => `${row.price} zł`,
             sortable: true,
-            width: "250px",
+            center: true,
+            wrap: true,
+            width: "150px",
             style: {
 
-                width: "250px"
+                width: "150px"
             },
 
 
         },
         {
-            name: translate(languageData, "PublicationStatus"),
-            selector: row => row.publicationStatus,
-            cell: row => <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "Correct")}</button>,
+            name: translate(languageData, "artilstStatus"),
+            selector: (row) => row.status,
             sortable: true,
-            width: "250px",
-            style: {
+            center: true,
+            cell: (row) => {
+                let buttonClass = "btn btn-outline-primary btn-pill";
+                let buttonText = "";
 
-                width: "250px"
+                switch (row.status) {
+                    case "Pending":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "pending")}</small>;
+                        break;
+                    case "AssignedToWriter":
+                        buttonClass = "btn btn-outline-info btn-pill";
+                        buttonText = <small>{translate(languageData, "AssignedToWriter")}</small>;
+                        break;
+                    case "Completed":
+                        buttonClass = "btn btn-outline-success btn-pill";
+                        buttonText = <small>{translate(languageData, "Completed")}</small>;
+                        break;
+                    case "RequestChanges":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
+                        break;
+                    case "Rejected":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "Rejected")}</small>;
+                        break;
+                    case "Accepted":
+                        buttonClass = "btn btn-outline-secondary btn-pill";
+                        buttonText = <small>{translate(languageData, "Accepted")}</small>;
+                        break;
+                    case "CustomerReview":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "CustomerReview")}</small>;
+                        break;
+                    case "RejectedLink":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "RejectedLink")}</small>;
+                        break;
+                    case "Published":
+                        buttonClass = "btn btn-outline-primary btn-pill";
+                        buttonText = <small>{translate(languageData, "Published")}</small>;
+                        break;
+                    case "PendingForAssing":
+                        buttonClass = "btn btn-outline-warning btn-pill";
+                        buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
+                        break;
+                    case "Accept":
+                        buttonClass = "btn btn-outline-dark btn-pill";
+                        buttonText = <small>{translate(languageData, "Accept")}</small>;
+                        break;
+                    case "RejectPublication":
+                        buttonClass = "btn btn-outline-danger btn-pill";
+                        buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
+                        break;
+                    case "AcceptPublication":
+                        buttonClass = "btn btn-outline-success btn-pill";
+                        buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+                        break;
+                    case "ReadyToPublish":
+                        buttonClass = "btn btn-outline-primary btn-pill";
+                        buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+                        break;
+                    default:
+
+                        buttonText = row.status;
+                }
+
+                return (
+                    <span className={`${buttonClass} d-flex justify-content-center align-items-center`} style={{ minWidth: '140px', minHeight: "35px" }}>
+                        {buttonText}
+                    </span>
+                );
             },
-
-
         },
         {
-            name: translate(languageData, "ArticleIndexationStatus"),
-            // selector: row => row.indStatus,
+            name: translate(languageData, "dateOfOrder"),
+            selector: row => row.date,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{translate(languageData, "ReadyArticleOk")}</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date)}</button>
             ),
             sortable: true,
-            width: "250px",
+            center: true,
+            wrap: true,
+            width: "150px",
             style: {
 
-                width: "250px"
+                width: "150px"
             },
 
 
         },
         {
-            name: translate(languageData, "DeadlineForPublication"),
-            selector: row => row.deadline,
+            name: translate(languageData, "link"),
+            selector: row => row.link,
+            cell: (row) => (
+                <Link to={row.link}>{row.link}</Link>
+            ),
             sortable: true,
-            // cell: row => <div className='mt-2 mb-2'>
-            //     <div> <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>Waiting for content</button></div>
-            //     <div> <button className='btn btn-pill btn-outline-primary mt-1' style={{ fontSize: "12px" }} >New</button></div>
-            // </div>,
+            center: true,
+            wrap: true,
             width: "250px",
             style: {
 
@@ -114,89 +222,29 @@ const ReadyArticles = () => {
 
         },
         {
-            name: translate(languageData , "PublicationDate"),
-            selector: row => row.deadline2,
-            // cell: (row) => (
-            //     <div>
-            //         <div target="_blank">
-            //             {row.cost}
-            //         </div>
-            //         <div className='text-muted' style={{ fontSize: "12px!important" }}>{row.cost2}</div>
-            //     </div>
-            // ),
+            name: translate(languageData, "writingAction"),
             sortable: true,
+            center: true,
+            cell: (row) => (
+                <div className='d-flex gap-2'>
+                    {(row.status === "AcceptPublication" || row.status === "Published") && (
+                        <Link to={row.link}>
+                            <FaLink className="icon-link" />
+                        </Link>
+                    )}
 
-            width: "250px",
-            style: {
-
-                width: "250px"
-            },
-        },
-        {
-            name: (
-                <div className='mt-1 mb-2'>
-                    <div>{translate(languageData, "ArtilistPublicationCost")}</div>
-                    <div className='text-muted fw-normal'>{translate(languageData, "WritingCostNet")}</div>
+                    <Link to={`/viewArticle/${row.id}`}>
+                        <FaEye className="icon-view" />
+                    </Link>
                 </div>
             ),
-
-            cell: row => <div >
-                <div className=''>140,00 zł</div>
-                <div className='text-muted' style={{ fontSize: "12px" }}>0,00 zł</div>
-            </div>,
-            selector: row => row.cost,
-            sortable: true,
-
-            width: "250px",
-            style: {
-
-                width: "250px"
-            },
-        },
-        {
-
-            cell: row => <div ><Dropdown as={ButtonGroup} drop={"up"}>
-                <Button variant="primary">{translate(languageData, "Details")}</Button>
-
-                <Dropdown.Toggle split variant="primary" id="dropdown-split-basic" />
-
-                <Dropdown.Menu style={{ zIndex: "1000" }}>
-                    <Dropdown.Item href="#/action-1">{translate(languageData, "Details")}</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">{translate(languageData, "PaidModification")}</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">{translate(languageData, "CheckPublication")}</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">{translate(languageData, "CheckIndexing")}</Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
-            </div>,
-            width: "250px",
-            style: {
-
-                width: "250px"
-            },
-
-        },
-    ];
-
-    const data = [
-        {
-            title: "(brak tytułu)",
-            title2: "meskiswiat.pl",
-            view: "-",
-            deadline: "07/09/23 14:50",
-            deadline2: "07/09/23 14:50",
-            cost: "103,50 zł",
-            cost2: "0.00 zł"
-
-
-
         }
-    ]
-
+    ];
 
     const modalColumns = [
 
         {
-            name: <div>{translate(languageData , "StatusWhetherArticleCorrectlyPublished")}</div>,
+            name: <div>{translate(languageData, "StatusWhetherArticleCorrectlyPublished")}</div>,
             selector: row => row.status,
 
             width: "250px",
@@ -207,7 +255,7 @@ const ReadyArticles = () => {
 
         },
         {
-            name: translate(languageData , "NumberOfArticle"),
+            name: translate(languageData, "NumberOfArticle"),
             selector: row => row.articleNum,
             cell: (row) => (
                 row.status === "Publication correct" ?
@@ -223,7 +271,7 @@ const ReadyArticles = () => {
 
         },
         {
-            name: translate(languageData , "Action"),
+            name: translate(languageData, "Action"),
             selector: row => row.publicationStatus,
             cell: row => <button className='btn btn-outline-light' style={{ fontSize: "12px" }}>Check the publication</button>,
             width: "250px",
@@ -259,8 +307,8 @@ const ReadyArticles = () => {
         {
             name: (
                 <div>
-                    <div>{translate(languageData , "StatusWhetherArticleCorrectlyPublished")}</div>
-                    <div className='text-muted' style={{ fontSize: "12px" }}>{translate(languageData , "OnlyCorrectlyPublishedArticlesSection36")}</div>
+                    <div>{translate(languageData, "StatusWhetherArticleCorrectlyPublished")}</div>
+                    <div className='text-muted' style={{ fontSize: "12px" }}>{translate(languageData, "OnlyCorrectlyPublishedArticlesSection36")}</div>
                 </div>
             ),
             selector: row => row.status,
@@ -273,7 +321,7 @@ const ReadyArticles = () => {
 
         },
         {
-            name: translate(languageData , "NumberOfArticle"),
+            name: translate(languageData, "NumberOfArticle"),
             selector: row => row.articleNum,
             cell: (row) => (
                 row.status === "Publication correct" ?
@@ -289,7 +337,7 @@ const ReadyArticles = () => {
 
         },
         {
-            name: translate(languageData , "Action"),
+            name: translate(languageData, "Action"),
             selector: row => row.publicationStatus,
             cell: row => <button className='btn btn-primary' style={{ fontSize: "12px" }}>Check the publication</button>,
             width: "250px",
@@ -349,7 +397,7 @@ const ReadyArticles = () => {
 
     return (
         <div className='p-4'>
-            <div><h3 className='semi-bold mt-1'>{translate(languageData , "ReadyArticles")}</h3></div>
+            <div><h3 className='semi-bold mt-1'>{translate(languageData, "ReadyArticles")}</h3></div>
             <div className=' mt-4'>
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
@@ -473,7 +521,7 @@ const ReadyArticles = () => {
                         </Tooltip>
                     }
                 >
-                    <Button variant="primary" className='ms-4' style={{ marginTop: "-17px" }} onClick={() => setShowIndexationModal(true)}>{translate(languageData , "VerificationIndexationArticles")}</Button>
+                    <Button variant="primary" className='ms-4' style={{ marginTop: "-17px" }} onClick={() => setShowIndexationModal(true)}>{translate(languageData, "VerificationIndexationArticles")}</Button>
 
                 </OverlayTrigger>
 
@@ -484,7 +532,7 @@ const ReadyArticles = () => {
                 <DataTable
                     // selectableRowsComponent={Checkbox}
                     columns={columns}
-                    data={data}
+                    data={tableData}
                     customStyles={{
                         rows: {
                             style: {
@@ -502,11 +550,11 @@ const ReadyArticles = () => {
 
             <Modal show={showIndexationModal} onHide={() => setShowIndexationModal(false)} size='lg'>
                 <Modal.Header closeButton>
-                    <Modal.Title>{translate(languageData , "VerificationIndexationArticles")}</Modal.Title>
+                    <Modal.Title>{translate(languageData, "VerificationIndexationArticles")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                       {translate(languageData , "VerificationIndexationArticlesLongContent")}
+                        {translate(languageData, "VerificationIndexationArticlesLongContent")}
                     </div>
                     <div>
                         <DataTable

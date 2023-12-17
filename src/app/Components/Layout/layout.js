@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Header from '../Header/header'
 import { Button, Container, Modal } from 'react-bootstrap'
 import Sidebar from '../Sidebar/sidebar'
+import "./layout.css";
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate } from '../../../utility/helper'
@@ -13,7 +14,7 @@ const Layout = () => {
   const { languageData } = useLanguage();
   const { sidebarActive, toggleSidebar } = useSidebar();
 
-  const userData = localStorage.getItem('userData');
+  const userData = JSON.parse(localStorage.getItem("userData"));
 
   useEffect(() => {
     if (!userData) {

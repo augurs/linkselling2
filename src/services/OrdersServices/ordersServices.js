@@ -15,3 +15,16 @@ import { baseURL2 } from "../../utility/data";
       });
   };
 
+
+export const ordersListArticle = (id) => {
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/addnewarticle/${id}`)
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+

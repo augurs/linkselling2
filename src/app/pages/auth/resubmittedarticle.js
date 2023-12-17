@@ -222,124 +222,151 @@ const AddArticle = () => {
                         <div className='my-5'>
                             <h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5>
                         </div>
-                        <Row className='align-items-center'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "artilstTitle")}*</span>
-                            </Col>
-                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                    <input
-                                        className='input100'
-                                        type='text'
-                                        name='title'
-                                        placeholder={translate(languageData, "artilstTitle")}
-                                        style={{ paddingLeft: "15px" }}
-                                        onChange={(e) => handleChange(e)}
-                                        value={formValues.title}
-                                    />
-                                </div>
-                                <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "CommentsAndRecommendations")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                    <textarea
-                                        className='input100'
-                                        type='text'
-                                        name='comment'
-                                        style={{ paddingLeft: "15px" }}
-                                        onChange={(e) => handleChange(e)}
-                                        onKeyDown={() => validate(formValues)}
-                                        value={formValues?.comment}
-                                    />
-                                </div>
-                                <div className='text-danger text-center mt-1'>{formErrors?.comment}</div>
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "PublicationDate")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='date is required'>
-                                    <input
-                                        className='input100'
-                                        type='date'
-                                        name='date'
-                                        placeholder='date'
-                                        style={{ paddingLeft: "15px" }}
-                                        onChange={(e) => handleChange(e)}
-                                        value={formValues?.date}
-                                    />
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className='mt-4 pb-8'>
-                            <Col xs={12} md={4} className='mt-2'>
-                                <span>{translate(languageData, "sidebarContent")} *</span>
-                            </Col>
-                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                <ReactQuill
-                                    theme='snow'
-                                    onChange={handleEditorChange}
-                                    value={editor}
-                                    modules={modules}
-                                    formats={formats}
-                                    bounds={'.app'}
-                                    placeholder='Write content'
-                                    style={{ height: "300px" }}
-                                />
-                                {formValues?.link < linkCount && (
-                                    <Alert variant="danger">
-                                        {translate(languageData, "Toomanylinks")} : {formValues?.link}
-                                    </Alert>
-                                )}
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "image")}</span>
-                            </Col>
-                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
-                            </Col>
-                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' /></div>
-                            </Col>
-                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                <div>{translate(languageData, "orselectviapixabay")}</div>
-                            </Col>
 
-                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "link")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                    {formValues.url}
-                                </div>
-                                <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                            </Col>
-                        </Row>
-                        {showDropdown && (
-                            <Row className='align-items-center mt-5'>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "Status")}</span>
-                                </Col>
-                                <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
-                                    <div className='text-danger text-center mt-1'>{formErrors.userStatus}</div>
-                                </Col>
+                        {showDropdown ? (
+                            <>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "PublicationId")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            {formValues.id}
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "link")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            {formValues.url}
+                                        </div>
+                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "Status")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                                        <div className='text-danger text-center mt-1'>{formErrors.userStatus}</div>
+                                    </Col>
 
-                            </Row>)}
+                                </Row>
+                            </>
+                        ) : (
+                            <>
+                                <Row className='align-items-center'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "artilstTitle")}*</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            <input
+                                                className='input100'
+                                                type='text'
+                                                name='title'
+                                                placeholder={translate(languageData, "artilstTitle")}
+                                                style={{ paddingLeft: "15px" }}
+                                                onChange={(e) => handleChange(e)}
+                                                value={formValues.title}
+                                            />
+                                        </div>
+                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "CommentsAndRecommendations")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            <textarea
+                                                className='input100'
+                                                type='text'
+                                                name='comment'
+                                                style={{ paddingLeft: "15px" }}
+                                                onChange={(e) => handleChange(e)}
+                                                onKeyDown={() => validate(formValues)}
+                                                value={formValues?.comment}
+                                            />
+                                        </div>
+                                        <div className='text-danger text-center mt-1'>{formErrors?.comment}</div>
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "PublicationDate")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='date is required'>
+                                            <input
+                                                className='input100'
+                                                type='date'
+                                                name='date'
+                                                placeholder='date'
+                                                style={{ paddingLeft: "15px" }}
+                                                onChange={(e) => handleChange(e)}
+                                                value={formValues?.date}
+                                            />
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row className='mt-4 pb-8'>
+                                    <Col xs={12} md={4} className='mt-2'>
+                                        <span>{translate(languageData, "sidebarContent")} *</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <ReactQuill
+                                            theme='snow'
+                                            onChange={handleEditorChange}
+                                            value={editor}
+                                            modules={modules}
+                                            formats={formats}
+                                            bounds={'.app'}
+                                            placeholder='Write content'
+                                            style={{ height: "300px" }}
+                                        />
+                                        {formValues?.link < linkCount && (
+                                            <Alert variant="danger">
+                                                {translate(languageData, "Toomanylinks")} : {formValues?.link}
+                                            </Alert>
+                                        )}
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "image")}</span>
+                                    </Col>
+                                    <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                        <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
+                                    </Col>
+                                    <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' /></div>
+                                    </Col>
+                                    <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                        <div>{translate(languageData, "orselectviapixabay")}</div>
+                                    </Col>
+
+                                    <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                        <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
+                                    </Col>
+                                </Row>
+                                {/* <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "link")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            {formValues.url}
+                                        </div>
+                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
+                                    </Col>
+                                </Row> */}
+                            </>)}
                     </Card.Body>
                     <div className='d-flex justify-content-end'>
                         {loading ? <img src={globalLoader} className='mx-auto' /> :

@@ -1228,7 +1228,7 @@ const BuyArticles = () => {
                                         {anchorTypes.map((name, index) => (
                                             <MenuItem key={index} value={name.type} className='check_list'>
                                                 <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
-                                                <ListItemText primary={name.type} />
+                                                <ListItemText primary={name.label} />
                                             </MenuItem>
                                         ))}
                                     </Select>

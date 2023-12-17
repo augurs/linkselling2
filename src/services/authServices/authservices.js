@@ -80,3 +80,24 @@ export const thankupage = () => {
       return error.response.data;
     });
 };
+
+
+
+export const userprofileModal = (id, Email, Phone ) => {
+
+  const formData = new FormData();
+  formData.append("id", id);
+  formData.append("email", Email);
+  formData.append("phone_number", Phone);
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-user-info`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

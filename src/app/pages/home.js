@@ -44,7 +44,6 @@ const Home = () => {
     }
     return '#';
   };
-  
 
   const getActionText = (status) => {
     switch (status) {
@@ -232,7 +231,9 @@ const Home = () => {
       project: item?.project,
       date: date?.toLocaleString(),
       status: item?.status,
-      name: item?.name
+      name: item?.name,
+      id: item?.id,
+      link: item?.link
     }
   })
 
@@ -273,7 +274,7 @@ const Home = () => {
 
       sortable: true,
       center: true,
-      //  width: '180px'
+      width: '180px'
     },
     {
       name: translate(languageData, "artilstStatus"),
@@ -281,7 +282,7 @@ const Home = () => {
       sortable: true,
       center: true,
       cell: (row) => {
-        let buttonClass = "btn btn-primary btn-pill";
+        let buttonClass = "btn btn-outline-primary btn-pill";
         let buttonText = "";
 
         switch (row.status) {
@@ -297,7 +298,7 @@ const Home = () => {
             buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "Completed")}</small>;
             break;
-            case "RequestChanges":
+          case "RequestChanges":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
             break;
@@ -321,16 +322,28 @@ const Home = () => {
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
-            case "PendingForAssing":
+          case "PendingForAssing":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
-            case "Accept":
-              buttonClass = "btn btn-outline-dark btn-pill";
-              buttonText = <small>{translate(languageData, "Accept")}</small>;
-              break;
+          case "Accept":
+            buttonClass = "btn btn-outline-dark btn-pill";
+            buttonText = <small>{translate(languageData, "Accept")}</small>;
+            break;
+          case "RejectPublication":
+            buttonClass = "btn btn-outline-danger btn-pill";
+            buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
+            break;
+          case "AcceptPublication":
+            buttonClass = "btn btn-outline-success btn-pill";
+            buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
+            break;
+          case "ReadyToPublish":
+            buttonClass = "btn btn-outline-primary btn-pill";
+            buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
+            break;
           default:
-            
+
             buttonText = row.status;
         }
 
@@ -347,15 +360,15 @@ const Home = () => {
       center: true,
       cell: (row) => (
         <div className='d-flex gap-2'>
-          <a href={row.link} target='_blank'>
-            <FaLink className="icon-link" />
-          </a>
-          <a href={row.viewLink} target='_blank'>
+          {(row.status === "AcceptPublication" || row.status === "Published") && (
+            <Link to={row.link}>
+              <FaLink className="icon-link" />
+            </Link>
+          )}
+
+          <Link to={`/viewArticle/${row.id}`}>
             <FaEye className="icon-view" />
-          </a>
-          <a href={row.invoice} target='_blank'>
-            <FaPlus className="icon-add" />
-          </a>
+          </Link>
         </div>
       ),
     }
@@ -367,7 +380,7 @@ const Home = () => {
     <div className="inner-body" id="content">
       <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
       <Row>
-        <Col xs={12} sm={7}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "todo")}</h3>
@@ -380,14 +393,14 @@ const Home = () => {
                       <Card className='shadow-md' style={{ marginBottom: "0.2rem" }}>
                         <div className='d-flex align-items-center justify-content-between p-1'>
                           <div>
-                            <h6 style={{marginBottom: "1px"}}>{data?.title}</h6>
-                            <small className='d-flex'><div  className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
+                            <h6 style={{ marginBottom: "1px" }}>{data?.title}</h6>
+                            <small className='d-flex'><div className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
                           </div>
                           <div>
                             <Link to={handleRedirect(data)}>
-                            <Button className="btn btn-primary mt-1">
-                              <small>{getButtonText(data?.status)}</small>
-                            </Button></Link>
+                              <Button className="btn btn-primary mt-1">
+                                <small>{getButtonText(data?.status)}</small>
+                              </Button></Link>
                           </div>
                         </div>
                       </Card>
@@ -402,7 +415,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={5}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
@@ -429,7 +442,7 @@ const Home = () => {
       </Row>
 
       <Row>
-        <Col xs={12} sm={7}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "promotionalList")}</h3>
@@ -452,7 +465,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={5}>
+        <Col xs={12} sm={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "OrdersList")}</h3>
