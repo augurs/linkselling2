@@ -254,27 +254,12 @@ const Home = () => {
         </div>
     },
     {
-      name: translate(languageData, "price"),
-      selector: row => `${row.price} zł`,
-      sortable: true,
-      center: true,
-      // width: '180px'
-    },
-    {
       name: translate(languageData, "artilstProject"),
       selector: row => row.project,
 
       sortable: true,
       center: true,
       //  width: '180px'
-    },
-    {
-      name: translate(languageData, "dateOfOrder"),
-      selector: row => formatDate(row.date),
-
-      sortable: true,
-      center: true,
-      width: '180px'
     },
     {
       name: translate(languageData, "artilstStatus"),
@@ -380,13 +365,13 @@ const Home = () => {
     <div className="inner-body" id="content">
       <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
       <Row>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "todo")}</h3>
             </Card.Header>
             <Card.Body >
-              <div className="px-1" style={{ maxHeight: '240px', overflowY: 'scroll', overflowX: 'hidden' }}>
+              <div className="px-1" style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px' }}>
                 <Row className='mt-1'>
                   {toDoList?.map((data, index) => (
                     <Col xs={12} sm={12} key={index}>
@@ -415,7 +400,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
@@ -427,7 +412,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <div style={{ height: '240px', overflowY: 'scroll' }}>
+                    <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
                       <DataTable
                         columns={columns}
                         data={tableData}
@@ -442,7 +427,7 @@ const Home = () => {
       </Row>
 
       <Row>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
             <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "promotionalList")}</h3>
@@ -453,7 +438,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <div style={{ height: '317px', overflowY: 'scroll' }}>
+                    <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px'  }}>
                       <DataTable
                         columns={columns2}
                         data={tableData2}
@@ -465,7 +450,7 @@ const Home = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
               <h3 className='fw-semibold'>{translate(languageData, "OrdersList")}</h3>
@@ -477,12 +462,12 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <>
+                    <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
                       <DataTable
                         columns={columns1}
                         data={tableData1}
                       />
-                    </>
+                    </div>
                   }
                 </div>
               </Row>

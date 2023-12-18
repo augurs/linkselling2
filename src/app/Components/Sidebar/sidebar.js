@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BiUserCircle } from 'react-icons/bi';
 import { PiArticleLight } from 'react-icons/pi';
 import { BsPencil, BsFillBagCheckFill } from 'react-icons/bs';
@@ -12,15 +12,16 @@ import { translate } from '../../../utility/helper';
 import { Button, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 import UserProfileModal from './userProfileModal';
 import { ToastContainer } from 'react-toastify';
+import { walletBalance } from "../../../services/walletServices/walletService"
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
 
-    const location = useLocation()
-
     const [menuType, setMenuType] = useState("")
     const [currentPath, setcurrentPath] = useState('')
     const [isModalOpen, setModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const [userDetails, setUserDetails] = useState('');
     const { languageData } = useLanguage()
 
 
@@ -42,7 +43,26 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
     const handleEditClick = () => {
         setModalOpen(true);
     };
+    useEffect(() => {
+        showWalletServices()
+    }, [])
 
+    const showWalletServices = async () => {
+        setLoading(true);
+        try {
+            const res = await walletBalance(userData?.id);
+            if (res.success === true) {
+                setUserDetails(res.data);
+                setLoading(false);
+            } else {
+                console.error('API call failed:', res);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setLoading(false);
+        }
+    };
 
     const popoverContent = (
         <Popover id="popover-content">
@@ -79,14 +99,13 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
             </Popover.Body>
         </Popover>
     );
-
     const popoverUserProfile = (
         <Popover id="popover-content" >
             <Popover.Body className='d-flex flex-column justify-content-center align-items-center'>
                 <div className='mb-2 border-bottom border-2'>
                 <h3 className='border-bottom border-3 text-center'>{translate(languageData, "UserProfile")}</h3>
-                    <Link className="slide-item" >{`${translate(languageData, "emailSignUp")} : ${userData.email}`}</Link>
-                    <Link className="slide-item" >{userData.alternative_number !== null ? `${translate(languageData, "PhoneNumber")} : ${userData.alternative_number}` : `${translate(languageData, "PhoneNumber")} :  --`}</Link>
+                    <Link className="slide-item" >{`${translate(languageData, "emailSignUp")} : ${userDetails?.email}`}</Link>
+                    <Link className="slide-item" >{userDetails?.phone_number !== null ? `${translate(languageData, "PhoneNumber")} : ${userDetails?.phone_number}` : `${translate(languageData, "PhoneNumber")} :  --`}</Link>
                 </div>
                 <div><Button className='btn btn-outline-primary' onClick={handleEditClick}>{translate(languageData, "edituserprofile")}</Button></div>
             </Popover.Body>
@@ -174,13 +193,13 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
                             </Link>
                         </li>
-                        {/* {translate(languageData,"sidebarInvoices")} */}
+                        {/* {translate(languageData,"sidebarInvoices")}
                         <li className="slide" style={{ cursor: "pointer" }}>
                             <a className="side-menu__item has-link" data-bs-toggle="slide">
                                 <span className="side-menu__icon"><BsPencil size={20} style={{ color: "gray!important" }} /></span>
                                 <span className="side-menu__label">{translate(languageData, "sidebarAddYourOwnText")}</span>
                             </a>
-                        </li>
+                        </li> */}
 
 
                         {/* Other menu items */}

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Form, Row } from 'react-bootstrap'
-import { getArticles, articlesInProgressList } from '../../../services/articleServices/articleServices'
+import { articlesInProgressList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate, formatDate } from '../../../utility/helper'
 import { FaEye, FaLink } from 'react-icons/fa'
-
+import globalLoader from '../../../assets/images/loader.svg'
+import { projectList} from '../../../services/ProjectServices/projectServices';
 const ArticleInProgress = () => {
 
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const navigate = useNavigate();
-
-    const [articleList, setArticleList] = useState([])
+    const [projectListData, setProjectList] = useState([])
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     const { languageData } = useLanguage()
 
@@ -21,7 +21,7 @@ const ArticleInProgress = () => {
 
 
     useEffect(() => {
-        handleArticleList()
+        projectListServices()
     }, [])
 
     useEffect(() => {
@@ -233,27 +233,24 @@ const ArticleInProgress = () => {
         }
     ];
 
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-
-    const handleArticleList = async () => {
-        const res = await getArticles(userData?.id)
-        setArticleList(res.data)
+    const projectListServices = async () => {
+        const res = await projectList(userData?.id)
+        setProjectList(res.data)
     }
 
-    const status = [
-        translate(languageData, "All"),
-        translate(languageData, "WaitingForContent"),
-        translate(languageData, "PublisherWrites"),
-        translate(languageData, "PublisherWrites"),
-        translate(languageData, "ComplainToPublisher"),
-        translate(languageData, "PublicationInProgress"),
-        translate(languageData, "PublicationOverdue"),
-        translate(languageData, "PublisherComments"),
-        translate(languageData, "PublishedInVerification"),
-        translate(languageData, "AdvertisersComments")
+    // const status = [
+    //     translate(languageData, "All"),
+    //     translate(languageData, "WaitingForContent"),
+    //     translate(languageData, "PublisherWrites"),
+    //     translate(languageData, "PublisherWrites"),
+    //     translate(languageData, "ComplainToPublisher"),
+    //     translate(languageData, "PublicationInProgress"),
+    //     translate(languageData, "PublicationOverdue"),
+    //     translate(languageData, "PublisherComments"),
+    //     translate(languageData, "PublishedInVerification"),
+    //     translate(languageData, "AdvertisersComments")
 
-    ]
+    // ]
 
 
     return (
@@ -261,13 +258,13 @@ const ArticleInProgress = () => {
             <div><h3 className='semi-bold mt-1'>{translate(languageData, "InProgressArticles")}</h3></div>
             <div className=' mt-4'>
                 <Row>
-                    <Col xs={12} sm={6} md={4} className=''>
+                    <Col xs={12} sm={6} md={6} className=''>
                         <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country">
+                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Project">
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {articleList.map((item, index) => {
+                                {projectListData?.map((item, index) => {
                                     return (
-                                        <option value={item.project} key={index}>{item.project}</option>
+                                        <option value={item.id} key={index}>{item.name}</option>
 
                                     )
                                 })}
@@ -275,8 +272,8 @@ const ArticleInProgress = () => {
                         </div>
 
                     </Col>
-                    <Col xs={12} sm={6} md={4} className='mb-3'>
-                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                    <Col xs={12} sm={6} md={6} className='mb-3'>
+                        <div className="wrap-input100 validate-input mb-0">
                             <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
@@ -284,7 +281,7 @@ const ArticleInProgress = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
+                    {/* <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
                                 <option label={translate(languageData, "artilstStatus")}></option>
@@ -295,9 +292,9 @@ const ArticleInProgress = () => {
                                 })}
                             </select>
                         </div>
-                    </Col>
+                    </Col> */}
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
                             <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
@@ -323,17 +320,16 @@ const ArticleInProgress = () => {
                         </div>
                     </Col>
 
-                </Row>
+                </Row> */}
 
 
             </div>
             <div className='mt-5'>
-                {/* {loading ?
+                {loading ?
                     <div className='d-flex justify-content-between align-items-center'>
                         <img src={globalLoader} className='mx-auto' />
-                    </div> : */}
+                    </div> :
                 <DataTable
-                    // selectableRowsComponent={Checkbox}
                     columns={columns}
                     data={tableData}
                     customStyles={{
@@ -348,7 +344,7 @@ const ArticleInProgress = () => {
                 // selectableRowsHeader
                 // selectableRowsHeaderComponent={checkboxHeader}
 
-                />
+                />}
             </div>
         </div>
     )
