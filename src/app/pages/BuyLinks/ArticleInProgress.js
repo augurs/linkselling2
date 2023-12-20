@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Form, Row } from 'react-bootstrap'
+import { Card, Col, Form, Row } from 'react-bootstrap'
 import { articlesInProgressList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
 import { Link } from 'react-router-dom'
@@ -7,13 +7,14 @@ import { useLanguage } from '../../Context/languageContext'
 import { translate, formatDate } from '../../../utility/helper'
 import { FaEye, FaLink } from 'react-icons/fa'
 import globalLoader from '../../../assets/images/loader.svg'
-import { projectList} from '../../../services/ProjectServices/projectServices';
+import { projectList } from '../../../services/ProjectServices/projectServices';
 const ArticleInProgress = () => {
 
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
     const [projectListData, setProjectList] = useState([])
     const userData = JSON.parse(localStorage.getItem("userData"));
+    const [isDataPresent, setIsDataPresent] = useState(true);
 
     const { languageData } = useLanguage()
 
@@ -30,21 +31,25 @@ const ArticleInProgress = () => {
 
 
     const articlesInProgressServices = async () => {
-        setLoading(true)
-        const res = await articlesInProgressList(userData?.id)
+        setLoading(true);
+        const res = await articlesInProgressList(userData?.id);
         if (res.success === true) {
-            setData(res?.data)
-            setLoading(false)
+            setData(res?.data);
+            setIsDataPresent(res.data.length > 0);
+            setLoading(false);
+        } else {
+            setIsDataPresent(false);
+            setLoading(false);
         }
-    }
+    };
+
 
     const tableData = data?.map((item) => {
-        const date = new Date(item?.created_at);
         return {
             portal: item?.portal,
             price: item?.price,
             project: item?.project,
-            date1: date?.toLocaleString(),
+            date1: item?.created_at,
             status: item?.status,
             name: item?.name,
             id: item?.id,
@@ -183,7 +188,7 @@ const ArticleInProgress = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date1,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date1)}</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date1}</button>
             ),
             sortable: true,
             center: true,
@@ -192,23 +197,6 @@ const ArticleInProgress = () => {
             style: {
 
                 width: "150px"
-            },
-
-
-        },
-        {
-            name: translate(languageData, "link"),
-            selector: row => row.link,
-            cell: (row) => (
-                <Link to={row.link}>{row.link}</Link>
-            ),
-            sortable: true,
-            center: true,
-
-            width: "180px",
-            style: {
-
-                width: "180px"
             },
 
 
@@ -235,7 +223,7 @@ const ArticleInProgress = () => {
 
     const projectListServices = async () => {
         const res = await projectList(userData?.id)
-        setProjectList(res.data)
+        setProjectList(res?.data)
     }
 
     // const status = [
@@ -325,26 +313,29 @@ const ArticleInProgress = () => {
 
             </div>
             <div className='mt-5'>
-                {loading ?
+                {loading ? (
                     <div className='d-flex justify-content-between align-items-center'>
-                        <img src={globalLoader} className='mx-auto' />
-                    </div> :
-                <DataTable
-                    columns={columns}
-                    data={tableData}
-                    customStyles={{
-                        rows: {
-                            style: {
-                                fontSize: '14px',
+                        <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    </div>
+                ) : isDataPresent ? (
+                    <DataTable
+                        columns={columns}
+                        data={tableData}
+                        customStyles={{
+                            rows: {
+                                style: {
+                                    fontSize: '14px',
+                                },
                             },
-                        },
-                    }}
-                // selectableRows
-                // selectableRowsHighlight
-                // selectableRowsHeader
-                // selectableRowsHeaderComponent={checkboxHeader}
-
-                />}
+                        }}
+                    />
+                ) : (
+                    <Col lg={12}  className="text-center mt-5">
+                        <div className="input100">
+                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+                        </div>
+                    </Col>
+                )}
             </div>
         </div>
     )

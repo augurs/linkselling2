@@ -1263,7 +1263,7 @@ const BuyArticles = () => {
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
                                     .map((checkbox) => (
-                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2' style={{ height: "45px", width: boxWidth }}>
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2 ' style={{ height: "45px", width: boxWidth }}>
                                             {/* Left side: promo code icon */}
                                             <IoTicketOutline size={24} color="primary" />
 

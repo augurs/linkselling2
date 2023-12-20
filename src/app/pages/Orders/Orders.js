@@ -9,6 +9,7 @@ import DataTable from 'react-data-table-component'
 import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
 import "./Orders.css";
 import { Link } from 'react-router-dom'
+import { Col } from 'react-bootstrap'
 const Orders = () => {
 
   const userData = JSON.parse(localStorage.getItem('userData'))
@@ -16,7 +17,7 @@ const Orders = () => {
 
   const [ordersList, setOrdersList] = useState([])
   const [loading, setLoading] = useState(false)
-
+  const [isDataPresent, setIsDataPresent] = useState(true);
   useEffect(() => {
     ordersListServices()
   }, [])
@@ -28,17 +29,20 @@ const Orders = () => {
     const res = await orderslist(userData?.id)
     if (res.success === true) {
       setOrdersList(res?.data)
+      setIsDataPresent(res.data.length > 0);
       setLoading(false)
-    }
+    } else {
+      setIsDataPresent(false);
+      setLoading(false);
+  }
   }
 
   const tableData = ordersList?.map((item) => {
-    const date = new Date(item?.created_at);
     return {
       domain: item?.domain,
       price: item?.price,
       project: item?.project,
-      date: date?.toLocaleString(),
+      date: item?.created_at,
       status: item?.status,
       name: item?.name,
       id: item?.id,
@@ -80,7 +84,7 @@ const Orders = () => {
     },
     {
       name: translate(languageData, "dateOfOrder"),
-      selector: row => formatDate(row.date),
+      selector: row => (row.date),
 
       sortable: true,
       center: true,
@@ -191,16 +195,21 @@ const Orders = () => {
       <h3 className='mt-3 mb-3 text-center'>{translate(languageData, "OrdersList")}</h3>
 
       <div className='mt-5 w-100'>
-        {loading ? <div className='d-flex'>
+        {loading ? (<div className='d-flex'>
           <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
-        </div> :
+        </div> ):  isDataPresent ?(
           <>
             <DataTable
               columns={columns}
               data={tableData}
             />
-          </>
-        }
+          </>) :(
+                    <Col lg={12}  className="text-center mt-5">
+                        <div className="input100">
+                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+                        </div>
+                    </Col>
+                )}
       </div>
 
     </div>

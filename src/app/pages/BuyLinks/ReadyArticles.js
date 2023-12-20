@@ -18,6 +18,7 @@ const ReadyArticles = () => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const [showIndexationModal, setShowIndexationModal] = useState(false)
+    const [isDataPresent, setIsDataPresent] = useState(true);
     const userData = JSON.parse(localStorage.getItem("userData"));
     const { languageData } = useLanguage()
 
@@ -39,18 +40,21 @@ const ReadyArticles = () => {
         setLoading(true)
         const res = await readyArticleList(userData?.id)
         if (res.success === true) {
-            setData(res?.data)
-            setLoading(false)
+            setData(res?.data);
+            setIsDataPresent(res.data.length > 0);
+            setLoading(false);
+        } else {
+            setIsDataPresent(false);
+            setLoading(false);
         }
-    }
+    };
 
     const tableData = data?.map((item) => {
-        const date = new Date(item?.created_at);
         return {
             portal: item?.portal,
             price: item?.price,
             project: item?.project,
-            date: date?.toLocaleString(),
+            date: item?.created_at,
             status: item?.status,
             name: item?.name,
             id: item?.id,
@@ -196,7 +200,7 @@ const ReadyArticles = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date)}</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date}</button>
             ),
             sortable: true,
             center: true,
@@ -205,23 +209,6 @@ const ReadyArticles = () => {
             style: {
 
                 width: "150px"
-            },
-
-
-        },
-        {
-            name: translate(languageData, "link"),
-            selector: row => row.link,
-            cell: (row) => (
-                <Link to={row.link}>{row.link}</Link>
-            ),
-            sortable: true,
-            center: true,
-            wrap: true,
-            width: "250px",
-            style: {
-
-                width: "250px"
             },
 
 
@@ -459,7 +446,6 @@ const ReadyArticles = () => {
 
             </div>
             <div className='mt-5'>
-
                 <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -467,7 +453,6 @@ const ReadyArticles = () => {
                             Go to Reports
                         </Tooltip>
                     }
-
                 >
                     <Dropdown as={ButtonGroup} drop={"down"} className="mb-4">
 
@@ -495,12 +480,12 @@ const ReadyArticles = () => {
 
                 </OverlayTrigger>
 
-                {loading ?
+                {loading ? (
                     <div className='d-flex justify-content-between align-items-center'>
-                        <img src={globalLoader} className='mx-auto' />
-                    </div> :
+                        <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    </div>
+                ) : isDataPresent ? (
                     <DataTable
-                        // selectableRowsComponent={Checkbox}
                         columns={columns}
                         data={tableData}
                         customStyles={{
@@ -510,12 +495,14 @@ const ReadyArticles = () => {
                                 },
                             },
                         }}
-                    // selectableRows
-                    // selectableRowsHighlight
-                    // selectableRowsHeader
-                    // selectableRowsHeaderComponent={checkboxHeader}
-
-                    />}
+                    />
+                ) : (
+                    <Col lg={12}  className="text-center mt-5">
+                        <div className="input100">
+                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+                        </div>
+                    </Col>
+                )}
             </div>
 
             <Modal show={showIndexationModal} onHide={() => setShowIndexationModal(false)} size='lg'>
