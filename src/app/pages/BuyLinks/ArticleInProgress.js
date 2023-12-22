@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Form, Row } from 'react-bootstrap'
-import { getArticles, articlesInProgressList } from '../../../services/articleServices/articleServices'
+import { Card, Col, Form, Row } from 'react-bootstrap'
+import { articlesInProgressList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate, formatDate } from '../../../utility/helper'
 import { FaEye, FaLink } from 'react-icons/fa'
-
+import globalLoader from '../../../assets/images/loader.svg'
+import { projectList } from '../../../services/ProjectServices/projectServices';
 const ArticleInProgress = () => {
 
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const navigate = useNavigate();
-
-    const [articleList, setArticleList] = useState([])
+    const [projectListData, setProjectList] = useState([])
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const [isDataPresent, setIsDataPresent] = useState(true);
 
     const { languageData } = useLanguage()
 
@@ -21,7 +22,7 @@ const ArticleInProgress = () => {
 
 
     useEffect(() => {
-        handleArticleList()
+        projectListServices()
     }, [])
 
     useEffect(() => {
@@ -30,21 +31,25 @@ const ArticleInProgress = () => {
 
 
     const articlesInProgressServices = async () => {
-        setLoading(true)
-        const res = await articlesInProgressList(userData?.id)
+        setLoading(true);
+        const res = await articlesInProgressList(userData?.id);
         if (res.success === true) {
-            setData(res?.data)
-            setLoading(false)
+            setData(res?.data);
+            setIsDataPresent(res.data.length > 0);
+            setLoading(false);
+        } else {
+            setIsDataPresent(false);
+            setLoading(false);
         }
-    }
+    };
+
 
     const tableData = data?.map((item) => {
-        const date = new Date(item?.created_at);
         return {
             portal: item?.portal,
             price: item?.price,
             project: item?.project,
-            date1: date?.toLocaleString(),
+            date1: item?.created_at,
             status: item?.status,
             name: item?.name,
             id: item?.id,
@@ -183,7 +188,7 @@ const ArticleInProgress = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date1,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date1)}</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date1}</button>
             ),
             sortable: true,
             center: true,
@@ -192,23 +197,6 @@ const ArticleInProgress = () => {
             style: {
 
                 width: "150px"
-            },
-
-
-        },
-        {
-            name: translate(languageData, "link"),
-            selector: row => row.link,
-            cell: (row) => (
-                <Link to={row.link}>{row.link}</Link>
-            ),
-            sortable: true,
-            center: true,
-
-            width: "180px",
-            style: {
-
-                width: "180px"
             },
 
 
@@ -233,27 +221,24 @@ const ArticleInProgress = () => {
         }
     ];
 
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-
-    const handleArticleList = async () => {
-        const res = await getArticles(userData?.id)
-        setArticleList(res.data)
+    const projectListServices = async () => {
+        const res = await projectList(userData?.id)
+        setProjectList(res?.data)
     }
 
-    const status = [
-        translate(languageData, "All"),
-        translate(languageData, "WaitingForContent"),
-        translate(languageData, "PublisherWrites"),
-        translate(languageData, "PublisherWrites"),
-        translate(languageData, "ComplainToPublisher"),
-        translate(languageData, "PublicationInProgress"),
-        translate(languageData, "PublicationOverdue"),
-        translate(languageData, "PublisherComments"),
-        translate(languageData, "PublishedInVerification"),
-        translate(languageData, "AdvertisersComments")
+    // const status = [
+    //     translate(languageData, "All"),
+    //     translate(languageData, "WaitingForContent"),
+    //     translate(languageData, "PublisherWrites"),
+    //     translate(languageData, "PublisherWrites"),
+    //     translate(languageData, "ComplainToPublisher"),
+    //     translate(languageData, "PublicationInProgress"),
+    //     translate(languageData, "PublicationOverdue"),
+    //     translate(languageData, "PublisherComments"),
+    //     translate(languageData, "PublishedInVerification"),
+    //     translate(languageData, "AdvertisersComments")
 
-    ]
+    // ]
 
 
     return (
@@ -261,13 +246,13 @@ const ArticleInProgress = () => {
             <div><h3 className='semi-bold mt-1'>{translate(languageData, "InProgressArticles")}</h3></div>
             <div className=' mt-4'>
                 <Row>
-                    <Col xs={12} sm={6} md={4} className=''>
+                    <Col xs={12} sm={6} md={6} className=''>
                         <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country">
+                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Project">
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {articleList.map((item, index) => {
+                                {projectListData?.map((item, index) => {
                                     return (
-                                        <option value={item.project} key={index}>{item.project}</option>
+                                        <option value={item.id} key={index}>{item.name}</option>
 
                                     )
                                 })}
@@ -275,8 +260,8 @@ const ArticleInProgress = () => {
                         </div>
 
                     </Col>
-                    <Col xs={12} sm={6} md={4} className='mb-3'>
-                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                    <Col xs={12} sm={6} md={6} className='mb-3'>
+                        <div className="wrap-input100 validate-input mb-0">
                             <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
@@ -284,7 +269,7 @@ const ArticleInProgress = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
+                    {/* <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
                                 <option label={translate(languageData, "artilstStatus")}></option>
@@ -295,9 +280,9 @@ const ArticleInProgress = () => {
                                 })}
                             </select>
                         </div>
-                    </Col>
+                    </Col> */}
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
                             <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
@@ -323,32 +308,34 @@ const ArticleInProgress = () => {
                         </div>
                     </Col>
 
-                </Row>
+                </Row> */}
 
 
             </div>
             <div className='mt-5'>
-                {/* {loading ?
+                {loading ? (
                     <div className='d-flex justify-content-between align-items-center'>
-                        <img src={globalLoader} className='mx-auto' />
-                    </div> : */}
-                <DataTable
-                    // selectableRowsComponent={Checkbox}
-                    columns={columns}
-                    data={tableData}
-                    customStyles={{
-                        rows: {
-                            style: {
-                                fontSize: '14px',
+                        <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    </div>
+                ) : isDataPresent ? (
+                    <DataTable
+                        columns={columns}
+                        data={tableData}
+                        customStyles={{
+                            rows: {
+                                style: {
+                                    fontSize: '14px',
+                                },
                             },
-                        },
-                    }}
-                // selectableRows
-                // selectableRowsHighlight
-                // selectableRowsHeader
-                // selectableRowsHeaderComponent={checkboxHeader}
-
-                />
+                        }}
+                    />
+                ) : (
+                    <Col lg={12}  className="text-center mt-5">
+                        <div className="input100">
+                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+                        </div>
+                    </Col>
+                )}
             </div>
         </div>
     )

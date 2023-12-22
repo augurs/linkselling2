@@ -14,8 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
-import { MenuProps, anchorTypes } from "../../../utility/data";
-import { numberToNumeralsArray, translate } from "../../../utility/helper";
+import { anchorTypes } from "../../../utility/data";
+import { translate, countLinksInEditor } from "../../../utility/helper";
 import { useLanguage } from "../../Context/languageContext";
 import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles, requestArticle } from "../../../services/buyArticleServices/buyArticlesServices";
 import { ToastContainer, toast } from "react-toastify";
@@ -40,6 +40,7 @@ import { addProjects } from '../../../services/ProjectServices/projectServices'
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoTicketOutline } from 'react-icons/io5';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
+import { walletBalance } from "../../../services/walletServices/walletService"
 const BuyArticles = () => {
 
     const initialValues = {
@@ -66,7 +67,6 @@ const BuyArticles = () => {
     const [orderType, setOrderType] = useState('Basic article');
     const [orderPrice, setOrderPrice] = useState('50,00 zł');
     const [orderId, setOrderId] = useState(1);
-    // const [specifyDetails, setSpecifyDetails] = useState("Specify Now")
     const [requestArticleTitle, setRequestArticleTitle] = useState("")
     const [selectArticle, setSelectArticle] = useState('')
     const [loading, setLoading] = useState(false)
@@ -80,7 +80,6 @@ const BuyArticles = () => {
     const [image, setImage] = useState(null);
     const [imageSource, setImageSource] = useState(null);
     const [date, setDate] = useState('')
-    const [link, setLink] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
@@ -92,10 +91,7 @@ const BuyArticles = () => {
     const [selectedSubArticles, setSelectedSubArticles] = useState('')
     const [articlePackages, setArticlePackages] = useState([])
     const [articlesData2, setArticlesData2] = useState([]);
-    const [promotionList, setPromotionList] = useState([])
     const [checkboxes, setCheckboxes] = useState([]);
-    const [selectedProject, setSelectedProject] = useState('');
-    const [userSelectedProject, setUserSelectedProject] = useState('');
     const [error, setError] = useState('');
     const [search, setSearch] = useState({ doFollow: 0, promotions: 0, drMin: "", drMax: "", minLinks: "", maxLinks: "", ahrefMin: "", ahrefMax: "" })
     const { cartListServices } = useCart()
@@ -108,6 +104,21 @@ const BuyArticles = () => {
     const [anchorValues, setAnchorValues] = useState([]);
     const [suggestion, setSuggestion] = useState('')
     const [provideSubjectText, setProvideSubjectText] = useState('')
+    const [userDiscount, setUserDiscount] = useState('');
+
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    useEffect(() => {
+        getUserDiscountServices()
+    }, [])
+
+    const getUserDiscountServices = async () => {
+        setListLoading(true)
+        const res = await walletBalance(userData?.id);
+        setUserDiscount(res?.data)
+        setListLoading(false)
+    }
+
 
     const handleMaxLinksSelection = (maxLinks) => {
         setSelectedMaxLinks(maxLinks);
@@ -197,9 +208,6 @@ const BuyArticles = () => {
 
     const navigate = useNavigate()
 
-    const userData = JSON.parse(localStorage.getItem('userData'));
-
-    // console.log(search , "116");
     useEffect(() => {
         getPublisherArticlesService()
     }, [search, typeAnchors, page])
@@ -227,8 +235,8 @@ const BuyArticles = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value });
-    };
+        setFormValues1({ ...formValues1, [name]: value })
+    }
 
     const handlePageChange = (event, value) => {
         setPage(value)
@@ -302,41 +310,41 @@ const BuyArticles = () => {
     const checkAddedToCart = articles?.some((item) => item?.cart === 'Yes')
     console.log(checkAddedToCart, "155");
 
-    const requestArticleService = async () => {
-        const data = {
-            id: userData?.id,
-            title: requestArticleTitle
-        }
-        setLoading(true)
-        const res = await requestArticle(data)
-        if (res.success === true && res.message === "Article Requested successfully.") {
-            toast(res.message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'success'
-            });
-            setLoading(false)
-        } else if (res.success === false) {
-            setLoading(false)
-        } else {
-            toast("Something went wrong !", {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'error'
-            })
-            setLoading(false)
-        }
-    }
+    // const requestArticleService = async () => {
+    //     const data = {
+    //         id: userData?.id,
+    //         title: requestArticleTitle
+    //     }
+    //     setLoading(true)
+    //     const res = await requestArticle(data)
+    //     if (res.success === true && res.message === "Article Requested successfully.") {
+    //         toast(res.message, {
+    //             position: "top-right",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'success'
+    //         });
+    //         setLoading(false)
+    //     } else if (res.success === false) {
+    //         setLoading(false)
+    //     } else {
+    //         toast("Something went wrong !", {
+    //             position: "top-right",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             type: 'error'
+    //         })
+    //         setLoading(false)
+    //     }
+    // }
 
     const getArticleListServices = async () => {
         setListLoading(true)
@@ -483,7 +491,7 @@ const BuyArticles = () => {
             width: "130px",
         },
         {
-            name: "Action",
+            name: translate(languageData, "Action"),
             cell: (row) => (
                 <div>
                     {row.cartOption && selectedSubArticles?.id === row?.id ? (
@@ -517,6 +525,8 @@ const BuyArticles = () => {
     ];
 
     const modalTableData = publisherArticleDetails?.map((item, index) => {
+        const discount = userDiscount?.discount || 0;
+        const discountedPrice = item?.client_price * (1 - discount / 100);
         return {
             id: item?.id,
             portalLink: item?.url,
@@ -524,7 +534,7 @@ const BuyArticles = () => {
             dr: item?.dr,
             ahrefs: item?.ahrefs ? item?.ahrefs : "N/A",
             ai: item?.ai ? item?.ai : "N/A",
-            bestPrice: item?.client_price,
+            bestPrice: discountedPrice >= 0 ? discountedPrice : item?.client_price,
             cartOption: showCartOptions,
             cart: item.cart,
             typeOfAnchors: item?.type_of_anchor,
@@ -541,7 +551,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "PortalType")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>here we described about domain name</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Herewedescribedabout")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -597,7 +607,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "Language")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Heregivendomaincountry")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -617,7 +627,7 @@ const BuyArticles = () => {
             name: (
                 <div>
                     DR
-                    <OverlayTrigger placement="top" overlay={<Tooltip>Here given Domain Rating of domain </Tooltip>}>
+                    <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "DomainRatingdomain")}</Tooltip>}>
                         <span className="ms-2">
                             <BsInfoCircle />
                         </span>
@@ -638,7 +648,7 @@ const BuyArticles = () => {
             name: (
                 <div>
                     {translate(languageData, "Ahrefs")}
-                    <OverlayTrigger placement="top" overlay={<Tooltip>This is the Ahref rating of domain given by AHREF website</Tooltip>}>
+                    <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Ahrefratingofdomain")}</Tooltip>}>
                         <span className="ms-2">
                             <BsInfoCircle />
                         </span>
@@ -658,7 +668,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "BestPrice")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>In this section price of domain are given.</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "priceofdomain")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -700,12 +710,14 @@ const BuyArticles = () => {
 
 
     const data = articles?.map((item) => {
+        const discount = userDiscount?.discount || 0;
+        const discountedPrice = item?.client_price * (1 - discount / 100);
         return {
             id: item?.id,
             language: item?.language,
             portalLink: item?.url,
             dr: item?.dr,
-            bestPrice: item?.client_price,
+            bestPrice: discountedPrice >= 0 ? discountedPrice : item?.client_price,
             ahrefs: item?.ahref_traffic,
             noFollow: item?.nofollow,
             homepage: item?.home_page,
@@ -859,13 +871,6 @@ const BuyArticles = () => {
         setContent(html)
     }
 
-    const countLinksInEditor = (editorContent) => {
-        const parser = new DOMParser();
-        const parsedContent = parser.parseFromString(editorContent, 'text/html');
-        const linkCount = parsedContent.querySelectorAll('a').length;
-        return linkCount;
-    };
-
     const linkCount = countLinksInEditor(content);
 
     useEffect(() => {
@@ -990,10 +995,7 @@ const BuyArticles = () => {
 
     //add project modal api start
 
-    const handleChange1 = (e) => {
-        const { name, value } = e.target;
-        setFormValues1({ ...formValues1, [name]: value })
-    }
+    
 
     const handleSelectChange1 = (selectedOption) => {
         setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
@@ -1164,7 +1166,7 @@ const BuyArticles = () => {
                                     </span>
                                 </div>
                             </Col> */}
-                            <Col xs={12} sm={6} md={4} className="">
+                            <Col xs={12} sm={12} md={4} className="">
                                 {/* <FormControl fullWidth onMouseEnter={handletoggle}>
 
                                     <Select
@@ -1234,7 +1236,7 @@ const BuyArticles = () => {
                                     </Select>
                                 </FormControl>
                             </Col>
-                            <Col xs={12} sm={6} md={4} className=''>
+                            <Col xs={12} sm={12} md={4} className=''>
                                 <div className='border border-muted d-flex align-items-center bg-white mb-3 p-3' style={{ height: "45px" }}>
                                     <MdLink size={24} color="text-primary" />
                                     <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
@@ -1250,11 +1252,11 @@ const BuyArticles = () => {
                                     </label>
                                 </div>
                             </Col>
-                            <Col xs={12} sm={6} md={4} className='d-flex gap-2'>
+                            <Col xs={12} sm={12} md={4} className='d-flex gap-2'>
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
                                     .map((checkbox) => (
-                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2' style={{ height: "45px", width: boxWidth }}>
+                                        <div key={checkbox.id} className='border border-muted d-flex align-items-center bg-white mb-3 p-2 ' style={{ height: "45px", width: boxWidth }}>
                                             {/* Left side: promo code icon */}
                                             <IoTicketOutline size={24} color="primary" />
 
@@ -1277,7 +1279,7 @@ const BuyArticles = () => {
                             </Col>
 
 
-                            <Col xs={12} sm={6} md={4} className="mb-3 d-flex">
+                            <Col xs={12} sm={12} md={4} className="mb-3 d-flex">
                                 <Col lg={6} className="ps-0">
                                     <div
                                         className="wrap-input100 validate-input mb-0"
@@ -1312,7 +1314,7 @@ const BuyArticles = () => {
                                 </Col>
                             </Col>
 
-                            <Col xs={12} sm={6} md={4} className="mb-3 d-flex">
+                            <Col xs={12} sm={12} md={4} className="mb-3 d-flex">
                                 <Col lg={6} className="ps-0">
                                     <div
                                         className="wrap-input100 validate-input mb-0"
@@ -1348,7 +1350,7 @@ const BuyArticles = () => {
                             </Col>
 
 
-                            <Col xs={12} sm={6} md={4} className="mb-3 d-flex">
+                            <Col xs={12} sm={12} md={4} className="mb-3 d-flex">
                                 <Col lg={6} className="ps-0">
                                     <div
                                         className="wrap-input100 validate-input mb-0"
@@ -1764,7 +1766,7 @@ const BuyArticles = () => {
                                                             />
                                                             {linkCount > 0 && linkCount > selectedMaxLinks && (
                                                                 <Alert variant="danger">
-                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
+                                                                    {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
                                                         </Col>
@@ -1936,7 +1938,7 @@ const BuyArticles = () => {
                             </Col>
                             <Col lg={8} xs={12}>
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                    <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues1)} />
                                 </div>
                                 <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
                             </Col>
@@ -1947,7 +1949,7 @@ const BuyArticles = () => {
                             </Col>
                             <Col lg={8} xs={12}>
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                                    <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues1)} />
                                 </div>
                                 <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
                             </Col>

@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from 'react'
 import { Button, ButtonGroup, Col, Dropdown, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { getArticles, readyArticleList } from '../../../services/articleServices/articleServices'
+import { readyArticleList } from '../../../services/articleServices/articleServices'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../Context/languageContext'
 import { translate, formatDate } from '../../../utility/helper'
 import { FaEye, FaLink } from 'react-icons/fa'
+import { projectList } from '../../../services/ProjectServices/projectServices';
+import globalLoader from '../../../assets/images/loader.svg'
 
 const ReadyArticles = () => {
 
 
     const navigate = useNavigate();
 
-    const [articleList, setArticleList] = useState([])
+    const [projectListData, setProjectList] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const [showIndexationModal, setShowIndexationModal] = useState(false)
-
+    const [isDataPresent, setIsDataPresent] = useState(true);
+    const userData = JSON.parse(localStorage.getItem("userData"));
     const { languageData } = useLanguage()
 
     useEffect(() => {
-        handleArticleList()
+        projectListServices()
     }, [])
 
-
+    const projectListServices = async () => {
+        const res = await projectList(userData?.id)
+        setProjectList(res.data)
+    }
 
     useEffect(() => {
         readyArticleListServices()
@@ -34,18 +40,21 @@ const ReadyArticles = () => {
         setLoading(true)
         const res = await readyArticleList(userData?.id)
         if (res.success === true) {
-            setData(res?.data)
-            setLoading(false)
+            setData(res?.data);
+            setIsDataPresent(res.data.length > 0);
+            setLoading(false);
+        } else {
+            setIsDataPresent(false);
+            setLoading(false);
         }
-    }
+    };
 
     const tableData = data?.map((item) => {
-        const date = new Date(item?.created_at);
         return {
             portal: item?.portal,
             price: item?.price,
             project: item?.project,
-            date: date?.toLocaleString(),
+            date: item?.created_at,
             status: item?.status,
             name: item?.name,
             id: item?.id,
@@ -74,14 +83,14 @@ const ReadyArticles = () => {
                     </Link>
                     <div className='text-muted' style={{ fontSize: "14px" }}>{row.project}</div>
                     <div className='text-muted' style={{ fontSize: "14px" }}>{row.portal}</div>
-                    <div className='d-flex mt-1'>
+                    {/* <div className='d-flex mt-1'>
                         <Link to={"https://twitter.com"} target="_blank">
                             <img src='data:image/png;base64,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' width="25" />
                         </Link>
                         <Link to="https://facebook.com" target="_blank">
                             <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHwAAAB8CAMAAACcwCSMAAAAYFBMVEX///9VrO+gze5Vre5MqO6ezu5Mqe3///3n8veUxurC3vNRq/Dw9/plsedPq+3i8fen0vBDouiKwurz/f7S6fdstup8u+thr+mby/Ha7PV/vOi02O+LyO+v1vTL5PNYrOmzqLdFAAADPUlEQVRoge2aa5ebIBCGVQigeCMardlu/P//ssAmbSKooUxOtj3z7n7KOfAw3OYiSYJCoVAoFAqFQv3r4vpPFG0WpUPWFsJ2FcbmvMxrRillUaK0zssklJ40FU2NyN/Ltk9p1YRaXl7ZAJJVGWh4DsbWtudhbHGbNACRlIggeMEkGFymtAha9RZw1vW8t0H7PWOg8EPQtB9gLQ+DZwxuw1l42LQjHOEIR/i3gRP7/xa4VEZ/fLDrjAHg0jseyY5F04m+PSkp7VBOr4B7IytZTTrStW36gUpWn6cDXbaNhsvR52dl1XEj0znnRfWjSaYa3nJ5Nl5++Ws93YJya74ZxCidRY+G00z//KEef9bx0VK5Ov0En3b6aYy7sAe7Zics5SLphmVjCLhRc7pbeHnmy045F9WLpt30ntXsdqVcB/Ro+fiCcy6H256azvRqveqdTvnsCfjjz3nd2c5NAjsdFaV68VXjNCyVywaAs/ZugfklGypSu/lnozyJFsANp7o7+Ne15uy3pFeeSzgePpNFqmsvtWWnH747OBrOCtE/zrJrtmn4Erg5al7c/XASfvZltwCOxbiPPXo5+hwvwG7v99B6bI3vpAHA5fBEB5/e7BbgqNHLbjM+eAsa8XAiZ7FTz+PCDSSALNd7btpptlJNAYlepco360qdx6OBWT4I0a234fp6ex08ZVvTrq/a2R9dA037aasPvlo/g8lYaL6y342TEd4LBg6e0qP3krUhRrXGBsvV2Nj7+tH043rpDgauoxTJTm3nms51MrWaWwLAie1d0rFwyAnfLJFDWF6brx5D4ew548Y3y6XxkYxS1Tm7lL/jtztNI92sz0fDD537ncYMgidlvnKxwcHrsRWefcZFNu9WqCH8ORmKR7/Cy8uR0J2CDAxcHzPKqmN7mUTXdU1fZANRcpcMA7eSkqqr2N5Sg8O/piC1n+yeLlj9v0VAhCMc4QgPhsOhCTHwAHrm1Jdj4QGWt7DwsI/3BSBcr/ky3t2WgGSnddiDjbc+VeFl9VSAtCtingiFPtJJmgrotNEx+HlSYh5mUQDVeelWaJ9Q9JO0zD5JC38U9g1kk/4ovXPsKBQKhUKhUKgX6BesaDYk30hDNAAAAABJRU5ErkJggg==' width="25" />
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
             ),
             sortable: true,
@@ -191,7 +200,7 @@ const ReadyArticles = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{formatDate(row.date)}</button>
+                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date}</button>
             ),
             sortable: true,
             center: true,
@@ -200,23 +209,6 @@ const ReadyArticles = () => {
             style: {
 
                 width: "150px"
-            },
-
-
-        },
-        {
-            name: translate(languageData, "link"),
-            selector: row => row.link,
-            cell: (row) => (
-                <Link to={row.link}>{row.link}</Link>
-            ),
-            sortable: true,
-            center: true,
-            wrap: true,
-            width: "250px",
-            style: {
-
-                width: "250px"
             },
 
 
@@ -368,13 +360,6 @@ const ReadyArticles = () => {
         },
     ]
 
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const handleArticleList = async () => {
-        const res = await getArticles(userData?.id)
-        setArticleList(res.data)
-    }
-
     const status = [
         translate(languageData, "All"),
         "Untested",
@@ -404,10 +389,9 @@ const ReadyArticles = () => {
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country">
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {articleList.map((item, index) => {
+                                {projectListData?.map((item, index) => {
                                     return (
-                                        <option value={item.project} key={index}>{item.project}</option>
-
+                                        <option value={item.id} key={index}>{item.name}</option>
                                     )
                                 })}
                             </select>
@@ -438,30 +422,6 @@ const ReadyArticles = () => {
                 </Row>
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
-                        <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
-                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                <Form.Check
-                                    id='checkguarantee'
-                                    className='pe-2'
-                                />
-                                <span className='mt-1'>{translate(languageData, "36MonthGuarantee")}</span>
-                            </label>
-                        </div>
-
-                    </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
-                        <div className='border border-muted d-flex align-items-center bg-white' style={{ height: "45px" }}>
-                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                <Form.Check
-                                    id='checkguarantee'
-                                    className='pe-2'
-                                />
-                                <span className='mt-1'>{translate(languageData, "36MonthGuarantee")}</span>
-
-                            </label>
-                        </div>
-                    </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
                         <div className="input-group">
                             {/* <div className="input-group-text bg-primary-transparent text-primary">
                                 <i className="fe fe-calendar text-20"></i>
@@ -469,27 +429,23 @@ const ReadyArticles = () => {
                             <input className="form-control" id="datepicker-date" placeholder="MM/DD/YYYY" type="date" style={{ height: "45px" }} max={new Date().toISOString().split("T")[0]} />
                         </div>
                     </Col>
-                    <Row>
-                        <Col xs={12} sm={6} md={4} className=''>
-                            <div className="form-group">
-                                <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
-                                    <option label={translate(languageData, "ArticleIndexationStatus")}></option>
-                                    {indexationStatus.map((item, index) => {
-                                        return (
-                                            <option value={item} key={index}>{item}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
-                        </Col>
-                    </Row>
-
+                    <Col xs={12} sm={6} md={4} className=''>
+                        <div className="form-group">
+                            <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
+                                <option label={translate(languageData, "ArticleIndexationStatus")}></option>
+                                {indexationStatus.map((item, index) => {
+                                    return (
+                                        <option value={item} key={index}>{item}</option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </Col>
                 </Row>
 
 
             </div>
             <div className='mt-5'>
-
                 <OverlayTrigger
                     placement={"top"}
                     overlay={
@@ -497,7 +453,6 @@ const ReadyArticles = () => {
                             Go to Reports
                         </Tooltip>
                     }
-
                 >
                     <Dropdown as={ButtonGroup} drop={"down"} className="mb-4">
 
@@ -525,27 +480,29 @@ const ReadyArticles = () => {
 
                 </OverlayTrigger>
 
-                {/* {loading ?
+                {loading ? (
                     <div className='d-flex justify-content-between align-items-center'>
-                        <img src={globalLoader} className='mx-auto' />
-                    </div> : */}
-                <DataTable
-                    // selectableRowsComponent={Checkbox}
-                    columns={columns}
-                    data={tableData}
-                    customStyles={{
-                        rows: {
-                            style: {
-                                fontSize: '14px',
+                        <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    </div>
+                ) : isDataPresent ? (
+                    <DataTable
+                        columns={columns}
+                        data={tableData}
+                        customStyles={{
+                            rows: {
+                                style: {
+                                    fontSize: '14px',
+                                },
                             },
-                        },
-                    }}
-                // selectableRows
-                // selectableRowsHighlight
-                // selectableRowsHeader
-                // selectableRowsHeaderComponent={checkboxHeader}
-
-                />
+                        }}
+                    />
+                ) : (
+                    <Col lg={12}  className="text-center mt-5">
+                        <div className="input100">
+                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+                        </div>
+                    </Col>
+                )}
             </div>
 
             <Modal show={showIndexationModal} onHide={() => setShowIndexationModal(false)} size='lg'>

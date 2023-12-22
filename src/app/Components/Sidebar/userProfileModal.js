@@ -76,6 +76,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen }) => {
 
     return (
         <div>
+            
             <Modal show={isModalOpen} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>{translate(languageData, "Edituser")}</Modal.Title>

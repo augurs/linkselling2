@@ -26,7 +26,7 @@ import ArticleInProgress from "./app/pages/BuyLinks/ArticleInProgress.js";
 import ArticleDetails from "./app/pages/Content/ArticleDetails.js";
 import ReadyArticles from "./app/pages/BuyLinks/ReadyArticles.js";
 import BuyArticles from "./app/pages/BuyLinks/BuyArticles.js";
-import Domaindetails from "./app/pages/BuyLinks/Domaindetails.js";
+// import Domaindetails from "./app/pages/BuyLinks/Domaindetails.js";
 import CustomLanguageContext from "./app/Context/languageContext.js";
 import RequestedArticles from "./app/pages/Content/RequestedArticles.js";
 import Cart from "./app/pages/Cart/cart.js";
@@ -140,7 +140,7 @@ function App() {
         { path: 'invoices', element: <Invoices /> },
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
-        { path: 'DomainDetails', element: <Domaindetails /> },
+        // { path: 'DomainDetails', element: <Domaindetails /> },
         { path: 'viewArticle/:id', element: <VieworderArticle /> },
         { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {

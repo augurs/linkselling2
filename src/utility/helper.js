@@ -31,3 +31,11 @@ export function formatDate(created_at) {
    const day = String(date.getDate()).padStart(2, '0');
    return `${year}-${month}-${day}`;
 }
+
+
+export const countLinksInEditor = (editorContent) => {
+   const parser = new DOMParser();
+   const parsedContent = parser.parseFromString(editorContent, 'text/html');
+   const linkCount = parsedContent.querySelectorAll('a').length;
+   return linkCount;
+};
