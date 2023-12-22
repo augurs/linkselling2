@@ -15,7 +15,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
 import { anchorTypes } from "../../../utility/data";
-import { translate } from "../../../utility/helper";
+import { translate, countLinksInEditor } from "../../../utility/helper";
 import { useLanguage } from "../../Context/languageContext";
 import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles, requestArticle } from "../../../services/buyArticleServices/buyArticlesServices";
 import { ToastContainer, toast } from "react-toastify";
@@ -491,7 +491,7 @@ const BuyArticles = () => {
             width: "130px",
         },
         {
-            name: "Action",
+            name: translate(languageData, "Action"),
             cell: (row) => (
                 <div>
                     {row.cartOption && selectedSubArticles?.id === row?.id ? (
@@ -551,7 +551,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "PortalType")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>here we described about domain name</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Herewedescribedabout")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -607,7 +607,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "Language")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>here given domain country</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Heregivendomaincountry")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -627,7 +627,7 @@ const BuyArticles = () => {
             name: (
                 <div>
                     DR
-                    <OverlayTrigger placement="top" overlay={<Tooltip>Here given Domain Rating of domain </Tooltip>}>
+                    <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "DomainRatingdomain")}</Tooltip>}>
                         <span className="ms-2">
                             <BsInfoCircle />
                         </span>
@@ -648,7 +648,7 @@ const BuyArticles = () => {
             name: (
                 <div>
                     {translate(languageData, "Ahrefs")}
-                    <OverlayTrigger placement="top" overlay={<Tooltip>This is the Ahref rating of domain given by AHREF website</Tooltip>}>
+                    <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "Ahrefratingofdomain")}</Tooltip>}>
                         <span className="ms-2">
                             <BsInfoCircle />
                         </span>
@@ -668,7 +668,7 @@ const BuyArticles = () => {
                 <div>
                     <div>
                         {translate(languageData, "BestPrice")}
-                        <OverlayTrigger placement="top" overlay={<Tooltip>In this section price of domain are given.</Tooltip>}>
+                        <OverlayTrigger placement="top" overlay={<Tooltip>{translate(languageData, "priceofdomain")}</Tooltip>}>
                             <span className="ms-2">
                                 <BsInfoCircle />
                             </span>
@@ -870,13 +870,6 @@ const BuyArticles = () => {
     const handleEditorChange = (html) => {
         setContent(html)
     }
-
-    const countLinksInEditor = (editorContent) => {
-        const parser = new DOMParser();
-        const parsedContent = parser.parseFromString(editorContent, 'text/html');
-        const linkCount = parsedContent.querySelectorAll('a').length;
-        return linkCount;
-    };
 
     const linkCount = countLinksInEditor(content);
 
@@ -1773,7 +1766,7 @@ const BuyArticles = () => {
                                                             />
                                                             {linkCount > 0 && linkCount > selectedMaxLinks && (
                                                                 <Alert variant="danger">
-                                                                    Too many links inside the article! Maximum allowed: {selectedMaxLinks}
+                                                                    {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
                                                         </Col>
