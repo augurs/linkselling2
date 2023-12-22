@@ -7,7 +7,7 @@ import { translate, formatDate } from '../../utility/helper';
 import globalLoader from '../../assets/images/loader.svg'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEye, FaLink } from 'react-icons/fa';
+import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
 import { orderslist } from '../../services/OrdersServices/ordersServices'
 const Home = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
