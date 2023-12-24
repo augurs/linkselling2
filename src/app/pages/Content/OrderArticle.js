@@ -278,7 +278,7 @@ const OrderArticle = () => {
                         <Col lg={10} className='mt-6 pb-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "ArticleType")} *</span>
+                                    <span>{translate(languageData, "ArticleType")} </span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0 d-flex justify-content-center">
                                     <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData, "artilistPaidArticle")}</Button>

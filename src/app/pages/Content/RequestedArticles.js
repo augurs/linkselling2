@@ -218,6 +218,10 @@ const RequestedArticles = () => {
                       buttonClass = "btn btn-outline-dark btn-pill";
                       buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
                       break;
+                      case "RejectedByPortal":
+                      buttonClass = "btn btn-outline-dark btn-pill";
+                      buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+                      break;
                     default:
                       
                       buttonText = row.status;

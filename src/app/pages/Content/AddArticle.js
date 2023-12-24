@@ -70,7 +70,7 @@ const AddArticle = () => {
     
     //pixabay Image selct end//
 
-    const allowedDocExtensions = ['.docx', '.doc', '.odt', '.html'];
+    const allowedDocExtensions = ['.docx'];
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
 
@@ -239,7 +239,7 @@ const AddArticle = () => {
         } else {
             const fileExtension = values?.document?.name?.slice(values?.document?.name?.lastIndexOf('.'));
             if (!allowedDocExtensions.includes(fileExtension)) {
-                error.document = "Invalid file type. Allowed: .docx, .doc, .odt, .html";
+                error.document = "Invalid file type. Allowed: .docx";
                 isValid = false;
             }
         }
@@ -305,7 +305,7 @@ const AddArticle = () => {
 
                         <Row className='align-items-center border-bottom pb-4'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "AddArtiImportDoc")}</span>
+                                <span>{translate(languageData, "AddArtiImportDoc")} *</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div>
@@ -318,7 +318,7 @@ const AddArticle = () => {
                                         name="document"
                                     />
                                 </div>
-                                <div className='text-danger text-center mt-1'>{formErrors.document} {title}</div>
+                                <div className='text-danger text-center mt-1'>{formErrors.document}</div>
                             </Col>
                         </Row>
 
@@ -356,7 +356,7 @@ const AddArticle = () => {
                         </Row>
                         <Row className='mt-4'>
                             <Col xs={12} md={4} className='mt-2'>
-                                <span>{translate(languageData, "AddArtiLead")}</span>
+                                <span>{translate(languageData, "AddArtiLead")} *</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="lead is required">
@@ -367,7 +367,7 @@ const AddArticle = () => {
                         </Row>
                         <Row className='mt-4 pb-8'>
                             <Col xs={12} md={4} className='mt-2'>
-                                <span>{translate(languageData, "sidebarContent")}</span>
+                                <span>{translate(languageData, "sidebarContent")} *</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <ReactQuill
@@ -385,7 +385,7 @@ const AddArticle = () => {
                         </Row>
                         <Row className='align-items-center mt-4'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "AddArtiMainImage")}</span>
+                                <span>{translate(languageData, "AddArtiMainImage")} *</span>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
                                 <div><img src={displayedImage} alt='Displayed' /></div>
