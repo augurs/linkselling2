@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Modal, Row } from 'react-bootstrap';
 import { userprofileModal } from '../../../services/authServices/authservices';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
+import globalLoader from '../../../assets/images/loader.svg'
 import { toast } from 'react-toastify'
-const UserProfileModal = ({ isModalOpen, setModalOpen }) => {
+const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices }) => {
 
     let initialValues = {
         Email: "",
@@ -40,7 +41,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen }) => {
                 progress: undefined,
                 type: 'success'
             });
-
+            showWalletServices();
             setLoading(false);
             setModalOpen(false);
         } else if (res.success === false) {
@@ -76,58 +77,63 @@ const UserProfileModal = ({ isModalOpen, setModalOpen }) => {
 
     return (
         <div>
-            
-            <Modal show={isModalOpen} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{translate(languageData, "Edituser")}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row className='align-items-center'>
-                        <Col lg={4} xs={12}>
-                            {translate(languageData, "emailSignUp")} :
-                        </Col>
-                        <Col lg={8} xs={12}>
-                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="email is required">
-                                <input
-                                    className="input100"
-                                    type="text"
-                                    name="Email"
-                                    placeholder={translate(languageData, "emailSignUp")}
-                                    style={{ paddingLeft: "15px" }}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row className='align-items-center mt-2'>
-                        <Col lg={4} xs={12}>
-                            {translate(languageData, "PhoneNumber")} : 
-                        </Col>
-                        <Col lg={8} xs={12}>
-                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="number is required">
-                                <input
-                                    className="input100"
-                                    type="number"
-                                    name="Phone"
-                                    placeholder={translate(languageData, "PhoneNumber")}
-                                    style={{ paddingLeft: "15px" }}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                        </Col>
-                    </Row>
+            {loading ? (
+                <div className="d-flex">
+                    <img src={globalLoader} className="mx-auto mt-10" alt="loader1" />
+                </div>
+            ) : (
+                <Modal show={isModalOpen} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{translate(languageData, "Edituser")}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row className='align-items-center'>
+                            <Col lg={4} xs={12}>
+                                {translate(languageData, "emailSignUp")} :
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="email is required">
+                                    <input
+                                        className="input100"
+                                        type="text"
+                                        name="Email"
+                                        placeholder={translate(languageData, "emailSignUp")}
+                                        style={{ paddingLeft: "15px" }}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-2'>
+                            <Col lg={4} xs={12}>
+                                {translate(languageData, "PhoneNumber")} :
+                            </Col>
+                            <Col lg={8} xs={12}>
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="number is required">
+                                    <input
+                                        className="input100"
+                                        type="number"
+                                        name="Phone"
+                                        placeholder={translate(languageData, "PhoneNumber")}
+                                        style={{ paddingLeft: "15px" }}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
 
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        {translate(languageData, "close")}
-                    </Button>
-                    <Button variant="primary" onClick={userprofileModalService}>
-                        {translate(languageData, "Save")}
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseModal}>
+                            {translate(languageData, "close")}
+                        </Button>
+                        <Button variant="primary" onClick={userprofileModalService}>
+                            {translate(languageData, "Save")}
+                        </Button>
+                    </Modal.Footer>
+                </Modal>)
+}
+        </div >
     )
 }
 

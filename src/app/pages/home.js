@@ -7,7 +7,7 @@ import { translate, formatDate } from '../../utility/helper';
 import globalLoader from '../../assets/images/loader.svg'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEye, FaPlus, FaLink } from 'react-icons/fa';
+import { FaEye, FaLink } from 'react-icons/fa';
 import { orderslist } from '../../services/OrdersServices/ordersServices'
 const Home = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
@@ -327,6 +327,10 @@ const Home = () => {
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
             break;
+            case "RejectedByPortal":
+            buttonClass = "btn btn-outline-primary btn-pill";
+            buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+            break;
           default:
 
             buttonText = row.status;
@@ -375,10 +379,10 @@ const Home = () => {
                 <Row className='mt-1'>
                   {toDoList?.map((data, index) => (
                     <Col xs={12} sm={12} key={index}>
-                      <Card className='shadow-md' style={{ marginBottom: "0.2rem" }}>
+                      <Card className='shadow-md mb-1'>
                         <div className='d-flex align-items-center justify-content-between p-1'>
                           <div>
-                            <h6 style={{ marginBottom: "1px" }}>{data?.title}</h6>
+                            <h6 className='mb-0'>{data?.title}</h6>
                             <small className='d-flex'><div className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
                           </div>
                           <div>
@@ -410,7 +414,7 @@ const Home = () => {
               <Row>
                 <div className=' w-100'>
                   {loading ? <div className='d-flex'>
-                    <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    <img src={globalLoader} className='mx-auto mt-1' alt='loader1' />
                   </div> :
                     <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
                       <DataTable
@@ -460,7 +464,7 @@ const Home = () => {
               <Row>
                 <div className='mt-1 w-100'>
                   {loading ? <div className='d-flex'>
-                    <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
+                    <img src={globalLoader} className='mx-auto mt-1' alt='loader1' />
                   </div> :
                     <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
                       <DataTable

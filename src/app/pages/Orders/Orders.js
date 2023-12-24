@@ -34,7 +34,7 @@ const Orders = () => {
     } else {
       setIsDataPresent(false);
       setLoading(false);
-  }
+    }
   }
 
   const tableData = ordersList?.map((item) => {
@@ -46,7 +46,8 @@ const Orders = () => {
       status: item?.status,
       name: item?.name,
       id: item?.id,
-      link: item?.link
+      link: item?.link,
+      type: item?.type
     }
   })
 
@@ -112,7 +113,7 @@ const Orders = () => {
             buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "Completed")}</small>;
             break;
-            case "RequestChanges":
+          case "RequestChanges":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "RequestChanges")}</small>;
             break;
@@ -136,28 +137,32 @@ const Orders = () => {
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "Published")}</small>;
             break;
-            case "PendingForAssing":
+          case "PendingForAssing":
             buttonClass = "btn btn-outline-warning btn-pill";
             buttonText = <small>{translate(languageData, "PendingForAssing")}</small>;
             break;
-            case "Accept":
+          case "Accept":
             buttonClass = "btn btn-outline-dark btn-pill";
             buttonText = <small>{translate(languageData, "Accept")}</small>;
             break;
-            case "RejectPublication":
+          case "RejectPublication":
             buttonClass = "btn btn-outline-danger btn-pill";
             buttonText = <small>{translate(languageData, "RejectPublication")}</small>;
             break;
-            case "AcceptPublication":
+          case "AcceptPublication":
             buttonClass = "btn btn-outline-success btn-pill";
             buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
             break;
-            case "ReadyToPublish":
+          case "ReadyToPublish":
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
             break;
+          case "RejectedByPortal":
+            buttonClass = "btn btn-outline-primary btn-pill";
+            buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+            break;
           default:
-            
+
             buttonText = row.status;
         }
 
@@ -180,7 +185,7 @@ const Orders = () => {
               <FaLink className="icon-link" />
             </Link>
           )}
-          <Link to={`/viewArticle/${row.id}`}>
+          <Link to={`/viewArticle/${row.type}/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>
         </div>
@@ -197,19 +202,19 @@ const Orders = () => {
       <div className='mt-5 w-100'>
         {loading ? (<div className='d-flex'>
           <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
-        </div> ):  isDataPresent ?(
+        </div>) : isDataPresent ? (
           <>
             <DataTable
               columns={columns}
               data={tableData}
             />
-          </>) :(
-                    <Col lg={12}  className="text-center mt-5">
-                        <div className="input100">
-                            <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
-                        </div>
-                    </Col>
-                )}
+          </>) : (
+          <Col lg={12} className="text-center mt-5">
+            <div className="input100">
+              <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
+            </div>
+          </Col>
+        )}
       </div>
 
     </div>

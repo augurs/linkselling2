@@ -28,3 +28,16 @@ export const ordersListArticle = (id) => {
       });
   };
 
+
+  export const ordersListArticle1 = (id) => {
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/requestarticle/${id}`)
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+

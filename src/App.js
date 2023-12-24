@@ -141,7 +141,7 @@ function App() {
         { path: 'companydata', element: <Companydata /> },
         { path: 'orders', element: <Orders /> },
         // { path: 'DomainDetails', element: <Domaindetails /> },
-        { path: 'viewArticle/:id', element: <VieworderArticle /> },
+        { path: 'viewArticle/:articleid/:id', element: <VieworderArticle /> },
         { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {
           path: '/resubmitarticle/:id',

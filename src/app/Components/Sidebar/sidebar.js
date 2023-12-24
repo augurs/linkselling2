@@ -223,7 +223,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </OverlayTrigger>
                     </ul></div>
             </div>
-            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} />
+            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} showWalletServices={showWalletServices}/>
             <ToastContainer />
         </div>
 
