@@ -213,7 +213,7 @@ const ArticleInProgress = () => {
                         </Link>
                     )}
 
-                    <Link to={`/viewArticle/${row.id}`}>
+                    <Link to={`/viewArticle/${row.type}/${row.id}`}>
                         <FaEye className="icon-view" />
                     </Link>
                 </div>

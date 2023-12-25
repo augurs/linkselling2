@@ -474,8 +474,8 @@ export const MenuProps = {
 };
 
 export const anchorTypes = [
-    { type: "1", label: "EMA"},
-   { type: "2", label: "BRAND/URL" },
+    { type: "EMA", label: "EMA"},
+   { type: "BRAND/URL", label: "BRAND/URL" },
     // { type: "3", label: "MIXED" },
     // { type: "4" },
     // { type: "5" },

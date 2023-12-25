@@ -233,7 +233,8 @@ const Home = () => {
       status: item?.status,
       name: item?.name,
       id: item?.id,
-      link: item?.link
+      link: item?.link,
+      type: item?.type
     }
   })
 
@@ -355,7 +356,7 @@ const Home = () => {
             </Link>
           )}
 
-          <Link to={`/viewArticle/${row.id}`}>
+          <Link to={`/viewArticle/${row.type}/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>
         </div>
