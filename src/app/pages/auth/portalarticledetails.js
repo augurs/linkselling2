@@ -19,7 +19,6 @@ function Portalarticledetails() {
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState();
-    const [language, setLanguage] = useState();
 
 
 
@@ -39,8 +38,12 @@ function Portalarticledetails() {
         const res = await portalArticleDetails(id)
         if (res.success === true) {
             setPortalArticleDetail(res?.data)
-            const apiLanguage = res?.data?.language;
-            setLanguage(apiLanguage);
+            const apiLanguage = res?.data[0]?.language;
+            if(apiLanguage){
+                localStorage.setItem('lang' , apiLanguage)
+            }
+            const storedLang = localStorage.getItem('lang');
+            setPortalArticleDetail(res?.data,storedLang )
             setLoading(false)
         }
     }
@@ -115,7 +118,7 @@ function Portalarticledetails() {
             <ToastContainer />
             <div className='d-flex mt-2 me-2 ms-2 mb-2 justify-content-between'>
                 <h2 className='text-white'>{translate(languageData, "portalArticleDetails")}</h2>
-                <LanguageSelect language={language}/>
+                <LanguageSelect/>
             </div>
             {loading ? <div className='d-flex'>
                 <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />

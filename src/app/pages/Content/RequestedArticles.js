@@ -218,6 +218,10 @@ const RequestedArticles = () => {
                       buttonClass = "btn btn-outline-dark btn-pill";
                       buttonText = <small>{translate(languageData, "AcceptPublication")}</small>;
                       break;
+                      case "RejectedByPortal":
+                      buttonClass = "btn btn-outline-dark btn-pill";
+                      buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+                      break;
                     default:
                       
                       buttonText = row.status;
@@ -232,7 +236,7 @@ const RequestedArticles = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData, "Edit")}</button>,
+            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.articleId)} >{translate(languageData, "Edit")}</button>,
             center: true,
             sortable: true,
         },
@@ -246,7 +250,8 @@ const RequestedArticles = () => {
             contentsize: item.contentsize,
             maxLink: item.max_links,
             dateOfArticle: item.date_of_article,
-            status: item.status
+            status: item.status,
+            articleId: item.article_id
         }
     })
 

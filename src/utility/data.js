@@ -474,8 +474,8 @@ export const MenuProps = {
 };
 
 export const anchorTypes = [
-    { type: "1", label: "EMA"},
-   { type: "2", label: "BRAND/URL" },
+    { type: "EMA", label: "EMA"},
+   { type: "BRAND/URL", label: "BRAND/URL" },
     // { type: "3", label: "MIXED" },
     // { type: "4" },
     // { type: "5" },
@@ -483,3 +483,12 @@ export const anchorTypes = [
     // { type: "7" },
 
 ]
+
+
+// utility.js
+
+export const isValidUrl = (url) => {
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+([a-zA-Z]{2,})(\/[^\s]*)?$/;
+    return urlPattern.test(url);
+  };
+  

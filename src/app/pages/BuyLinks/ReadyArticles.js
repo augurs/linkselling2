@@ -60,6 +60,7 @@ const ReadyArticles = () => {
             id: item?.id,
             link: item?.link,
             title: item?.title,
+            type: item?.type
         }
     })
 
@@ -225,7 +226,7 @@ const ReadyArticles = () => {
                         </Link>
                     )}
 
-                    <Link to={`/viewArticle/${row.id}`}>
+                    <Link to={`/viewArticle/${row.type}/${row.id}`}>
                         <FaEye className="icon-view" />
                     </Link>
                 </div>

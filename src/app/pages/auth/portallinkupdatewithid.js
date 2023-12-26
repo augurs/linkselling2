@@ -16,9 +16,7 @@ function Portallinkupdatewithid() {
 
   const userData = localStorage.getItem('userData');
   const [link, setLink] = useState('');
-
   const [loading, setLoading] = useState(false)
-  const [portalArticleDetail, setPortalArticleDetail] = useState([])
 
   const navigate = useNavigate();
 

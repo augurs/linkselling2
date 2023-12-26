@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
+import { isValidUrl } from '../../../utility/data'
 
 const AddProjects = () => {
 
@@ -113,10 +114,10 @@ const AddProjects = () => {
             isValid = false
         }
 
-        if (!values.webAddress) {
-            errors.webAddress = translate(languageData , "WebAddressRequired");
+        else if (!isValidUrl(values.webAddress)) {
+            errors.webAddress = translate(languageData, 'InvalidWebAddress');
             isValid = false;
-        }
+          }
 
         if (!values.publicationLang) {
             errors.publicationLang = translate(languageData , "PublicationLanguageRequired")

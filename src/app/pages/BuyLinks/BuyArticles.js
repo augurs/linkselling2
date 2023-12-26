@@ -1508,7 +1508,7 @@ const BuyArticles = () => {
                                     <option label={translate(languageData, "artilstProject")}></option>
                                     {articlesData2?.map((item, index) => {
                                         return (
-                                            <option value={item?.id} key={index}>{item?.name}</option>
+                                            <option value={item?.id} key={index}>{item.name.length > 10 ? item.name.slice(0, 10) + '...' : item.name}</option>
                                         )
                                     })}
                                 </select>
@@ -1647,7 +1647,7 @@ const BuyArticles = () => {
                                                     {provideSubject && (
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
-                                                                <span>{translate(languageData, "writeSubject")} </span>
+                                                                <span>{translate(languageData, "writeSubject")} *</span>
                                                             </Col>
                                                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
@@ -1740,7 +1740,7 @@ const BuyArticles = () => {
 
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "PublicationDate")} *</span>
+                                                            <span>{translate(languageData, "PublicationDate")} </span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
@@ -1751,7 +1751,7 @@ const BuyArticles = () => {
                                                     </Row>
                                                     <Row className='mt-4 pb-8'>
                                                         <Col xs={12} md={4} className='mt-2'>
-                                                            <span>{translate(languageData, "sidebarContent")}</span>
+                                                            <span>{translate(languageData, "sidebarContent")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <ReactQuill

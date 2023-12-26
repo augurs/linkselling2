@@ -38,6 +38,10 @@ function Portalarticledetails() {
         const res = await requestArticleDetails(id)
         if (res.success === true) {
             setPortalArticleDetail(res?.data)
+            const apiLanguage = res?.data[0]?.language;
+            if(apiLanguage){
+                localStorage.setItem('lang' , apiLanguage)
+            }
             setLoading(false)
         }
     }
