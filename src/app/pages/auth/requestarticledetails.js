@@ -19,32 +19,51 @@ function Portalarticledetails() {
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState();
-
-    const navigate = useNavigate();
-
-    const { t } = useTranslation();
-    const { languageData } = useLanguage();
+    const [portalLang, setPortalLang] = useState([])
 
 
-    const language = localStorage.getItem('lang')
-    const {id}= useParams();
+    const { languageData, setLanguage} = useLanguage();
+
+
+    const { id } = useParams();
+
+    
+    useEffect(() => {
+        const storedLanguage = localStorage.getItem('lang');
+        if (storedLanguage) {
+            setLanguage(storedLanguage);
+        }
+    }, [setLanguage]);
 
     useEffect(() => {
         ordersListServices()
     }, [])
 
     const ordersListServices = async () => {
-        setLoading(true)
-        const res = await requestArticleDetails(id)
+        setLoading(true);
+        const res = await requestArticleDetails(id);
         if (res.success === true) {
-            setPortalArticleDetail(res?.data)
+            setPortalArticleDetail(res?.data);
             const apiLanguage = res?.data[0]?.language;
-            if(apiLanguage){
-                localStorage.setItem('lang' , apiLanguage)
+            setPortalLang(apiLanguage);
+            if (apiLanguage) {
+                setLanguage(apiLanguage);
+                localStorage.setItem('lang', apiLanguage);
             }
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (portalLang === undefined) {
+            return (
+                <div>
+                    Loading...
+                </div>
+            );
+        }
+    }, [portalLang])
+
 
     const handleCopyClick = (content) => {
         const tempInput = document.createElement('textarea');
