@@ -243,7 +243,7 @@ const SignUp = () => {
                       }} checked={formValues.terms} />
                       <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition2')[0]?.value || 'singUpTermsAndCondition2'}</a></span>
                     </label>
-                    <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.terms}</div>
+                    <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.terms}</div>
                     <div className="container-login100-form-btn text-primary">
                       {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> :
                         <a onClick={() => validate(formValues) ? signUpServices() : ""} className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>

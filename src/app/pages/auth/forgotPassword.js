@@ -83,7 +83,7 @@ const ForgotPassword = () => {
                                         <div className="pt-3" id="forgot">
                                             <div className="form-group mb-0">
                                                 <label className="form-label" for="eMail">E-Mail:</label>
-                                                <input className="form-control" id="eMail" placeholder={languageData &&  languageData?.filter((item) => item.title === 'forgotPasswordPlaceHolder')[0]?.value || 'forgotPasswordPlaceHolder' }  type="email" onChange={(e) => setEmail(e.target.value)} onKeyUp={() => validate()} />
+                                                <input className="form-control" id="eMail" placeholder={languageData &&  languageData?.filter((item) => item.title === 'enterforgetmail')[0]?.value || 'forgotPasswordPlaceHolder' }  type="email" onChange={(e) => setEmail(e.target.value)} onKeyUp={() => validate()} />
                                             </div>
                                             <div className='mt-1 mb-2 text-danger text-sm-12'>{errors}</div>
 

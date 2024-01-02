@@ -196,9 +196,15 @@ const BuyArticles = () => {
         setSearch({ ...search, doFollow: 0 });
     };
 
-    const handleRemoveTypeAnchor2 = () => {
+    const handleRemovePromotion = (checkboxId) => {
         setSearch({ ...search, promotions: 0 });
-    };
+    
+        const updatedCheckboxes = checkboxes.map((checkbox) => ({
+          ...checkbox,
+          checked: checkbox.id === checkboxId ? false : checkbox.checked,
+        }));
+        setCheckboxes(updatedCheckboxes);
+      };
 
     const handleRemoveTypeAnchor = (type) => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
@@ -995,7 +1001,7 @@ const BuyArticles = () => {
 
     //add project modal api start
 
-    
+
 
     const handleSelectChange1 = (selectedOption) => {
         setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
@@ -1413,18 +1419,19 @@ const BuyArticles = () => {
                                     doFollow
                                 </Button>
                             </div> : ""}
-                            {search?.promotions ? <div>
-
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className="btn btn-light text-dark"
-                                    onClick={handleRemoveTypeAnchor2}
-                                >
-                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
-                                    Promotions
-                                </Button>
-                            </div> : ""}
+                            {search?.promotions && checkboxes.find((checkbox) => checkbox.id === search.promotions) ? (
+                                <div>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemovePromotion(search.promotions)}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        Promotions
+                                    </Button>
+                                </div>
+                            ) : ''}
                         </ul>
 
                         {/* <Button variant="primary" className="mx-auto d-flex mt-4">
@@ -1968,7 +1975,7 @@ const BuyArticles = () => {
                     <Modal.Footer>
                         <div>
                             <Button variant="secondary" onClick={handleCloseModal}>
-                            {translate(languageData, "close")}
+                                {translate(languageData, "close")}
                             </Button>
                         </div>
                         <div className=''>

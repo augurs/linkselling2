@@ -261,7 +261,7 @@ const RequestedArticles = () => {
     }
 
 
-
+    const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
     return (
         <div className='p-4'>
             <ToastContainer />
@@ -277,6 +277,7 @@ const RequestedArticles = () => {
                     <DataTable
                         columns={columns}
                         data={data}
+                        noDataComponent={noDataComponent}
                     />
 
                 </div>}

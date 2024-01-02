@@ -207,6 +207,8 @@ const ArticleList = () => {
         />
     );
 
+    const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
+
     return (
         <div className='p-4'>
 
@@ -316,6 +318,7 @@ const ArticleList = () => {
                         // selectableRowsComponent={Checkbox}
                         columns={columns}
                         data={data}
+                        noDataComponent={noDataComponent}
                     // selectableRows
                     // selectableRowsHighlight
                     // selectableRowsHeader

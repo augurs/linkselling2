@@ -366,6 +366,8 @@ const Home = () => {
   ]
   //*api 4th section end
 
+  const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
+
   return (
     <div className="inner-body" id="content">
       <h1 className='text-center mt-2'>{translate(languageData, "home")}</h1>
@@ -377,6 +379,7 @@ const Home = () => {
             </Card.Header>
             <Card.Body >
               <div className="px-1" style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px' }}>
+              {toDoList && toDoList.length > 0 ? (
                 <Row className='mt-1'>
                   {toDoList?.map((data, index) => (
                     <Col xs={12} sm={12} key={index}>
@@ -396,7 +399,10 @@ const Home = () => {
                       </Card>
                     </Col>
                   ))}
-                </Row>
+                </Row> 
+              ) : (
+                <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>
+              )}
 
 
 
@@ -421,6 +427,7 @@ const Home = () => {
                       <DataTable
                         columns={columns}
                         data={tableData}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }
@@ -447,6 +454,7 @@ const Home = () => {
                       <DataTable
                         columns={columns2}
                         data={tableData2}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }
@@ -471,6 +479,7 @@ const Home = () => {
                       <DataTable
                         columns={columns1}
                         data={tableData1}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }
