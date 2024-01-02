@@ -106,6 +106,21 @@ const SignUp = () => {
 
   const signUpServices = async () => {
     setSignUpLoading(true);
+    if (!formValues.terms) {
+      toast(languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: "error",
+      });
+      setSignUpLoading(false);
+      return;
+    }
     if (formValues.password !== formValues.confirmPassword) {
       toast('Passwords do not match', {
         position: 'top-right',
@@ -246,7 +261,7 @@ const SignUp = () => {
                     <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.terms}</div>
                     <div className="container-login100-form-btn text-primary">
                       {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> :
-                        <a onClick={() => validate(formValues) ? signUpServices() : ""} className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>
+                        <a onClick={() => signUpServices() } className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>
                           {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
                         </a>}
                     </div>
