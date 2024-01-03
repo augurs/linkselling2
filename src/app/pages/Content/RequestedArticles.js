@@ -236,7 +236,7 @@ const RequestedArticles = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.id)} >{translate(languageData, "Edit")}</button>,
+            cell: row => <button className='btn btn-primary' onClick={() => viewRequestedArticleService(row.articleId)} >{translate(languageData, "Edit")}</button>,
             center: true,
             sortable: true,
         },
@@ -250,7 +250,8 @@ const RequestedArticles = () => {
             contentsize: item.contentsize,
             maxLink: item.max_links,
             dateOfArticle: item.date_of_article,
-            status: item.status
+            status: item.status,
+            articleId: item.article_id
         }
     })
 
@@ -260,7 +261,7 @@ const RequestedArticles = () => {
     }
 
 
-
+    const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
     return (
         <div className='p-4'>
             <ToastContainer />
@@ -276,6 +277,7 @@ const RequestedArticles = () => {
                     <DataTable
                         columns={columns}
                         data={data}
+                        noDataComponent={noDataComponent}
                     />
 
                 </div>}

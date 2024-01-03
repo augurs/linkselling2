@@ -102,7 +102,7 @@ const Home = () => {
   const tableData = dashBoardproject?.map((item) => {
     return {
       no_of_proejct: item?.no_of_proejct,
-      name: item?.name,
+      name: item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name,
       id: item?.id
     }
   })
@@ -233,7 +233,8 @@ const Home = () => {
       status: item?.status,
       name: item?.name,
       id: item?.id,
-      link: item?.link
+      link: item?.link,
+      type: item?.type
     }
   })
 
@@ -355,7 +356,7 @@ const Home = () => {
             </Link>
           )}
 
-          <Link to={`/viewArticle/${row.id}`}>
+          <Link to={`/viewArticle/${row.type}/${row.id}`}>
             <FaEye className="icon-view" />
           </Link>
         </div>
@@ -364,6 +365,8 @@ const Home = () => {
 
   ]
   //*api 4th section end
+
+  const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
 
   return (
     <div className="inner-body" id="content">
@@ -376,6 +379,7 @@ const Home = () => {
             </Card.Header>
             <Card.Body >
               <div className="px-1" style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px' }}>
+              {toDoList && toDoList.length > 0 ? (
                 <Row className='mt-1'>
                   {toDoList?.map((data, index) => (
                     <Col xs={12} sm={12} key={index}>
@@ -395,7 +399,10 @@ const Home = () => {
                       </Card>
                     </Col>
                   ))}
-                </Row>
+                </Row> 
+              ) : (
+                <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>
+              )}
 
 
 
@@ -420,6 +427,7 @@ const Home = () => {
                       <DataTable
                         columns={columns}
                         data={tableData}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }
@@ -446,6 +454,7 @@ const Home = () => {
                       <DataTable
                         columns={columns2}
                         data={tableData2}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }
@@ -470,6 +479,7 @@ const Home = () => {
                       <DataTable
                         columns={columns1}
                         data={tableData1}
+                        noDataComponent={noDataComponent}
                       />
                     </div>
                   }

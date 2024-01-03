@@ -5,11 +5,11 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import globalLoader from '../../../assets/images/loader.svg'
 import { toast } from 'react-toastify'
-const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices }) => {
+const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices, userDetails }) => {
 
     let initialValues = {
-        Email: "",
-        Phone: "",
+        Email: userDetails?.email,
+        Phone: userDetails?.phone_number || "",
     }
 
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -21,6 +21,13 @@ const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices }) => 
         setModalOpen(false);
     };
 
+    useEffect(() => {
+        setFormValues({
+            Email: userDetails?.email || "",
+            Phone: userDetails?.phone_number !== null ? userDetails?.phone_number : "",
+        });
+    }, [userDetails]);
+    
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
@@ -97,6 +104,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices }) => 
                                         className="input100"
                                         type="text"
                                         name="Email"
+                                        value={formValues.Email}
                                         placeholder={translate(languageData, "emailSignUp")}
                                         style={{ paddingLeft: "15px" }}
                                         onChange={handleInputChange}
@@ -114,6 +122,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices }) => 
                                         className="input100"
                                         type="number"
                                         name="Phone"
+                                        value={formValues?.Phone !== null ? formValues?.Phone: "--"}
                                         placeholder={translate(languageData, "PhoneNumber")}
                                         style={{ paddingLeft: "15px" }}
                                         onChange={handleInputChange}

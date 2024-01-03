@@ -9,41 +9,65 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { portalArticleDetails, portalArticleDetailsReject } from "../../../services/Resubmitarticle/resubmitarticle"
 import { FaCopy } from 'react-icons/fa';
+import { updateLanguages } from '../../../services/CommonServices/commonService';
 
 function Portalarticledetails() {
 
-    const userData = localStorage.getItem('userData');
-
-    const contentRef = useRef(null);
+    const userData = JSON.parse(localStorage.getItem('userData'));
     const [loading, setLoading] = useState(false)
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState();
-    const [language, setLanguage] = useState();
+    const [portalLang, setPortalLang] = useState([])
 
 
 
 
 
-    const { languageData } = useLanguage();
+
+    const { languageData, setLanguage} = useLanguage();
 
 
     const { id } = useParams();
+
+    
+    useEffect(() => {
+        const storedLanguage = localStorage.getItem('lang');
+        if (storedLanguage) {
+            setLanguage(storedLanguage);
+        }
+    }, [setLanguage]);
 
     useEffect(() => {
         ordersListServices()
     }, [])
 
     const ordersListServices = async () => {
-        setLoading(true)
-        const res = await portalArticleDetails(id)
+        setLoading(true);
+        const res = await portalArticleDetails(id);
         if (res.success === true) {
-            setPortalArticleDetail(res?.data)
-            const apiLanguage = res?.data?.language;
-            setLanguage(apiLanguage);
-            setLoading(false)
+            setPortalArticleDetail(res?.data);
+            const apiLanguage = res?.data[0]?.language;
+            setPortalLang(apiLanguage);
+            if (apiLanguage) {
+                setLanguage(apiLanguage);
+                localStorage.setItem('lang', apiLanguage);
+            }
+            setLoading(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (portalLang === undefined) {
+            return (
+                <div>
+                    Loading...
+                </div>
+            );
+        }
+    }, [portalLang])
+
+   
 
     const handleCopyClick = (content) => {
         const tempInput = document.createElement('textarea');
@@ -115,7 +139,7 @@ function Portalarticledetails() {
             <ToastContainer />
             <div className='d-flex mt-2 me-2 ms-2 mb-2 justify-content-between'>
                 <h2 className='text-white'>{translate(languageData, "portalArticleDetails")}</h2>
-                <LanguageSelect language={language}/>
+                <LanguageSelect/>
             </div>
             {loading ? <div className='d-flex'>
                 <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />

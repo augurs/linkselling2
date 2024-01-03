@@ -214,7 +214,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                 <div>
                     <ul className="side-menu mt-3 border-top border-3">
                         <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="top" overlay={popoverUserProfile} rootClose>
-                            <li className="slide" style={{ cursor: "pointer" }}>
+                            <li className="slide" style={{ cursor: "pointer" }} onClick={handleEditClick}>
                                 <div className="side-menu__item has-link d-flex justify-content-center align-items-center gap-3" data-bs-toggle="slide">
                                     <span className="side-menu__icon"><BiUserCircle size={30} style={{ color: "gray!important" }} /></span>
                                     <span className="side-menu__label">{translate(languageData, "welcome")} {userData?.first_name} </span>
@@ -223,7 +223,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </OverlayTrigger>
                     </ul></div>
             </div>
-            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} showWalletServices={showWalletServices}/>
+            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} userDetails={userDetails} showWalletServices={showWalletServices}/>
             <ToastContainer />
         </div>
 

@@ -40,6 +40,7 @@ const Invoices = () => {
         province: invoicesList?.province,
         street: invoicesList?.street,
         nip_number: invoicesList?.nip_number,
+        property_number: invoicesList?.property_number,
       }
 
   ]
@@ -84,6 +85,13 @@ const Invoices = () => {
       name: translate(languageData, "street"),
       selector: (row) => row.street,
       sortable: true,
+      wrap: true,
+    },
+    {
+      name: translate(languageData, "streetNo"),
+      selector: (row) => row.property_number,
+      sortable: true,
+      center: true,
       wrap: true,
     },
     {

@@ -80,7 +80,7 @@ const Invoices = () => {
 
 
 
-
+    const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
     return (
         <div className='p-4'>
 
@@ -111,6 +111,7 @@ const Invoices = () => {
                         <DataTable
                             columns={columns}
                             data={tableData}
+                            noDataComponent={noDataComponent}
                         />
                     </>
                 }

@@ -196,9 +196,15 @@ const BuyArticles = () => {
         setSearch({ ...search, doFollow: 0 });
     };
 
-    const handleRemoveTypeAnchor2 = () => {
+    const handleRemovePromotion = (checkboxId) => {
         setSearch({ ...search, promotions: 0 });
-    };
+    
+        const updatedCheckboxes = checkboxes.map((checkbox) => ({
+          ...checkbox,
+          checked: checkbox.id === checkboxId ? false : checkbox.checked,
+        }));
+        setCheckboxes(updatedCheckboxes);
+      };
 
     const handleRemoveTypeAnchor = (type) => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
@@ -995,7 +1001,7 @@ const BuyArticles = () => {
 
     //add project modal api start
 
-    
+
 
     const handleSelectChange1 = (selectedOption) => {
         setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
@@ -1011,10 +1017,10 @@ const BuyArticles = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues1);
+        const res = await addProjects(formValues1, userData?.id);
 
         if (res.response === true && res.success === true) {
-            toast(res.message, {
+            toast(translate(languageData, "Projectaddedsucessfully"), {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -1413,18 +1419,19 @@ const BuyArticles = () => {
                                     doFollow
                                 </Button>
                             </div> : ""}
-                            {search?.promotions ? <div>
-
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className="btn btn-light text-dark"
-                                    onClick={handleRemoveTypeAnchor2}
-                                >
-                                    <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
-                                    Promotions
-                                </Button>
-                            </div> : ""}
+                            {search?.promotions && checkboxes.find((checkbox) => checkbox.id === search.promotions) ? (
+                                <div>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemovePromotion(search.promotions)}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        Promotions
+                                    </Button>
+                                </div>
+                            ) : ''}
                         </ul>
 
                         {/* <Button variant="primary" className="mx-auto d-flex mt-4">
@@ -1508,7 +1515,7 @@ const BuyArticles = () => {
                                     <option label={translate(languageData, "artilstProject")}></option>
                                     {articlesData2?.map((item, index) => {
                                         return (
-                                            <option value={item?.id} key={index}>{item?.name}</option>
+                                            <option value={item?.id} key={index}>{item.name.length > 10 ? item.name.slice(0, 10) + '...' : item.name}</option>
                                         )
                                     })}
                                 </select>
@@ -1968,7 +1975,7 @@ const BuyArticles = () => {
                     <Modal.Footer>
                         <div>
                             <Button variant="secondary" onClick={handleCloseModal}>
-                            {translate(languageData, "close")}
+                                {translate(languageData, "close")}
                             </Button>
                         </div>
                         <div className=''>

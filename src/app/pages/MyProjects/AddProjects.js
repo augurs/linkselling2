@@ -9,10 +9,12 @@ import { ToastContainer, toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
+import { isValidUrl } from '../../../utility/data'
 
 const AddProjects = () => {
 
     const { languageData } = useLanguage()
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     let initialValues = {
         projectName: "",
@@ -48,7 +50,7 @@ const AddProjects = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues);
+        const res = await addProjects(formValues, userData?.id);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
@@ -113,10 +115,10 @@ const AddProjects = () => {
             isValid = false
         }
 
-        if (!values.webAddress) {
-            errors.webAddress = translate(languageData , "WebAddressRequired");
+        else if (!isValidUrl(values.webAddress)) {
+            errors.webAddress = translate(languageData, 'InvalidWebAddress');
             isValid = false;
-        }
+          }
 
         if (!values.publicationLang) {
             errors.publicationLang = translate(languageData , "PublicationLanguageRequired")
