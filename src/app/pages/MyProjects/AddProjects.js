@@ -14,6 +14,7 @@ import { isValidUrl } from '../../../utility/data'
 const AddProjects = () => {
 
     const { languageData } = useLanguage()
+    const userData = JSON.parse(localStorage.getItem("userData"));
 
     let initialValues = {
         projectName: "",
@@ -49,7 +50,7 @@ const AddProjects = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues);
+        const res = await addProjects(formValues, userData?.id);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {

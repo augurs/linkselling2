@@ -1,12 +1,12 @@
 import axios from "axios";
 import { baseURL2 } from "../../utility/data";
 
-const userData = JSON.parse(localStorage.getItem('userData'))
+// const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addProjects = (values) => {
+export const addProjects = (values, id) => {
     return axios
       .post(`${baseURL2}/LinkSellingSystem/public/api/add-project`, {
-        user_id: userData?.id,
+        user_id: id,
         name: values.projectName,
         domain: values.webAddress,
         language: values.publicationLang,

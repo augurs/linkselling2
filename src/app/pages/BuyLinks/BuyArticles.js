@@ -1017,10 +1017,10 @@ const BuyArticles = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues1);
+        const res = await addProjects(formValues1, userData?.id);
 
         if (res.response === true && res.success === true) {
-            toast(res.message, {
+            toast(translate(languageData, "Projectaddedsucessfully"), {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
