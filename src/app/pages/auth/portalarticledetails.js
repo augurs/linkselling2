@@ -117,6 +117,7 @@ function Portalarticledetails() {
             //   setTimeout(() => {
             //     navigate('/thanksPage')
             //   }, 1000);
+            ordersListServices()
             setShowModal(false);
             setLoading(false)
         } else {
