@@ -147,7 +147,7 @@ const AddArticle = () => {
         const res = await addArticle(formValues, editor, userData2.id)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
