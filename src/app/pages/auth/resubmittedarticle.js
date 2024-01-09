@@ -270,6 +270,9 @@ const AddArticle = () => {
                                         <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
                                             {formValues.url}
                                         </a>
+                                    <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                                {formValues.url}
+                                            </a>
                                         <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                     </Col>
                                 </Row>
