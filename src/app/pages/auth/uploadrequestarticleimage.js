@@ -202,9 +202,9 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "writingUrl")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0">
+                                <a href={formValues?.url} className="wrap-input100 validate-input mb-0">
                                     {formValues?.url}
-                                </div>
+                                </a>
 
                             </Col>
                         </Row>

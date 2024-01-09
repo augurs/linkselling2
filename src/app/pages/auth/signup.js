@@ -98,7 +98,7 @@ const SignUp = () => {
   const signUpSuccessMessage = languageData && languageData?.filter((item) => item.title === 'signUpSuccessMessage')[0]?.value || 'signUpSuccessMessage';
   const signUpErrorsMessage = languageData && languageData?.filter((item) => item.title === 'signUpErrorMessage')[0]?.value || 'signUpErrorMessage';
   const loginFailureMessage2 = languageData && languageData?.filter((item) => item.title === 'loginFailureMessage2')[0]?.value || 'loginFailureMessage2';
-
+  const passwordDoNotMatch = languageData && languageData?.filter((item) => item.title === 'passwordDoNotMatch')[0]?.value || 'passwordDoNotMatch';
 
 
 
@@ -108,7 +108,7 @@ const SignUp = () => {
     setSignUpLoading(true);
     if (!formValues.terms) {
       toast(languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms', {
-        position: "top-right",
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -122,8 +122,8 @@ const SignUp = () => {
       return;
     }
     if (formValues.password !== formValues.confirmPassword) {
-      toast('Passwords do not match', {
-        position: 'top-right',
+      toast(passwordDoNotMatch, {
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -143,7 +143,7 @@ const SignUp = () => {
     const res = await signup(values, currLang);
     if (res.success === true) {
       toast(signUpSuccessMessage, {
-        position: "top-right",
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -160,7 +160,7 @@ const SignUp = () => {
       }, 2000);
     } else if (res.message[0] === "The email has already been taken.") {
       toast(signUpErrorsMessage, {
-        position: "top-right",
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -174,7 +174,7 @@ const SignUp = () => {
       setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: '' })
     } else {
       toast(loginFailureMessage2, {
-        position: "top-right",
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,

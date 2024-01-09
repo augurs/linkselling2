@@ -750,38 +750,111 @@ const BuyArticles = () => {
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
             if (!requestArticleTitle) {
-                toast.error(translate(languageData, "TitleofArticleField"));
+                toast(translate(languageData, "TitleofArticleField"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (linkCount === 0) {
-                toast.error(translate(languageData, "Minimum1link"));
+                toast(translate(languageData, "Minimum1link"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                
                 return;
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast.error(translate(languageData, "Toomanylinks"));
+                toast(translate(languageData, "Minimum1link"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (!image) {
-                toast.error(translate(languageData, "ImageField"));
+                toast(translate(languageData, "ImageField"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
         }
         if (articleType === translate(languageData, "RequestArticleWriting")) {
             if (provideSubject && (!provideSubjectText || provideSubjectText.trim() === '')) {
-                toast.error(translate(languageData, "SubjectFieldNotEmpty"));
+                toast(translate(languageData, "SubjectFieldNotEmpty"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (linkValues == 0) {
-                toast.error(translate(languageData, "Minimum1link"));
+                toast(translate(languageData, "Minimum1link"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (anchorValues == 0) {
-                toast.error(translate(languageData, "Min1anchor"));
+                toast(translate(languageData, "Min1anchor"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (linkValues.some((link) => !isValidUrl(link))) {
-                toast.error(translate(languageData, "InvalidLink"));
+                toast(translate(languageData, "InvalidLink"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
         }
@@ -813,7 +886,7 @@ const BuyArticles = () => {
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -830,7 +903,7 @@ const BuyArticles = () => {
             getPublisherArticlesService()
         } else {
             toast(translate(languageData, 'dataNotAddedCart'), {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

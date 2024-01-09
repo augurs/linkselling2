@@ -73,7 +73,7 @@ const Nip = () => {
 
         if (res?.success === true && res.message === "NIP response get successfully.") {
             toast("Dane zostały zapisane pomyślnie", {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -93,7 +93,7 @@ const Nip = () => {
 
         } else if (res?.success === false && res?.errors?.email[0] === "The email has already been taken.") {
             toast("E-mail został już zajęty", {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -106,7 +106,7 @@ const Nip = () => {
             setLoader(false)
         } else if (res?.message === "Invalid NIP Number." && res?.success === false) {
             toast("Nieprawidłowy numer NIP", {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

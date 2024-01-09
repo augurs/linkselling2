@@ -82,8 +82,16 @@ function Portalarticledetails() {
         document.execCommand('copy');
         document.body.removeChild(tempInput);
         document.body.removeChild(tempDiv);
-    
-        toast.success(translate(languageData, "Contentcopiedtoclipboard"));
+        toast(translate(languageData, "Contentcopiedtoclipboard"), {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            type: 'success'
+        });
     };
 
     const handleRejectClick = () => {
@@ -112,6 +120,7 @@ function Portalarticledetails() {
             //   setTimeout(() => {
             //     navigate('/thanksPage')
             //   }, 1000);
+            ordersListServices()
             setShowModal(false);
             setLoading(false)
         } else {

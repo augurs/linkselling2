@@ -68,7 +68,7 @@ const EditProjects = () => {
             setUpdateLoader(false)
         } else {
             toast("Something went wrong", {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,

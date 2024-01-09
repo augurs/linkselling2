@@ -164,15 +164,42 @@ const AddArticle = () => {
 
         try {
             if (!formValues.title) {
-                toast.error(translate(languageData, "TitleofArticleField"));
+                toast(translate(languageData, "TitleofArticleField"), {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (linkCount > 0 && linkCount > formValues?.link) {
-                toast.error(`${translate(languageData, "Toomanylinks")}: ${formValues.link}`);
+                toast(`${translate(languageData, "Toomanylinks")}: ${formValues.link}`, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
             if (linkCount === 0) {
-                toast.error(translate(languageData, "Minimum1link"));
+                toast(translate(languageData, "Minimum1link"), {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
                 return;
             }
 
@@ -240,9 +267,9 @@ const AddArticle = () => {
                                         <span>{translate(languageData, "link")}</span>
                                     </Col>
                                     <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
                                             {formValues.url}
-                                        </div>
+                                        </a>
                                         <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                     </Col>
                                 </Row>

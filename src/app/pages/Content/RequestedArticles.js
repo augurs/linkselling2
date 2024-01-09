@@ -80,7 +80,7 @@ const RequestedArticles = () => {
         if (res.success === true) {
             setLoading({ ...loading, updateLoading: false, loadingStatus: status })
             toast(res.message, {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -94,7 +94,7 @@ const RequestedArticles = () => {
         } else {
             setLoading({ ...loading, updateLoading: false, loadingStatus: status })
             toast(res.message, {
-                position: "top-right",
+                position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
