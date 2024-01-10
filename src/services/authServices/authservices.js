@@ -107,7 +107,7 @@ export const userprofileModal = (id, Email, Phone ) => {
 export const updateNip = (values , id) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/update-nip-details`, {
-      apartment_number: values.apartment_number,
+      apartment_number: values.apartment_number ? values.apartment_number : 0,
       city: values.city,
       community: values.community,
       company_name: values.company_name,

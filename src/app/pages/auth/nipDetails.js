@@ -51,8 +51,14 @@ const NipDetails = () => {
     let isValid = true;
 
     // Validate each field
+    // Object.keys(formValues).forEach((key) => {
+    //   if (!formValues[key]) {
+    //     error[key] = `${languageData && languageData?.filter((item) => item.title === key)[0]?.value || key} ${languageData?.filter((item) => item.title === 'isRequired')[0]?.value || 'isRequired'}`;
+    //     isValid = false;
+    //   }
+    // });
     Object.keys(formValues).forEach((key) => {
-      if (!formValues[key]) {
+      if (key !== 'apartment_number' && !formValues[key]) {
         error[key] = `${languageData && languageData?.filter((item) => item.title === key)[0]?.value || key} ${languageData?.filter((item) => item.title === 'isRequired')[0]?.value || 'isRequired'}`;
         isValid = false;
       }
