@@ -507,15 +507,16 @@ const BuyArticles = () => {
                         >
                             {translate(languageData, "back")}
                         </Button>
-                    ) : (
-                        row.cart === 'Yes' ?
-                            <Button
-                                variant="primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
-                                disabled
-                            >
-                                {translate(languageData, "Select")}
-                            </Button>
+                    ) 
+                    // : (
+                    //     row.cart === 'Yes' ?
+                    //         <Button
+                    //             variant="primary"
+                    //             onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
+                    //             disabled
+                    //         >
+                    //             {translate(languageData, "Select")}
+                    //         </Button>
                             :
                             <Button
                                 variant="outline-primary"
@@ -523,7 +524,7 @@ const BuyArticles = () => {
                             >
                                 {translate(languageData, "Select")}
                             </Button>
-                    )}
+                    }
                 </div>
             ),
             center: true,

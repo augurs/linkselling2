@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { FaWallet, FaPlus } from 'react-icons/fa';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { updateWallet, walletBalance } from "../../../services/walletServices/walletService"
 import { translate } from '../../../utility/helper';
 import { useLanguage } from "../../Context/languageContext";
+
 const WalletBalance = () => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     const [balance, setBalance] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [newBalance, setNewBalance] = useState('');
-    const [loading, setLoading] = useState(false)
+    const [taxPercentage, setTaxPercentage] = useState(23); // Change this to your tax percentage
+    const [taxAmount, setTaxAmount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        showWalletServices()
-    }, [])
+        showWalletServices();
+    }, []);
 
     const { languageData } = useLanguage();
+
     const showWalletServices = async () => {
         setLoading(true);
         try {
@@ -31,6 +36,14 @@ const WalletBalance = () => {
             console.error('Error:', error);
             setLoading(false);
         }
+    };
+
+    const calculateTaxAndTotalAmount = (amount) => {
+        const tax = (amount * taxPercentage) / 100;
+        const total = parseFloat(amount) + parseFloat(tax);
+
+        setTaxAmount(tax);
+        setTotalAmount(total);
     };
 
     const handleAddBalance = async () => {
@@ -76,15 +89,30 @@ const WalletBalance = () => {
                             className='w-75'
                             placeholder={translate(languageData, "enterAmount")}
                             value={newBalance}
-                            onChange={(e) => setNewBalance(e.target.value)}
+                            onChange={(e) => {
+                                setNewBalance(e.target.value);
+                                calculateTaxAndTotalAmount(e.target.value);
+                            }}
                         />
                     </Form.Group>
+                    {taxAmount > 0 && (
+                        <>
+                            <div className="d-flex justify-content-between text-nowrap gap-2">
+                                <label className="form-label">{translate(languageData, "linkTax")}   : </label>
+                                <input placeholder="Wprowadź ilość" type="number" className="w-75 form-control" value={taxAmount.toFixed(2)} disabled/>
+                            </div>
+                            <div className="d-flex text-nowrap align-items-center gap-2">
+                                <label className='mt-2'>{translate(languageData, "TotalAmount")} : </label>
+                                <input type="number" className="w-75 form-control" value={totalAmount.toFixed(2)} disabled />
+                            </div>
+                        </>
+                    )}
                     <div className='d-flex gap-2'>
                         <Button variant="secondary" onClick={handleCloseModal}>
-                        {translate(languageData, "close")}
+                            {translate(languageData, "close")}
                         </Button>
                         <Button variant="primary" onClick={handleAddBalance}>
-                        {translate(languageData, "addBalance")} 
+                            {translate(languageData, "addBalance")}
                         </Button>
                     </div>
                 </Modal.Body>

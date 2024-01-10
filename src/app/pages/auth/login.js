@@ -81,9 +81,8 @@ function Login() {
         localStorage.setItem('lang', "pl")
       }
       toast(loginSuccessMessage, {
-        containerId: 'custom-toast-container',
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -99,9 +98,8 @@ function Login() {
 
     } else if (res.message === "The provided credentials are incorrect") {
       toast(loginFailurMessage1, {
-        containerId: 'custom-toast-container',
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -113,9 +111,8 @@ function Login() {
       setLoading(false)
     } else if (res.user_verified === 0) {
       toast(translate(languageData, "YourEmailNotVerifiedPleaseCheckMail"), {
-        containerId: 'custom-toast-container',
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -127,9 +124,8 @@ function Login() {
       setLoading(false)
     } else {
       toast(loginFailureMessage2, {
-        containerId: 'custom-toast-container',
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -148,7 +144,7 @@ function Login() {
 
   return (
     <div className='ltr login-img'>
-      <ToastContainer containerId="custom-toast-container"/>
+      <ToastContainer className="position-fixed" style={{top: "6rem"}}/>
 
       <div className='d-flex justify-content-end mt-2 me-2' >
         <LanguageSelect />

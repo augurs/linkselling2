@@ -163,7 +163,6 @@ const Cart = () => {
             selector: (row) => row.name,
             sortable: true,
         },
-
         {
             name: translate(languageData, "writingLanguage"),
             selector: row => row.language,
@@ -195,25 +194,26 @@ const Cart = () => {
             center: true,
             //  width: '180px'
         },
+        // {
+        //     name: translate(languageData, 'CostGraphic Link'),
+        //     selector: (row) => row.graphicLink,
+        //     center: true,
+        //     cell: (row) => (
+        //         <div>
+        //             <div>{row.graphicLink}</div>
+        //         </div>
+        //     ),
+        // },
         {
-            name: translate(languageData, 'CostGraphic Link'),
-            selector: (row) => row.graphicLink,
+            name: translate(languageData, 'ProjectName'),
+            selector: (row) => row.project_name,
             center: true,
             cell: (row) => (
                 <div>
-                    <div>{row.graphicLink}</div>
+                    <div>{row.project_name}</div>
                 </div>
             ),
-        },
-        {
-            name: translate(languageData, 'CostTestLink'),
-            selector: (row) => row.testLink,
-            center: true,
-            cell: (row) => (
-                <div>
-                    <div>{row.testLink}</div>
-                </div>
-            ),
+            width: "10VW"
         },
         {
             name: <div>
@@ -229,7 +229,7 @@ const Cart = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
+            cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
                 visible={true}
                 height="30"
                 width="30"
@@ -273,6 +273,7 @@ const Cart = () => {
             graphicLink: item?.service_type === '1' ? item?.links?.graph_cost : "N/A",
             price: item?.service_type === '1' ? "N/A" : item?.amount,
             rowId: item?.id,
+            project_name: item?.project_name
         }
     })
 
