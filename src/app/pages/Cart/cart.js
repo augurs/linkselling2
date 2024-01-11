@@ -337,7 +337,17 @@ const Cart = () => {
                         <Modal.Title>{translate(languageData, "linkDetails")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p className='mb-1'><strong>{translate(languageData, "linkName")}:</strong>{purchasedData?.allProduct?.map((item) => item?.links ? item?.links?.name : item?.articles?.url)} </p>
+                        <p className='mb-1'>
+                            <strong>{translate(languageData, "linkName")}:</strong>
+                            <span className="text-break">
+                                {purchasedData?.allProduct?.map((item, index) => (
+                                    <span key={index}>
+                                        {item?.links ? item?.links?.name : item?.articles?.url}
+                                        {index < purchasedData.allProduct.length - 1 && ', '}
+                                    </span>
+                                ))}
+                            </span>
+                        </p>
                         <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
                         <p className='mb-1'><strong>{translate(languageData, "Walletamount")}:</strong> {balance} PLN</p>
                         {/* <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>1%</span>  {translate(languageData, "linkFee")}:</strong> {purchasedData?.total + purchasedData?.fee}</p> */}
