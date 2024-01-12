@@ -943,6 +943,7 @@ const BuyArticles = () => {
                 progress: undefined,
                 type: 'success'
             });
+            handleUseArticleList()
             setCartLoading(false)
             setShowCartOptions(false)
             getCartServices()
@@ -1254,7 +1255,7 @@ const BuyArticles = () => {
             ),
             cell: (row) => (
                 <div>
-                    {row.id === userArticleId ?
+                    {row?.id === userArticleId ?
                         <Button variant={"danger"} onClick={() => handleUseArticleClick(row)}>
                             {translate(languageData, "selected")}
                         </Button> :
@@ -1263,7 +1264,7 @@ const BuyArticles = () => {
                         </Button>}
                 </div>
             ),
-            selector: (row) => row.offers,
+            selector: (row) => row?.offers,
             center: true,
             width: "150px",
             style: {
@@ -1273,31 +1274,29 @@ const BuyArticles = () => {
     ];
 
 
-    const articleTableData = useArticleList
-        .filter((item) => item.cart !== 'Yes') // Filter out rows with status "paid"
-        .map((item) => {
-            let arr = item?.created_at.split('T');
-            let time = arr[1].split('.')
-            let dateTime = arr[0] + " " + time[0]
+    const articleTableData = useArticleList?.filter((item) => item?.cart !== 'Yes')?.map((item) => {
+        let arr = item?.created_at.split('T');
+        let time = arr[1].split('.')
+        let dateTime = arr[0] + " " + time[0]
 
-            return {
-                id: item.id,
-                title: item.title,
-                date: dateTime,
-                cost: "0,00 zł",
-                status: item.status,
-                cart: item.cart
-            };
-        });
+        return {
+            id: item.id,
+            title: item.title,
+            date: dateTime,
+            cost: "0,00 zł",
+            status: item.status,
+            cart: item.cart
+        };
+    });
 
     const handleUseArticleClick = (item) => {
         if (item.id === userArticleId) {
             setUserArticleId(null);
         } else {
             // If the clicked item is not selected, select it
-            setUserArticleId(item.id);
+            setUserArticleId(item?.id);
         }
-        console.log(item.id, "1286");
+        console.log(item?.id, "1286");
     };
 
     return (
