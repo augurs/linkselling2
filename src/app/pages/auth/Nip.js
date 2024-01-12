@@ -86,7 +86,7 @@ const Nip = () => {
 
             setLoader(false)
             setTimeout(() => {
-                navigate('/')
+                navigate('/nipDetails')
             }, 1000);
             let nipData = JSON.stringify(res.response)
             localStorage.setItem('nipData', nipData)

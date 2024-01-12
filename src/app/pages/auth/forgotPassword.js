@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSelect from '../../Components/Language/languageSelect'
 import { useLanguage } from '../../Context/languageContext'
+import { Container} from 'react-bootstrap';
 const ForgotPassword = () => {
 
     const [email, setEmail] = useState('')
@@ -44,7 +45,7 @@ const ForgotPassword = () => {
 
         const res = await forgotPassword(email)
         console.log(res.data, "46");
-        if (res.status === 200 && res.data=== "Password reset email successfully sent.") {
+        if (res.status === 200 && res.data === "Password reset email successfully sent.") {
             toast(passwordResetMessage, {
                 containerId: 'custom-toast-container',
                 position: "top-center",
@@ -92,12 +93,15 @@ const ForgotPassword = () => {
 
     return (
         <div className='ltr login-img'>
-            <ToastContainer containerId="custom-toast-container"/>
+            <ToastContainer className="position-fixed" style={{top: "6rem"}} />
             <div className='d-flex justify-content-end mt-2 me-2' >
                 <LanguageSelect />
             </div>
             <div className="page">
                 <div>
+                    <Container className="col col-login mx-auto text-center">
+                        <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'title')[0]?.value || 'title'}</h2>
+                    </Container>
                     <div className="col mx-auto text-center">
                         <a href="../../index.html">
                             <img src="../../assets/images/brand/logo.png" className="header-brand-img" alt="" />

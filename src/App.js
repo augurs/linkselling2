@@ -38,6 +38,7 @@ import CustomCartContext from "./app/Context/cartListContext.js";
 import '../src/assets/css/custom.css'
 import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 import VieworderArticle from "./app/pages/ViewOderArticle/vieworderArticle.js";
+import NipDetails from "./app/pages/auth/nipDetails.js";
 
 function App() {
 
@@ -117,6 +118,10 @@ function App() {
     {
       path: '/requestarticledetail/requestarticle/:id/',
       element: <Requestarticledetails />
+    },
+    {
+      path: '/nipDetails',
+      element: <NipDetails />
     },
     { path: '/requestarticledetails/requestarticle/:id', element: <Requestarticleupdate /> },
     {

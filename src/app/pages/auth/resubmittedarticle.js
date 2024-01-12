@@ -9,6 +9,7 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate, formatDate } from '../../../utility/helper';
 import { resubmitarticle, updaterResubmitarticle } from '../../../services/Resubmitarticle/resubmitarticle';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
+import { modules, formats } from '../../../utility/helper';
 import Select from 'react-select'
 const AddArticle = () => {
     const [formValues, setFormValues] = useState({
@@ -94,6 +95,8 @@ const AddArticle = () => {
                 content: res.data[0].content,
                 status: res.data[0].status,
                 date: formatDate(res.data[0].created_at),
+                minArticleLength: res.data[0].min_article_length,
+                maxArticleLength: res.data[0].max_article_length
             });
             setDisplayedImage(dynamicImageUrl);
             setShowDropdown(res.data[0].status === 'Published');
@@ -132,23 +135,6 @@ const AddArticle = () => {
         setFormErrors(error);
         return isValid;
     };
-
-    const modules = {
-        toolbar: [
-            [{ 'header': '1' }, { 'header': '2' }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image'],
-            ['clean'],
-        ],
-    };
-
-    const formats = [
-        'header',
-        'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet',
-        'link', 'image',
-    ];
 
     const countLinksInEditor = (editorContent) => {
         const parser = new DOMParser();
@@ -200,6 +186,39 @@ const AddArticle = () => {
                     progress: undefined,
                     type: 'error'
                 });
+                return;
+            }
+            if (editor.length > formValues?.maxArticleLength) {
+                const maxArticleLength = formValues?.maxArticleLength;
+                const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
+                return;
+            }
+
+            if (editor.length < formValues?.minArticleLength) {
+                const minArticleLength = formValues?.minArticleLength;
+                const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
                 return;
             }
 
@@ -270,9 +289,9 @@ const AddArticle = () => {
                                         <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
                                             {formValues.url}
                                         </a>
-                                    <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                                {formValues.url}
-                                            </a>
+                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                            {formValues.url}
+                                        </a>
                                         <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                     </Col>
                                 </Row>

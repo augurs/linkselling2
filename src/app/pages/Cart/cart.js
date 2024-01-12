@@ -154,7 +154,8 @@ const Cart = () => {
                                             ? translate(languageData, 'selectLater')
                                             : row?.articleType === 'AddAnArticle'
                                                 ? translate(languageData, 'AddNewArticle')
-                                                : ''}
+                                                : row?.articleType === 'UseArticle'
+                                                ? translate(languageData, 'UseArticle'): ''}
                             </small>
                         </div>
                     </div>
@@ -163,7 +164,6 @@ const Cart = () => {
             selector: (row) => row.name,
             sortable: true,
         },
-
         {
             name: translate(languageData, "writingLanguage"),
             selector: row => row.language,
@@ -195,25 +195,26 @@ const Cart = () => {
             center: true,
             //  width: '180px'
         },
+        // {
+        //     name: translate(languageData, 'CostGraphic Link'),
+        //     selector: (row) => row.graphicLink,
+        //     center: true,
+        //     cell: (row) => (
+        //         <div>
+        //             <div>{row.graphicLink}</div>
+        //         </div>
+        //     ),
+        // },
         {
-            name: translate(languageData, 'CostGraphic Link'),
-            selector: (row) => row.graphicLink,
+            name: translate(languageData, 'ProjectName'),
+            selector: (row) => row.project_name,
             center: true,
             cell: (row) => (
                 <div>
-                    <div>{row.graphicLink}</div>
+                    <div>{row.project_name}</div>
                 </div>
             ),
-        },
-        {
-            name: translate(languageData, 'CostTestLink'),
-            selector: (row) => row.testLink,
-            center: true,
-            cell: (row) => (
-                <div>
-                    <div>{row.testLink}</div>
-                </div>
-            ),
+            width: "10VW"
         },
         {
             name: <div>
@@ -229,7 +230,7 @@ const Cart = () => {
         },
         {
             name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
+            cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
                 visible={true}
                 height="30"
                 width="30"
@@ -273,6 +274,7 @@ const Cart = () => {
             graphicLink: item?.service_type === '1' ? item?.links?.graph_cost : "N/A",
             price: item?.service_type === '1' ? "N/A" : item?.amount,
             rowId: item?.id,
+            project_name: item?.project_name
         }
     })
 
@@ -336,7 +338,17 @@ const Cart = () => {
                         <Modal.Title>{translate(languageData, "linkDetails")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p className='mb-1'><strong>{translate(languageData, "linkName")}:</strong>{purchasedData?.allProduct?.map((item) => item?.links ? item?.links?.name : item?.articles?.url)} </p>
+                        <p className='mb-1'>
+                            <strong>{translate(languageData, "linkName")}:</strong>
+                            <span className="text-break">
+                                {purchasedData?.allProduct?.map((item, index) => (
+                                    <span key={index}>
+                                        {item?.links ? item?.links?.name : item?.articles?.url}
+                                        {index < purchasedData.allProduct.length - 1 && ', '}
+                                    </span>
+                                ))}
+                            </span>
+                        </p>
                         <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
                         <p className='mb-1'><strong>{translate(languageData, "Walletamount")}:</strong> {balance} PLN</p>
                         {/* <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>1%</span>  {translate(languageData, "linkFee")}:</strong> {purchasedData?.total + purchasedData?.fee}</p> */}

@@ -101,3 +101,28 @@ export const userprofileModal = (id, Email, Phone ) => {
       return error.response.data;
     });
 };
+
+
+
+export const updateNip = (values , id) => {
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-nip-details`, {
+      apartment_number: values.apartment_number ? values.apartment_number : 0,
+      city: values.city,
+      community: values.community,
+      company_name: values.company_name,
+      district: values.district,
+      postal_code: values.postal_code,
+      property_number: values.property_number,
+      province: values.province,
+      street: values.street,
+      user_id: id,
+    })
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
