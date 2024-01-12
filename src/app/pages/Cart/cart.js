@@ -154,7 +154,8 @@ const Cart = () => {
                                             ? translate(languageData, 'selectLater')
                                             : row?.articleType === 'AddAnArticle'
                                                 ? translate(languageData, 'AddNewArticle')
-                                                : ''}
+                                                : row?.articleType === 'UseArticle'
+                                                ? translate(languageData, 'UseArticle'): ''}
                             </small>
                         </div>
                     </div>

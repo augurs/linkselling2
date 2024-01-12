@@ -39,3 +39,20 @@ export const countLinksInEditor = (editorContent) => {
    const linkCount = parsedContent.querySelectorAll('a').length;
    return linkCount;
 };
+
+export const modules = {
+   toolbar: [
+       [{ 'header': '1' }, { 'header': '2' }],
+       ['bold', 'italic', 'underline', 'strike'],
+       [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+       ['link', 'image'],
+       ['clean']
+   ],
+};
+
+export const formats = [
+   'header',
+   'bold', 'italic', 'underline', 'strike',
+   'list', 'bullet',
+   'link', 'image'
+];

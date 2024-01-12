@@ -41,6 +41,7 @@ import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoTicketOutline } from 'react-icons/io5';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import { walletBalance } from "../../../services/walletServices/walletService"
+import { modules, formats } from "../../../utility/helper";
 const BuyArticles = () => {
 
     const initialValues = {
@@ -105,11 +106,16 @@ const BuyArticles = () => {
     const [suggestion, setSuggestion] = useState('')
     const [provideSubjectText, setProvideSubjectText] = useState('')
     const [userDiscount, setUserDiscount] = useState('');
-
+    const [useArticleList, setUseArticleList] = useState([])
+    const [userArticleId, setUserArticleId] = useState()
     const userData = JSON.parse(localStorage.getItem('userData'));
 
     useEffect(() => {
         getUserDiscountServices()
+    }, [])
+
+    useEffect(() => {
+        handleUseArticleList()
     }, [])
 
     const getUserDiscountServices = async () => {
@@ -119,6 +125,12 @@ const BuyArticles = () => {
         setListLoading(false)
     }
 
+    useEffect(() => {
+        if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "RequestArticleWriting")) {
+            setUserArticleId('')
+
+        }
+    }, [articleType]);
 
     const handleMaxLinksSelection = (maxLinks) => {
         setSelectedMaxLinks(maxLinks);
@@ -198,13 +210,13 @@ const BuyArticles = () => {
 
     const handleRemovePromotion = (checkboxId) => {
         setSearch({ ...search, promotions: 0 });
-    
+
         const updatedCheckboxes = checkboxes.map((checkbox) => ({
-          ...checkbox,
-          checked: checkbox.id === checkboxId ? false : checkbox.checked,
+            ...checkbox,
+            checked: checkbox.id === checkboxId ? false : checkbox.checked,
         }));
         setCheckboxes(updatedCheckboxes);
-      };
+    };
 
     const handleRemoveTypeAnchor = (type) => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
@@ -219,7 +231,7 @@ const BuyArticles = () => {
     }, [search, typeAnchors, page])
 
     useEffect(() => {
-        if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater")) {
+        if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "UseArticle")) {
             setRequestArticleTitle('');
             setDate('');
             handleEditorChange('')
@@ -259,8 +271,10 @@ const BuyArticles = () => {
             setarticleTypeValue('RequestArticle')
         } else if (articleType === translate(languageData, "AddNewArticle")) {
             setarticleTypeValue('AddAnArticle ')
-        } else {
+        } else if (articleType === translate(languageData, "selectLater")) {
             setarticleTypeValue('SelectLater')
+        } else {
+            setarticleTypeValue('UseArticle')
         }
     }, [articleType])
 
@@ -507,23 +521,23 @@ const BuyArticles = () => {
                         >
                             {translate(languageData, "back")}
                         </Button>
-                    ) 
-                    // : (
-                    //     row.cart === 'Yes' ?
-                    //         <Button
-                    //             variant="primary"
-                    //             onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
-                    //             disabled
-                    //         >
-                    //             {translate(languageData, "Select")}
-                    //         </Button>
-                            :
-                            <Button
-                                variant="outline-primary"
-                                onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
-                            >
-                                {translate(languageData, "Select")}
-                            </Button>
+                    )
+                        // : (
+                        //     row.cart === 'Yes' ?
+                        //         <Button
+                        //             variant="primary"
+                        //             onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
+                        //             disabled
+                        //         >
+                        //             {translate(languageData, "Select")}
+                        //         </Button>
+                        :
+                        <Button
+                            variant="outline-primary"
+                            onClick={() => { setShowCartOptions(true); setSelectedSubArticles(row); handleMaxLinksSelection(row.maxLinks); }}
+                        >
+                            {translate(languageData, "Select")}
+                        </Button>
                     }
                 </div>
             ),
@@ -546,6 +560,8 @@ const BuyArticles = () => {
             cart: item.cart,
             typeOfAnchors: item?.type_of_anchor,
             maxLinks: item?.max_links,
+            maxArticleLength: item?.max_article_length,
+            minArticleLength: item?.min_article_length
 
         }
     })
@@ -715,7 +731,6 @@ const BuyArticles = () => {
         },
     ];
 
-
     const data = articles?.map((item) => {
         const discount = userDiscount?.discount || 0;
         const discountedPrice = item?.client_price * (1 - discount / 100);
@@ -774,7 +789,7 @@ const BuyArticles = () => {
                     progress: undefined,
                     type: 'error'
                 });
-                
+
                 return;
             }
 
@@ -793,6 +808,37 @@ const BuyArticles = () => {
             }
             if (!image) {
                 toast(translate(languageData, "ImageField"), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+            if (content.length > selectedSubArticles?.maxArticleLength) {
+                const maxArticleLength = selectedSubArticles?.maxArticleLength;
+                const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
+                return;
+            }
+            if (content.length < selectedSubArticles?.minArticleLength) {
+                const minArticleLength = selectedSubArticles?.minArticleLength;
+                const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
+                toast(errorMessage, {
                     position: "top-center",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -882,6 +928,7 @@ const BuyArticles = () => {
             suggestion: suggestion,
             articlesubject: articlesubjectValue,
             anchor: anchorValues,
+            artId: userArticleId
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
@@ -911,7 +958,7 @@ const BuyArticles = () => {
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
-                type: 'success'
+                type: 'error'
             });
             setCartLoading(false)
             setShowCartOptions(false)
@@ -930,22 +977,6 @@ const BuyArticles = () => {
         const res = await getCart(userData?.id)
         setCartList(res?.product)
     }
-
-    const modules = {
-        toolbar: [
-            [{ 'header': '1' }, { 'header': '2' }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image'],
-            ['clean']
-        ],
-    };
-    const formats = [
-        'header',
-        'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet',
-        'link', 'image'
-    ];
 
     const handleEditorChange = (html) => {
         setContent(html)
@@ -1188,6 +1219,86 @@ const BuyArticles = () => {
         }
     ]
     //add project modal api end
+
+
+    const handleUseArticleList = async () => {
+        const res = await getArticles(userData?.id)
+        setUseArticleList(res.data)
+    }
+
+    const useArticleColumns = [
+        {
+            name: translate(languageData, "artilstTitle"),
+            selector: row => row.title,
+            sortable: true,
+            center: true,
+        },
+        {
+            name: translate(languageData, "artilisAddingDate"),
+            selector: row => row.date,
+            sortable: true,
+            center: true,
+        },
+        {
+            name: translate(languageData, "ArtilistPublicationCost"),
+            selector: row => row.cost,
+            center: true,
+        },
+        {
+            name: (
+                <div>
+                    <Link className="btn btn-outline" >
+                        <i className="fa fa-columns" style={{ fontSize: "20px" }}></i>
+                    </Link>
+                </div>
+            ),
+            cell: (row) => (
+                <div>
+                    {row.id === userArticleId ?
+                        <Button variant={"danger"} onClick={() => handleUseArticleClick(row)}>
+                            {translate(languageData, "selected")}
+                        </Button> :
+                        <Button variant={"primary"} onClick={() => handleUseArticleClick(row)}>
+                            {translate(languageData, "Select")}
+                        </Button>}
+                </div>
+            ),
+            selector: (row) => row.offers,
+            center: true,
+            width: "150px",
+            style: {
+                width: "150px",
+            },
+        },
+    ];
+
+
+    const articleTableData = useArticleList
+        .filter((item) => item.cart !== 'Yes') // Filter out rows with status "paid"
+        .map((item) => {
+            let arr = item?.created_at.split('T');
+            let time = arr[1].split('.')
+            let dateTime = arr[0] + " " + time[0]
+
+            return {
+                id: item.id,
+                title: item.title,
+                date: dateTime,
+                cost: "0,00 zł",
+                status: item.status,
+                cart: item.cart
+            };
+        });
+
+    const handleUseArticleClick = (item) => {
+        if (item.id === userArticleId) {
+            setUserArticleId(null);
+        } else {
+            // If the clicked item is not selected, select it
+            setUserArticleId(item.id);
+        }
+        console.log(item.id, "1286");
+    };
 
     return (
         <>
@@ -1647,6 +1758,16 @@ const BuyArticles = () => {
                                     >
                                         {translate(languageData, "selectLater")}
                                     </Button>
+                                    <Button
+
+                                        className={`${articleType === translate(languageData, "UseArticle")
+                                            ? "btn-primary"
+                                            : "btn-outline-primary"
+                                            }   rounded-0`}
+                                        onClick={() => setArticleType(translate(languageData, "UseArticle"))}
+                                    >
+                                        {translate(languageData, "UseArticle")}
+                                    </Button>
                                 </div>
                                 <div className="mt-5">
                                     <div>
@@ -1893,6 +2014,13 @@ const BuyArticles = () => {
                                                 </Row> */}
 
 
+                                                </div>
+
+                                            }
+
+                                            {articleType === translate(languageData, "UseArticle") &&
+                                                <div>
+                                                    <DataTable onRowClicked={handleUseArticleClick} columns={useArticleColumns} data={articleTableData} highlightOnHover pointerOnHover pagination paginationPerPage={6} paginationRowsPerPageOptions={[5, 10, 15, 20, 30]} />
                                                 </div>
 
                                             }
