@@ -18,6 +18,7 @@ const WalletBalance = () => {
     useEffect(() => {
         showWalletServices();
     }, []);
+    
 
     const { languageData } = useLanguage();
 
@@ -81,41 +82,56 @@ const WalletBalance = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>{translate(languageData, "addBalance")}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className='d-flex flex-column align-items-center gap-4'>
-                    <Form.Group controlId="balanceAmount" className='d-flex justify-content-between'>
-                        <Form.Label>{translate(languageData, "amount")}   : </Form.Label>
-                        <Form.Control
-                            type="number"
-                            className='w-75'
-                            placeholder={translate(languageData, "enterAmount")}
-                            value={newBalance}
-                            onChange={(e) => {
-                                setNewBalance(e.target.value);
-                                calculateTaxAndTotalAmount(e.target.value);
-                            }}
-                        />
+                <Modal.Body className='d-flex flex-column gap-3'>
+                    <Form.Group as={Row} controlId="balanceAmount">
+                        <Col><Form.Label>{translate(languageData, "amount")} : </Form.Label></Col>
+                        <Col sm="8">
+                            <Form.Control
+                                type="text"
+                                placeholder={translate(languageData, "enterAmount")}
+                                value={newBalance}
+                                onChange={(e) => {
+                                    let input = e.target.value;
+                                    input = input.replace(/[^\d.]/g, '');
+                                    if (input.includes('.')) {
+                                        const parts = input.split('.');
+                                        input = `${parts[0]}.${parts[1].slice(0, 2)}`;
+                                    }
+                                    setNewBalance(input);
+                                    calculateTaxAndTotalAmount(input);
+                                }}
+                            />
+                        </Col>
                     </Form.Group>
+
                     {taxAmount > 0 && (
                         <>
-                            <div className="d-flex justify-content-between text-nowrap gap-2">
-                                <label className="form-label">{translate(languageData, "linkTax")}   : </label>
-                                <input placeholder="Wprowadź ilość" type="number" className="w-75 form-control" value={taxAmount.toFixed(2)} disabled/>
-                            </div>
-                            <div className="d-flex text-nowrap align-items-center gap-2">
-                                <label className='mt-2'>{translate(languageData, "TotalAmount")} : </label>
-                                <input type="number" className="w-75 form-control" value={totalAmount.toFixed(2)} disabled />
-                            </div>
+                            <Form.Group as={Row}>
+                                <Col><Form.Label>{translate(languageData, "linkTax")} : </Form.Label></Col>
+                                <Col sm="8">
+                                    <Form.Control type="number" value={taxAmount.toFixed(2)} disabled />
+                                </Col>
+                            </Form.Group>
+
+                            <Form.Group as={Row}>
+                                <Col><Form.Label>{translate(languageData, "TotalAmount")} : </Form.Label></Col>
+                                <Col sm="8">
+                                    <Form.Control type="number" value={totalAmount.toFixed(2)} disabled />
+                                </Col>
+                            </Form.Group>
                         </>
                     )}
+
                     <div className='d-flex gap-2'>
-                        <Button variant="secondary" onClick={handleCloseModal}>
-                            {translate(languageData, "close")}
-                        </Button>
                         <Button variant="primary" onClick={handleAddBalance}>
                             {translate(languageData, "addBalance")}
                         </Button>
+                        <Button variant="secondary" onClick={handleCloseModal}>
+                            {translate(languageData, "close")}
+                        </Button>
                     </div>
                 </Modal.Body>
+
             </Modal>
         </div>
     );

@@ -15,7 +15,9 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: '',
-    terms: "",
+    terms: false,
+    marketing: false,
+    privacy: false,
   };
 
   const { t, i18n } = useTranslation()
@@ -33,11 +35,9 @@ const SignUp = () => {
   // const currentLanguage = i18n.language;
 
 
-  useEffect(() => {
-    if (isCheckboxChecked || isCheckboxChecked === false) {
-      validate(formValues);
-    }
-  }, [isCheckboxChecked])
+  // useEffect(() => {
+  //   validate(formValues);
+  // }, [formValues]);
 
 
 
@@ -52,9 +52,10 @@ const SignUp = () => {
 
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
-    setFormValues({ ...formValues, [name]: checked })
-    setIsCheckboxChecked(checked)
+    setFormValues({ ...formValues, [name]: checked });
+    validate({ ...formValues, [name]: checked }); // Call validate with the updated checkbox status
   }
+  
 
 
 
@@ -88,6 +89,15 @@ const SignUp = () => {
       error.terms = languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms';
       isValid = false;
     }
+    if (!values.marketing) {
+      error.marketing = languageData && languageData?.filter((item) => item.title === 'marketing')[0]?.value || 'marketing';
+      isValid = false;
+    }
+  
+    if (!values.privacy) {
+      error.privacy = languageData && languageData?.filter((item) => item.title === 'privacy')[0]?.value || 'privacy';
+      isValid = false;
+    }
     setFormErrors(error);
     return isValid;
   }
@@ -110,6 +120,36 @@ const SignUp = () => {
       toast(languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms', {
         position: "top-center",
         autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: "error",
+      });
+      setSignUpLoading(false);
+      return;
+    }
+    if (!formValues.marketing) {
+      toast(languageData && languageData?.filter((item) => item.title === 'marketing')[0]?.value || 'marketing', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: "error",
+      });
+      setSignUpLoading(false);
+      return;
+    }
+    if (!formValues.privacy) {
+      toast(languageData && languageData?.filter((item) => item.title === 'privacy')[0]?.value || 'privacy', {
+        position: "top-center",
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -154,7 +194,7 @@ const SignUp = () => {
         type: 'success'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false })
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
       setTimeout(() => {
         navigate('/RegistrationDone')
       }, 2000);
@@ -171,7 +211,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: '' })
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
     } else {
       toast(loginFailureMessage2, {
         position: "top-center",
@@ -252,16 +292,25 @@ const SignUp = () => {
                       </p>
                     </div> */}
                     <label className="custom-control custom-checkbox mt-4">
-                      <input type="checkbox" className="custom-control-input" name='terms' onChange={(e) => {
-                        handleCheckbox(e);
-
-                      }} checked={formValues.terms} />
+                      <input type="checkbox" className="custom-control-input" name='terms' onChange={handleCheckbox} checked={formValues.terms} />
                       <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition2')[0]?.value || 'singUpTermsAndCondition2'}</a></span>
                     </label>
                     <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.terms}</div>
+
+                    <label className="custom-control custom-checkbox mt-4">
+                      <input type="checkbox" className="custom-control-input" name='marketing' onChange={handleCheckbox} checked={formValues.marketing} />
+                      <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'marketingPolicy')[0]?.value || 'marketingPolicy'}</a></span>
+                    </label>
+                    <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.marketing}</div>
+
+                    <label className="custom-control custom-checkbox mt-4">
+                      <input type="checkbox" className="custom-control-input" name='privacy' onChange={handleCheckbox} checked={formValues.privacy} />
+                      <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'privacyPolicy')[0]?.value || 'privacyPolicy'}</a></span>
+                    </label>
+                    <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.privacy}</div>
                     <div className="container-login100-form-btn text-primary">
                       {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> :
-                        <a onClick={() => signUpServices() } className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>
+                        <a onClick={() => signUpServices()} className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>
                           {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
                         </a>}
                     </div>
