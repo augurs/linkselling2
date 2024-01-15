@@ -91,7 +91,7 @@ const Cart = () => {
         } else {
             toast(res.message, {
                 position: "top-center",
-                autoClose: 5000,
+                autoClose: 1000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -127,8 +127,6 @@ const Cart = () => {
 
         }
     }
-
-    console.log(rowId, "110");
 
     const columns = [
         {

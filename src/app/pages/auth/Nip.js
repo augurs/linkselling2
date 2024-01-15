@@ -68,7 +68,7 @@ const Nip = () => {
 
     const nipRegisterServices = async () => {
         setLoader(true)
-        const res = await registerNip(formValues , id)
+        const res = await registerNip(formValues, id)
         console.log(res);
 
         if (res?.success === true && res.message === "NIP response get successfully.") {
@@ -91,7 +91,24 @@ const Nip = () => {
             let nipData = JSON.stringify(res.response)
             localStorage.setItem('nipData', nipData)
 
-        } else if (res?.success === false && res?.errors?.email[0] === "The email has already been taken.") {
+        } else if (res?.success === false && res?.message === "This nip number already registered") {
+            toast("Ten numer NIP już jest zarejestrowany", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                type: 'warning'
+            });
+            setLoader(false);
+            setTimeout(() => {
+                navigate('/login');
+            }, 1000);
+        }
+        else if (res?.success === false && res?.errors?.email[0] === "The email has already been taken.") {
             toast("E-mail został już zajęty", {
                 position: "top-center",
                 autoClose: 5000,

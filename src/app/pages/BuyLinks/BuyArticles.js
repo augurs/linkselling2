@@ -1274,20 +1274,21 @@ const BuyArticles = () => {
     ];
 
 
-    const articleTableData = useArticleList?.filter((item) => item?.cart !== 'Yes')?.map((item) => {
+    const articleTableData = useArticleList?.filter((item) => item?.cart !== 'Yes' && item?.status !== 'Paid')?.map((item) => {
         let arr = item?.created_at.split('T');
-        let time = arr[1].split('.')
-        let dateTime = arr[0] + " " + time[0]
+        let time = arr[1].split('.');
+        let dateTime = arr[0] + ' ' + time[0];
 
         return {
             id: item.id,
             title: item.title,
             date: dateTime,
-            cost: "0,00 zł",
+            cost: '0,00 zł',
             status: item.status,
-            cart: item.cart
+            cart: item.cart,
         };
     });
+
 
     const handleUseArticleClick = (item) => {
         if (item.id === userArticleId) {
