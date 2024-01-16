@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import LanguageSelect from '../../Components/Language/languageSelect';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
-import { portalArticleDetails, portalArticleDetailsReject } from "../../../services/Resubmitarticle/resubmitarticle"
+import { portalArticleDetails, portalArticleDetailsMessage, portalArticleDetailsReject } from "../../../services/Resubmitarticle/resubmitarticle"
 import { FaCopy } from 'react-icons/fa';
 import { updateLanguages } from '../../../services/CommonServices/commonService';
 
@@ -18,19 +18,20 @@ function Portalarticledetails() {
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState();
+    const [message, setMessage] = useState();
     const [portalLang, setPortalLang] = useState([])
+    const [modalType, setModalType] = useState("");
 
 
 
 
 
-
-    const { languageData, setLanguage} = useLanguage();
+    const { languageData, setLanguage } = useLanguage();
 
 
     const { id } = useParams();
 
-    
+
     useEffect(() => {
         const storedLanguage = localStorage.getItem('lang');
         if (storedLanguage) {
@@ -67,7 +68,7 @@ function Portalarticledetails() {
         }
     }, [portalLang])
 
-   
+
 
     const handleCopyClick = (content) => {
         const tempInput = document.createElement('textarea');
@@ -86,42 +87,62 @@ function Portalarticledetails() {
         document.execCommand('copy');
         document.body.removeChild(tempInput);
         document.body.removeChild(tempDiv);
-    
+
         toast.success(translate(languageData, "Contentcopiedtoclipboard"));
     };
-    
+
 
     const handleRejectClick = () => {
+        setModalType("reject");
+        setShowModal(true);
+    };
+
+    const handleSendMsgClick = () => {
+        setModalType("message");
         setShowModal(true);
     };
 
     const handleModalClose = () => {
+        setModalType("");
         setShowModal(false);
     };
 
     const handleRejectSubmit = async () => {
         setShowModal(false);
-        setLoading(true)
-        const res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "addnewarticle", comment)
-        if (res.success === true) {
-            toast(translate(languageData, "CommentrejectAddedSuccessfully"), {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'success'
-            });
-            //   setTimeout(() => {
-            //     navigate('/thanksPage')
-            //   }, 1000);
-            ordersListServices()
-            setShowModal(false);
-            setLoading(false)
-        } else {
-            toast(translate(languageData, "loginFailureMessage2"), {
+        setLoading(true);
+    
+        let res;
+        try {
+            if (modalType === "reject") {
+                res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "addnewarticle", comment);
+            } else {
+                res = await portalArticleDetailsMessage(portalArticleDetail[0]?.id, "addnewarticle", message);
+            }
+    
+            if (res.success === true) {
+                const successMessage = modalType === "reject"
+                    ? translate(languageData, "CommentrejectAddedSuccessfully")
+                    : translate(languageData, "dataaddedsuccessfully");
+    
+                toast(successMessage, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'success'
+                });
+    
+                ordersListServices();
+                setShowModal(false);
+            } else {
+                throw new Error('API call failed');
+            }
+        } catch (error) {
+            const errorMessage = translate(languageData, "loginFailureMessage2");
+            toast(errorMessage, {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -131,16 +152,18 @@ function Portalarticledetails() {
                 progress: undefined,
                 type: 'error'
             });
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
-    }
-
+    };
+    
+    
     return (
         <div className='ltr login-img'>
             <ToastContainer />
             <div className='d-flex mt-2 me-2 ms-2 mb-2 justify-content-between'>
                 <h2 className='text-white'>{translate(languageData, "portalArticleDetails")}</h2>
-                <LanguageSelect/>
+                <LanguageSelect />
             </div>
             {loading ? <div className='d-flex'>
                 <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
@@ -244,6 +267,7 @@ function Portalarticledetails() {
                             <Card.Footer className='d-flex gap-2'>
                                 <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
                                 <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
+                                <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sendMessage")}</Button>
                             </Card.Footer>
                         </Card>
                     </Col>
@@ -252,19 +276,32 @@ function Portalarticledetails() {
             }
             <Modal show={showModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{translate(languageData, "CommentsAndRecommendations")}</Modal.Title>
+                    <Modal.Title>
+                        {modalType === "reject"
+                            ? translate(languageData, "CommentsAndRecommendations")
+                            : translate(languageData, "sendMessage")}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className='align-items-center mt-2'>
                         <Col xs={12} md={4}>
-                            <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
+                            <span>
+                                {modalType === "reject"
+                                    ? translate(languageData, "CommentsAndRecommendations")
+                                    : translate(languageData, "sendMessage")}
+                                *
+                            </span>
                         </Col>
                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setComment(e.target.value)} />
+                                {modalType === "reject" ? (
+                                    <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setComment(e.target.value)} />
+                                ) : (
+                                    <textarea className="input100" type="text" name="message" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setMessage(e.target.value)} />
+                                )}
                             </div>
-                            {/* <div className='text-danger text-center mt-1'>{formErrors.comment}</div> */}
                         </Col>
+
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>

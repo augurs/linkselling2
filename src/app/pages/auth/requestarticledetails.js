@@ -8,7 +8,7 @@ import LanguageSelect from '../../Components/Language/languageSelect';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
-import { requestArticleDetails, portalArticleDetailsReject } from "../../../services/Resubmitarticle/resubmitarticle"
+import { requestArticleDetails, portalArticleDetailsReject, portalArticleDetailsMessage } from "../../../services/Resubmitarticle/resubmitarticle"
 import { FaCopy } from 'react-icons/fa';
 function Portalarticledetails() {
 
@@ -19,15 +19,16 @@ function Portalarticledetails() {
     const [portalArticleDetail, setPortalArticleDetail] = useState([])
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState();
+    const [message, setMessage] = useState();
     const [portalLang, setPortalLang] = useState([])
+    const [modalType, setModalType] = useState("");
 
-
-    const { languageData, setLanguage} = useLanguage();
+    const { languageData, setLanguage } = useLanguage();
 
 
     const { id } = useParams();
 
-    
+
     useEffect(() => {
         const storedLanguage = localStorage.getItem('lang');
         if (storedLanguage) {
@@ -95,36 +96,56 @@ function Portalarticledetails() {
     };
 
     const handleRejectClick = () => {
+        setModalType("reject");
+        setShowModal(true);
+    };
+
+    const handleSendMsgClick = () => {
+        setModalType("message");
         setShowModal(true);
     };
 
     const handleModalClose = () => {
+        setModalType("");
         setShowModal(false);
     };
 
     const handleRejectSubmit = async () => {
         setShowModal(false);
-        setLoading(true)
-        const res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "requestarticle", comment)
-        if (res.success === true) {
-            toast(translate(languageData, "CommentrejectAddedSuccessfully"), {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'success'
-            });
-            //   setTimeout(() => {
-            //     navigate('/thanksPage')
-            //   }, 1000);
-            ordersListServices()
-            setShowModal(false);
-            setLoading(false)
-        } else {
-            toast(translate(languageData, "loginFailureMessage2"), {
+        setLoading(true);
+    
+        let res;
+        try {
+            if (modalType === "reject") {
+                res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "addnewarticle", comment);
+            } else {
+                res = await portalArticleDetailsMessage(portalArticleDetail[0]?.id, "addnewarticle", message);
+            }
+    
+            if (res.success === true) {
+                const successMessage = modalType === "reject"
+                    ? translate(languageData, "CommentrejectAddedSuccessfully")
+                    : translate(languageData, "dataaddedsuccessfully");
+    
+                toast(successMessage, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'success'
+                });
+    
+                ordersListServices();
+                setShowModal(false);
+            } else {
+                throw new Error('API call failed');
+            }
+        } catch (error) {
+            const errorMessage = translate(languageData, "loginFailureMessage2");
+            toast(errorMessage, {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -134,9 +155,10 @@ function Portalarticledetails() {
                 progress: undefined,
                 type: 'error'
             });
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
         <div className='ltr login-img'>
@@ -245,28 +267,41 @@ function Portalarticledetails() {
                                 </div>
                             </Card.Body>
                             <Card.Footer className='d-flex gap-2'>
-                            <Link to={`/requestarticledetails/requestarticle/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
-                            <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
+                                <Link to={`/requestarticledetails/requestarticle/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
+                                <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
+                                <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sendMessage")}</Button>
                             </Card.Footer>
                         </Card>
                     </Col>
 
                 </Row>
             }
-             <Modal show={showModal} onHide={handleModalClose}>
+            <Modal show={showModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{translate(languageData, "CommentsAndRecommendations")}</Modal.Title>
+                    <Modal.Title>
+                        {modalType === "reject"
+                            ? translate(languageData, "CommentsAndRecommendations")
+                            : translate(languageData, "sendMessage")}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className='align-items-center mt-2'>
                         <Col xs={12} md={4}>
-                            <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
+                            <span>
+                                {modalType === "reject"
+                                    ? translate(languageData, "CommentsAndRecommendations")
+                                    : translate(languageData, "sendMessage")}
+                                *
+                            </span>
                         </Col>
                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setComment(e.target.value)} />
+                                {modalType === "reject" ? (
+                                    <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setComment(e.target.value)} />
+                                ) : (
+                                    <textarea className="input100" type="text" name="message" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setMessage(e.target.value)} />
+                                )}
                             </div>
-                            {/* <div className='text-danger text-center mt-1'>{formErrors.comment}</div> */}
                         </Col>
                     </Row>
                 </Modal.Body>

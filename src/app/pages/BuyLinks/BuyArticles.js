@@ -105,6 +105,7 @@ const BuyArticles = () => {
     const [anchorValues, setAnchorValues] = useState([]);
     const [suggestion, setSuggestion] = useState('')
     const [provideSubjectText, setProvideSubjectText] = useState('')
+    const [publisherMsgText, setPublisherMsgText] = useState('')
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [userArticleId, setUserArticleId] = useState()
@@ -237,7 +238,10 @@ const BuyArticles = () => {
             handleEditorChange('')
             setImage('')
             setImageSource('')
-
+            setPublisherMsgText('')
+            setSuggestion('')
+            setLinkValues('')
+            setAnchorValues('')
         }
     }, [articleType]);
 
@@ -278,11 +282,11 @@ const BuyArticles = () => {
         }
     }, [articleType])
 
-    // useEffect(() => {
-    //     if (articleType === translate(languageData, "AddNewArticle")) {
-    //         setOrderId('')
-    //     }
-    // }, [articleType])
+    useEffect(() => {
+        if (articleType === translate(languageData, "RequestArticleWriting")) {
+            setPublisherMsgText('')
+        }
+    }, [articleType])
 
 
     useEffect(() => {
@@ -928,7 +932,8 @@ const BuyArticles = () => {
             suggestion: suggestion,
             articlesubject: articlesubjectValue,
             anchor: anchorValues,
-            artId: userArticleId
+            artId: userArticleId,
+            publisherMsgText: publisherMsgText,
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
@@ -1884,16 +1889,24 @@ const BuyArticles = () => {
                                                         </Col>
                                                     </Row>
                                                     {selectedMaxLinks && generateRows()}
-                                                    {/* <Row>
-                                                        <Col xs={12} md={6}>
-                                                            {translate(languageData, "OrderDetails")}
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "MessageforPublisher")} </span>
                                                         </Col>
-                                                        <Col xs={12} md={6}>
-                                                            <Button className={`btn ${specifyDetails === "Specify Now" ? "btn-primary" : "btn-outline-primary"}  rounded-0`} onClick={() => setSpecifyDetails("Specify Now")}>Specify Now</Button>
-                                                            <Button className={`btn ${specifyDetails === "Specify Later" ? "btn-primary" : "btn-outline-primary"}  rounded-0`} onClick={() => setSpecifyDetails("Specify Later")}>Specify Later</Button>
-
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <input
+                                                                    className="input100"
+                                                                    value={publisherMsgText}
+                                                                    type="text"
+                                                                    name="message"
+                                                                    placeholder={`${translate(languageData, "MessageforPublisher")}`}
+                                                                    style={{ paddingLeft: "15px" }}
+                                                                    onChange={(e) => setPublisherMsgText(e.target.value)}
+                                                                />
+                                                            </div>
                                                         </Col>
-                                                    </Row> */}
+                                                    </Row>
                                                     {/* {specifyDetails === "Specify Now" &&
                                                         <Row className='align-items-center mt-5'>
                                                             <Col xs={12} md={4}>
@@ -1964,13 +1977,31 @@ const BuyArticles = () => {
                                                                 formats={formats}
                                                                 bounds={'.app'}
                                                                 placeholder="Write content"
-                                                                style={{ height: "300px" }}
                                                             />
                                                             {linkCount > 0 && linkCount > selectedMaxLinks && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
+                                                            <p className="text-end">{content.length} Character</p>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "MessageforPublisher")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <input
+                                                                    className="input100"
+                                                                    value={publisherMsgText}
+                                                                    type="text"
+                                                                    name="message"
+                                                                    placeholder={`${translate(languageData, "MessageforPublisher")}`}
+                                                                    style={{ paddingLeft: "15px" }}
+                                                                    onChange={(e) => setPublisherMsgText(e.target.value)}
+                                                                />
+                                                            </div>
                                                         </Col>
                                                     </Row>
 
@@ -2021,6 +2052,24 @@ const BuyArticles = () => {
                                             {articleType === translate(languageData, "UseArticle") &&
                                                 <div>
                                                     <DataTable onRowClicked={handleUseArticleClick} columns={useArticleColumns} data={articleTableData} highlightOnHover pointerOnHover pagination paginationPerPage={6} paginationRowsPerPageOptions={[5, 10, 15, 20, 30]} />
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span className="text-bold">{translate(languageData, "MessageforPublisher")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <input
+                                                                    className="input100"
+                                                                    value={publisherMsgText}
+                                                                    type="text"
+                                                                    name="message"
+                                                                    placeholder={`${translate(languageData, "MessageforPublisher")}`}
+                                                                    style={{ paddingLeft: "15px" }}
+                                                                    onChange={(e) => setPublisherMsgText(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
                                                 </div>
 
                                             }

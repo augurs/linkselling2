@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import globalLoader from '../../../assets/images/loader.svg';
 import { useLanguage } from '../../Context/languageContext';
@@ -10,8 +10,13 @@ function VieworderArticle() {
   const userData = localStorage.getItem('userData');
   const [loading, setLoading] = useState(false);
   const [portalArticleDetail, setPortalArticleDetail] = useState([]);
+  const [showChatModal, setShowChatModal] = useState(false);
   const { languageData } = useLanguage();
   const { id, articleid } = useParams();
+
+
+  const handleChatModalClose = () => setShowChatModal(false);
+  const handleChatModalShow = () => setShowChatModal(true);
 
   useEffect(() => {
     if (articleid === 'addnewarticle') {
@@ -119,10 +124,10 @@ function VieworderArticle() {
         buttonClass = "btn btn-outline-primary btn-pill";
         buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
         break;
-        case "RejectedByPortal":
-            buttonClass = "btn btn-outline-primary btn-pill";
-            buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
-            break;
+      case "RejectedByPortal":
+        buttonClass = "btn btn-outline-primary btn-pill";
+        buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+        break;
       default:
 
         buttonText = status;
@@ -198,6 +203,36 @@ function VieworderArticle() {
                         {getStatusMessage(portalArticleDetail[0]?.status) ?? ''}
                       </div>
                     </Col>
+                  </Row>
+                  <Row className="mt-5">
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, "communicationPanel")}</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                      <Button className='btn btn-primary btn-pill d-flex justify-content-center align-items-center w-25' onClick={handleChatModalShow}>{translate(languageData, "clicktoSeeChat")}</Button>
+                    </Col>
+                    <Modal show={showChatModal} onHide={handleChatModalClose}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>{translate(languageData, "ChatModalTitle")}</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Row className="mt-5">
+                          <Col xs={12} md={4}>
+                            <span>Chat</span>
+                          </Col>
+                          <Col xs={12} md={8} className="mt-3 mt-md-0">
+                            <div className="wrap-input100 validate-input mb-0">
+                              hi
+                            </div>
+                          </Col>
+                        </Row>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={handleChatModalClose}>
+                          {translate(languageData, "Close")}
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
                   </Row>
                 </div>
               </Card.Body>
