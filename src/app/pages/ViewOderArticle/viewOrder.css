@@ -1,0 +1,18 @@
+.timeline {
+    position: relative;
+  }
+  
+  .timeline-line {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    background-color: black;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  
+  .chat-image{
+    z-index: 3; 
+  }

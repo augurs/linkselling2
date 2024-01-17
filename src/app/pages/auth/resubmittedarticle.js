@@ -19,6 +19,7 @@ const AddArticle = () => {
         comment: "",
         content: "",
         userStatus: "",
+        publisherMsgText: ""
     });
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -377,13 +378,31 @@ const AddArticle = () => {
                                             formats={formats}
                                             bounds={'.app'}
                                             placeholder='Write content'
-                                            style={{ height: "300px" }}
                                         />
                                         {formValues?.link < linkCount && (
                                             <Alert variant="danger">
                                                 {translate(languageData, "Toomanylinks")} : {formValues?.link}
                                             </Alert>
                                         )}
+                                        <p className="text-end">{editor?.length || 0} Character</p>
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "MessageforPublisher")} </span>
+                                    </Col>
+                                    <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                        <div className="wrap-input100 validate-input mb-0">
+                                            <input
+                                                className='input100'
+                                                type='text'
+                                                name='publisherMsgText'
+                                                placeholder={translate(languageData, "MessageforPublisher")}
+                                                style={{ paddingLeft: "15px" }}
+                                                onChange={(e) => handleChange(e)}
+                                                value={formValues.publisherMsgText}
+                                            />
+                                        </div>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>

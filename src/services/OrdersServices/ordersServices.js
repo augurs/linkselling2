@@ -41,3 +41,37 @@ export const ordersListArticle = (id) => {
       });
   };
 
+  export const chatSectionService = (id, articleType) => {
+    // console.log(id, "45");
+    // console.log(articleType, "45");
+
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/article-messages/${articleType}/${id}`)
+      .then((res) => {
+        console.log(id, "45");
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+  export const sentToPublisherMessage = (id, article, message) => {
+
+    const formData = new FormData();
+    formData.append("message", message);
+    formData.append("type", article);
+  
+  
+  
+    return axios
+      .post(`${baseURL2}/LinkSellingSystem/public/api/user-send-message/${id}`, formData)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };

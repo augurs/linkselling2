@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal, Image } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import "./login.css"
 import globalLoader from '../../../assets/images/loader.svg'
@@ -10,6 +10,9 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { requestArticleDetails, portalArticleDetailsReject, portalArticleDetailsMessage } from "../../../services/Resubmitarticle/resubmitarticle"
 import { FaCopy } from 'react-icons/fa';
+import custImg from "../../../assets/images/users/customer.jpg"
+import publisherImg from "../../../assets/images/users/publisher.jpg"
+import { chatSectionService, sentToPublisherMessage } from '../../../services/OrdersServices/ordersServices';
 function Portalarticledetails() {
 
     const userData = localStorage.getItem('userData');
@@ -22,7 +25,7 @@ function Portalarticledetails() {
     const [message, setMessage] = useState();
     const [portalLang, setPortalLang] = useState([])
     const [modalType, setModalType] = useState("");
-
+    const [chatData, setChatData] = useState([]);
     const { languageData, setLanguage } = useLanguage();
 
 
@@ -65,6 +68,9 @@ function Portalarticledetails() {
         }
     }, [portalLang])
 
+    useEffect(() => {
+        chatSectionShow()
+    }, [portalArticleDetail])
 
     const handleCopyClick = (content) => {
         const tempInput = document.createElement('textarea');
@@ -110,23 +116,30 @@ function Portalarticledetails() {
         setShowModal(false);
     };
 
+    const handleSendPublisherMsgClick = () => {
+        setModalType("pmessage");
+        setShowModal(true);
+    };
+
     const handleRejectSubmit = async () => {
         setShowModal(false);
         setLoading(true);
-    
+
         let res;
         try {
             if (modalType === "reject") {
-                res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "addnewarticle", comment);
+                res = await portalArticleDetailsReject(portalArticleDetail[0]?.id, "requestarticle", comment);
+            } else if (modalType === "message") {
+                res = await portalArticleDetailsMessage(portalArticleDetail[0]?.id, "requestarticle", message);
             } else {
-                res = await portalArticleDetailsMessage(portalArticleDetail[0]?.id, "addnewarticle", message);
+                res = await sentToPublisherMessage(portalArticleDetail[0]?.id, "requestarticle", message);
             }
-    
+
             if (res.success === true) {
                 const successMessage = modalType === "reject"
                     ? translate(languageData, "CommentrejectAddedSuccessfully")
                     : translate(languageData, "dataaddedsuccessfully");
-    
+
                 toast(successMessage, {
                     position: "top-center",
                     autoClose: 3000,
@@ -137,7 +150,7 @@ function Portalarticledetails() {
                     progress: undefined,
                     type: 'success'
                 });
-    
+
                 ordersListServices();
                 setShowModal(false);
             } else {
@@ -158,6 +171,23 @@ function Portalarticledetails() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const chatSectionShow = async () => {
+        setLoading(true);
+        const res = await chatSectionService(portalArticleDetail[0]?.id, "requestarticle");
+
+        if (res.success === true) {
+            setChatData(res.data);
+        } else {
+            console.error('API request failed:', res.msg);
+
+            if (res.success === false && res.data.length === 0) {
+                setChatData([]);
+            }
+        }
+
+        setLoading(false);
     };
 
     return (
@@ -264,6 +294,38 @@ function Portalarticledetails() {
                                             </div>
                                         </Col>
                                     </Row>
+                                    <Row className="mt-5">
+                                        <Col xs={12} md={4}>
+                                            <span>{translate(languageData, "communicationPanel")}</span>
+                                        </Col>
+                                        <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3">
+                                            {chatData.map((message, index) => (
+                                                <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
+                                                    <Col xs={4} className="text-left">
+                                                        {message.sender === 'user' && (
+                                                            <div className="border p-2 square bg-primary rounded-1">{message.message}</div>
+                                                        )}
+                                                    </Col>
+                                                    <Col xs={1} className="d-flex flex-column align-items-center justify-content-center timeline">
+                                                        <div className="timeline-line"></div>
+                                                        {message.sender === 'user' ? (
+                                                            <div className="chat-image">
+                                                                <Image src={custImg} roundedCircle /></div>
+                                                        ) : (
+                                                            <div className="chat-image">
+                                                                <Image src={publisherImg} roundedCircle /></div>
+                                                        )}
+                                                    </Col>
+                                                    <Col xs={4} className="text-right">
+                                                        {message.sender === 'publisher' && (
+                                                            <div className='border p-2 square bg-secondary rounded-1'>{message.message}</div>
+                                                        )}
+                                                    </Col>
+                                                </Row>
+                                            ))}
+                                        </Col>
+                                    </Row>
+
                                 </div>
                             </Card.Body>
                             <Card.Footer className='d-flex gap-2'>

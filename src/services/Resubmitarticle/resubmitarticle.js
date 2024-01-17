@@ -43,6 +43,8 @@ export const updaterResubmitarticle = (data, id) => {
     formData.append("user_status", data.userStatus);
 }
   formData.append("comment", data.comment);
+  formData.append("publisher_msg", data.publisherMsgText);
+
 
 
   return axios
