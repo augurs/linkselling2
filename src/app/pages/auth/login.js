@@ -18,7 +18,7 @@ function Login() {
   };
 
   const userData = localStorage.getItem('userData');
-  
+
   useEffect(() => {
     if (userData) {
       navigate('/')
@@ -53,14 +53,18 @@ function Login() {
     let error = {};
     let isValid = true;
     const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const isEmail = value.email.includes('@');
 
     if (!value.email) {
-      error.email = languageData && languageData?.filter((item) => item.title === 'signUpEmailError')[0]?.value || 'signUpEmailError';
+      error.email = languageData && languageData?.filter((item) => item.title === 'fieldrequired')[0]?.value || 'fieldrequired';
       isValid = false;
-    } else if (!emailReg.test(value.email)) {
-      error.email = languageData && languageData?.filter((item) => item.title === 'signUpEmailError2')[0]?.value || 'signUpEmailError2';
-      isValid = false;
+    } else if (isEmail) {
+      if (!emailReg.test(value.email)) {
+        error.email = languageData && languageData?.filter((item) => item.title === 'signUpEmailError2')[0]?.value || 'signUpEmailError2';
+        isValid = false;
+      }
     }
+
     if (!value.password) {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
       isValid = false;
@@ -71,9 +75,13 @@ function Login() {
   };
 
 
+
   const loginService = async () => {
     setLoading(true)
-    const res = await login(formValues, language)
+    const res = await login(
+      formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
+      language
+    );
     if (res.status === "1") {
       setLoading(false)
       localStorage.setItem('userData', JSON.stringify(res))
@@ -144,7 +152,7 @@ function Login() {
 
   return (
     <div className='ltr login-img'>
-      <ToastContainer className="position-fixed" style={{top: "6rem"}}/>
+      <ToastContainer className="position-fixed" style={{ top: "6rem" }} />
 
       <div className='d-flex justify-content-end mt-2 me-2' >
         <LanguageSelect />
@@ -162,7 +170,7 @@ function Login() {
                   <Form className="login100-form validate-form">
                     <span className="login100-form-title">{languageData && languageData?.filter((item) => item.title === 'signIn')[0]?.value || 'signIn'}</span>
                     <div className="wrap-input100 validate-input mb-0" data-bs-validate="Valid email is required: ex@abc.xyz">
-                      <input className="input100" type="text" name="email" placeholder={languageData && languageData?.filter((item) => item.title === 'emailSignUp')[0]?.value || 'emailSignUp'} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} />
+                      <input className="input100" type="text" name="email" placeholder={languageData && languageData?.filter((item) => item.title === 'EmailorUname')[0]?.value || 'EmailorUname'} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} />
                       <span className="focus-input100"></span>
                       <span className="symbol-input100">
                         <i className="zmdi zmdi-email" aria-hidden="true"></i>

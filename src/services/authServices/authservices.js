@@ -7,6 +7,7 @@ export const login = (formValues , currLang) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/login`, {
       email: formValues.email,
+      first_name: formValues.username,
       password: formValues.password,
       language : currLang
     })
@@ -109,9 +110,9 @@ export const updateNip = (values , id) => {
     .post(`${baseURL2}/LinkSellingSystem/public/api/update-nip-details`, {
       apartment_number: values.apartment_number ? values.apartment_number : 0,
       city: values.city,
-      community: values.community,
+      // community: values.community,
       company_name: values.company_name,
-      district: values.district,
+      // district: values.district,
       postal_code: values.postal_code,
       property_number: values.property_number,
       province: values.province,

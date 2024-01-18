@@ -298,32 +298,36 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "communicationPanel")}</span>
                                         </Col>
-                                        <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3">
-                                            {chatData.map((message, index) => (
-                                                <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
-                                                    <Col xs={4} className="text-left">
-                                                        {message.sender === 'user' && (
-                                                            <div className="border p-2 square bg-primary rounded-1">{message.message}</div>
-                                                        )}
-                                                    </Col>
-                                                    <Col xs={1} className="d-flex flex-column align-items-center justify-content-center timeline">
-                                                        <div className="timeline-line"></div>
-                                                        {message.sender === 'user' ? (
-                                                            <div className="chat-image">
-                                                                <Image src={custImg} roundedCircle /></div>
-                                                        ) : (
-                                                            <div className="chat-image">
-                                                                <Image src={publisherImg} roundedCircle /></div>
-                                                        )}
-                                                    </Col>
-                                                    <Col xs={4} className="text-right">
-                                                        {message.sender === 'publisher' && (
-                                                            <div className='border p-2 square bg-secondary rounded-1'>{message.message}</div>
-                                                        )}
-                                                    </Col>
-                                                </Row>
-                                            ))}
-                                        </Col>
+                                        {chatData.length > 0 ? (
+                                            <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
+                                                {chatData.map((message, index) => (
+                                                    <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
+                                                        <Col xs={4} className="text-left">
+                                                            {message.sender === 'user' && (
+                                                                <div className="border-top border-primary p-2 square bg-lightgray rounded-1 mb-4">{message.message}</div>
+                                                            )}
+                                                        </Col>
+                                                        <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
+                                                            {message.sender === 'user' ? (
+                                                                <div className="chat-image mb-4">
+                                                                    <Image src={custImg} roundedCircle /></div>
+                                                            ) : (
+                                                                <div className="chat-image mb-4">
+                                                                    <Image src={publisherImg} roundedCircle /></div>
+                                                            )}
+                                                        </Col>
+                                                        <Col xs={4} className="text-right">
+                                                            {message.sender === 'publisher' && (
+                                                                <div className='border p-2 square bg-lightgray rounded-1 mb-4'>{message.message}</div>
+                                                            )}
+                                                        </Col>
+                                                    </Row>
+                                                ))}
+                                            </Col>) : (
+                                            <Col xs={12} md={8}>
+                                                {translate(languageData, "noMsgAvailable.")}
+                                            </Col>
+                                        )}
                                     </Row>
 
                                 </div>

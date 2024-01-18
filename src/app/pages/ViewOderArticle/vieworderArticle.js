@@ -7,7 +7,7 @@ import "./viewOrder.css";
 import { translate } from '../../../utility/helper';
 import custImg from "../../../assets/images/users/customer.jpg"
 import publisherImg from "../../../assets/images/users/publisher.jpg"
-import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage } from '../../../services/OrdersServices/ordersServices';
+import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
 import { ToastContainer, toast } from 'react-toastify';
 function VieworderArticle() {
   const userData = localStorage.getItem('userData');
@@ -18,7 +18,7 @@ function VieworderArticle() {
   const [sendMsg, setSendMsg] = useState();
   const { languageData } = useLanguage();
   const { id, articleid } = useParams();
-
+  const [modalType, setModalType] = useState("");
 
   const handleChatModalClose = () => setShowChatModal(false);
   const handleChatModalShow = () => setShowChatModal(true);
@@ -164,16 +164,27 @@ function VieworderArticle() {
   };
 
   const handleSendMsgClick = () => {
+    setModalType("message");
     setShowChatModal(true);
   };
+  const handleRejectClick = () => {
+    setModalType("reject");
+    setShowChatModal(true);
+  };
+
+  console.log(articleid, "179");
 
   const handleSendMsgPublisher = async () => {
     setShowChatModal(false);
     setLoading(true);
-
     let res;
     try {
-      res = await sentToPublisherMessage(portalArticleDetail[0]?.id, "addnewarticle", sendMsg);
+      if (modalType === "reject") {
+        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+      }
+      else {
+          res = await sentUserRejectMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+      }
       if (res.success === true) {
         const successMessage = translate(languageData, "dataaddedsuccessfully");
         toast(successMessage, {
@@ -281,37 +292,36 @@ function VieworderArticle() {
                     <Col xs={12} md={4}>
                       <span>{translate(languageData, "communicationPanel")}</span>
                     </Col>
-                    <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3">
-                      {chatData.map((message, index) => (
-                        <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
-                          <Col xs={4} className="text-left">
-                            {message.sender === 'user' && (
-                              <div className="border p-2 square bg-primary rounded-1">{message.message}</div>
-                            )}
-                          </Col>
-                          <Col xs={1} className="d-flex flex-column align-items-center justify-content-center timeline">
-                            <div className="timeline-line"></div>
-                            {message.sender === 'user' ? (
-                              <div className="chat-image">
-                              <Image  src={custImg} roundedCircle /></div>
-                            ) : (
-                              <div className="chat-image">
-                              <Image src={publisherImg} roundedCircle /></div>
-                            )}
-                          </Col>
-                          <Col xs={4} className="text-right">
-                            {message.sender === 'publisher' && (
-                              <div className='border p-2 square bg-secondary rounded-1'>{message.message}</div>
-                            )}
-                          </Col>
-                        </Row>
-                      ))}
-
-
-
-
-
-                    </Col>
+                    {chatData.length > 0 ? (
+                      <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
+                        {chatData.map((message, index) => (
+                          <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
+                            <Col xs={4} className="text-left">
+                              {message.sender === 'user' && (
+                                <div className="border-top border-primary p-2 square bg-lightgray rounded-1 mb-4">{message.message}</div>
+                              )}
+                            </Col>
+                            <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
+                              {message.sender === 'user' ? (
+                                <div className="chat-image mb-4">
+                                  <Image src={custImg} roundedCircle /></div>
+                              ) : (
+                                <div className="chat-image mb-4">
+                                  <Image src={publisherImg} roundedCircle /></div>
+                              )}
+                            </Col>
+                            <Col xs={4} className="text-right">
+                              {message.sender === 'publisher' && (
+                                <div className='border p-2 square bg-lightgray rounded-1 mb-4'>{message.message}</div>
+                              )}
+                            </Col>
+                          </Row>
+                        ))}
+                      </Col>) : (
+                      <Col xs={12} md={8}>
+                        {translate(languageData, "noMsgAvailable.")}
+                      </Col>
+                    )}
                   </Row>
                   <Row className='mt-5'>
                     <Col xs={12} md={4}>
@@ -320,7 +330,7 @@ function VieworderArticle() {
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Password is required">
                         <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sentMsgPublisher")}</Button>
-                        {/* <Button className='btn-dark' >{translate(languageData, "sentMsgPublisher")}</Button> */}
+                        <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
                       </div>
 
                     </Col>
@@ -328,7 +338,11 @@ function VieworderArticle() {
                   </Row>
                   <Modal show={showChatModal} onHide={handleChatModalClose} size="lg">
                     <Modal.Header closeButton>
-                      <Modal.Title>{translate(languageData, 'sentMsgPublisher')}</Modal.Title>
+                      <Modal.Title>
+                        {modalType === "reject"
+                          ? translate(languageData, "sendMessage")
+                          : translate(languageData, "sentMsgPublisher")}
+                      </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       <Row className='align-items-center mt-2'>
@@ -346,7 +360,9 @@ function VieworderArticle() {
                       </Row>
                     </Modal.Body>
                     <Modal.Footer>
-                      <Button className='btn-info' onClick={handleSendMsgPublisher}>{translate(languageData, "sentMsgPublisher")}</Button>
+                      <Button className='btn-info' onClick={handleSendMsgPublisher}>{modalType === "reject"
+                        ? translate(languageData, "sendMessage")
+                        : translate(languageData, "sentMsgPublisher")}</Button>
                       <Button variant="secondary" onClick={handleChatModalClose}>
                         {translate(languageData, 'close')}
                       </Button>

@@ -10,9 +10,7 @@ import { useLanguage } from '../../Context/languageContext';
 import {
   MdHouse,
   MdLocationCity,
-  MdGroups,
   MdAddBusiness,
-  MdMap,
   MdLocationOn,
   MdOutlineAddHomeWork,
   MdStreetview,
@@ -22,15 +20,13 @@ const NipDetails = () => {
   const nipDetails = JSON.parse(localStorage.getItem('nipData'));
 
   const initialValues = {
-    apartment_number: nipDetails?.apartment_number,
-    city: nipDetails?.city,
-    community: nipDetails?.community,
     company_name: nipDetails?.company_name,
-    district: nipDetails?.district,
-    postal_code: nipDetails?.postal_code,
-    property_number: nipDetails?.property_number,
+    city: nipDetails?.city,
     province: nipDetails?.province,
     street: nipDetails?.street,
+    property_number: nipDetails?.property_number,
+    apartment_number: nipDetails?.apartment_number,
+    postal_code: nipDetails?.postal_code,
   };
 
   const { t } = useTranslation();
@@ -50,13 +46,7 @@ const NipDetails = () => {
     let error = {};
     let isValid = true;
 
-    // Validate each field
-    // Object.keys(formValues).forEach((key) => {
-    //   if (!formValues[key]) {
-    //     error[key] = `${languageData && languageData?.filter((item) => item.title === key)[0]?.value || key} ${languageData?.filter((item) => item.title === 'isRequired')[0]?.value || 'isRequired'}`;
-    //     isValid = false;
-    //   }
-    // });
+  
     Object.keys(formValues).forEach((key) => {
       if (key !== 'apartment_number' && !formValues[key]) {
         error[key] = `${languageData && languageData?.filter((item) => item.title === key)[0]?.value || key} ${languageData?.filter((item) => item.title === 'isRequired')[0]?.value || 'isRequired'}`;
@@ -70,7 +60,6 @@ const NipDetails = () => {
 
   const UpdateNipServices = async () => {
     if (!validate()) {
-      // Show error toast if validation fails
       toast(languageData?.filter((item) => item.title === 'pleasefillallfield')[0]?.value || 'pleasefillallfield', {
         position: 'top-center',
         autoClose: 5000,
@@ -144,12 +133,16 @@ const NipDetails = () => {
         <div>
           <Container className='container-login100'>
             <div className='wrap-0login10 p-0'>
-              <Card>
+              <Card style={{ width: '550px'}}>
                 <Card.Body>
-                  <Form className='login100-form validate-form'>
+                  <Form>
                     <span className='login100-form-title'>
+                      <div className='d-flex flex-column gap-2'>
                       {languageData && languageData?.filter((item) => item.title === 'NipDetails')[0]?.value || 'NipDetails'}
+                      <small>{nipDetails?.nip_number}</small>
+                      </div>
                     </span>
+                    
                     {Object.keys(initialValues).map((key) => (
                       <div key={key} className={`wrap-input100 validate-input mb-0 mt-2`}>
                         <input
@@ -165,9 +158,9 @@ const NipDetails = () => {
                         <span className='symbol-input100'>
                           {key === 'apartment_number' && <MdHouse />}
                           {key === 'city' && <MdLocationCity />}
-                          {key === 'community' && <MdGroups />}
+                          {/* {key === 'community' && <MdGroups />} */}
                           {key === 'company_name' && <MdAddBusiness />}
-                          {key === 'district' && <MdMap />}
+                          {/* {key === 'district' && <MdMap />} */}
                           {key === 'postal_code' && <MdLocationOn />}
                           {key === 'property_number' && <MdOutlineAddHomeWork />}
                           {key === 'province' && <MdLocationCity />}
