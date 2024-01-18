@@ -180,10 +180,10 @@ function VieworderArticle() {
     let res;
     try {
       if (modalType === "reject") {
-        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+        res = await sentUserRejectMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
       }
       else {
-          res = await sentUserRejectMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
       }
       if (res.success === true) {
         const successMessage = translate(languageData, "dataaddedsuccessfully");
@@ -330,7 +330,11 @@ function VieworderArticle() {
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Password is required">
                         <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sentMsgPublisher")}</Button>
-                        <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
+                        {chatData.length > 0 && chatData.some(message => message.sender === 'publisher') && (
+                          <Button className='btn-danger' onClick={handleRejectClick}>
+                            {translate(languageData, "IhaveRejected")}
+                          </Button>
+                        )}
                       </div>
 
                     </Col>

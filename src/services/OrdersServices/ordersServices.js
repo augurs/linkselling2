@@ -79,13 +79,13 @@ export const ordersListArticle = (id) => {
   export const sentUserRejectMessage = (id, article, message) => {
 
     const formData = new FormData();
-    formData.append("message", message);
+    formData.append("comment", message);
     formData.append("type", article);
   
   
   
     return axios
-      .post(`${baseURL2}/LinkSellingSystem/public/api/user-send-message/${id}`, formData)
+      .post(`${baseURL2}/LinkSellingSystem/public/api/user-reject-article/${id}`, formData)
       .then((res) => {
         return res.data;
       })
