@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal, Image } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import globalLoader from '../../../assets/images/loader.svg';
 import { useLanguage } from '../../Context/languageContext';
+import "./viewOrder.css";
 import { translate } from '../../../utility/helper';
-import { ordersListArticle, ordersListArticle1 } from '../../../services/OrdersServices/ordersServices';
-
+import custImg from "../../../assets/images/users/customer.jpg"
+import publisherImg from "../../../assets/images/users/publisher.jpg"
+import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
+import { ToastContainer, toast } from 'react-toastify';
 function VieworderArticle() {
   const userData = localStorage.getItem('userData');
   const [loading, setLoading] = useState(false);
   const [portalArticleDetail, setPortalArticleDetail] = useState([]);
+  const [chatData, setChatData] = useState([]);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [sendMsg, setSendMsg] = useState();
   const { languageData } = useLanguage();
   const { id, articleid } = useParams();
+  const [modalType, setModalType] = useState("");
+
+  const handleChatModalClose = () => setShowChatModal(false);
+  const handleChatModalShow = () => setShowChatModal(true);
 
   useEffect(() => {
     if (articleid === 'addnewarticle') {
@@ -40,6 +50,10 @@ function VieworderArticle() {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    chatSectionShow()
+  }, [])
 
   const ordersListServices1 = async () => {
     setLoading(true);
@@ -119,10 +133,10 @@ function VieworderArticle() {
         buttonClass = "btn btn-outline-primary btn-pill";
         buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
         break;
-        case "RejectedByPortal":
-            buttonClass = "btn btn-outline-primary btn-pill";
-            buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
-            break;
+      case "RejectedByPortal":
+        buttonClass = "btn btn-outline-primary btn-pill";
+        buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
+        break;
       default:
 
         buttonText = status;
@@ -130,6 +144,81 @@ function VieworderArticle() {
     return <span className={`${buttonClass} d-flex justify-content-center align-items-center w-25`}>
       {buttonText}
     </span>
+  };
+
+  const chatSectionShow = async () => {
+    setLoading(true);
+    const res = await chatSectionService(id, articleid);
+
+    if (res.success === true) {
+      setChatData(res.data);
+    } else {
+      console.error('API request failed:', res.msg);
+
+      if (res.success === false && res.data.length === 0) {
+        setChatData([]);
+      }
+    }
+
+    setLoading(false);
+  };
+
+  const handleSendMsgClick = () => {
+    setModalType("message");
+    setShowChatModal(true);
+  };
+  const handleRejectClick = () => {
+    setModalType("reject");
+    setShowChatModal(true);
+  };
+
+  console.log(articleid, "179");
+
+  const handleSendMsgPublisher = async () => {
+    setShowChatModal(false);
+    setLoading(true);
+    let res;
+    try {
+      if (modalType === "reject") {
+        res = await sentUserRejectMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+      }
+      else {
+        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+      }
+      if (res.success === true) {
+        const successMessage = translate(languageData, "dataaddedsuccessfully");
+        toast(successMessage, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          type: 'success'
+        });
+
+        ordersListServices();
+        chatSectionShow();
+        setShowChatModal(false);
+      } else {
+        throw new Error('API call failed');
+      }
+    } catch (error) {
+      const errorMessage = translate(languageData, "loginFailureMessage2");
+      toast(errorMessage, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -199,6 +288,90 @@ function VieworderArticle() {
                       </div>
                     </Col>
                   </Row>
+                  <Row className="mt-5">
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, "communicationPanel")}</span>
+                    </Col>
+                    {chatData.length > 0 ? (
+                      <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
+                        {chatData.map((message, index) => (
+                          <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
+                            <Col xs={4} className="text-left">
+                              {message.sender === 'user' && (
+                                <div className="border-top border-primary p-2 square bg-lightgray rounded-1 mb-4">{message.message}</div>
+                              )}
+                            </Col>
+                            <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
+                              {message.sender === 'user' ? (
+                                <div className="chat-image mb-4">
+                                  <Image src={custImg} roundedCircle /></div>
+                              ) : (
+                                <div className="chat-image mb-4">
+                                  <Image src={publisherImg} roundedCircle /></div>
+                              )}
+                            </Col>
+                            <Col xs={4} className="text-right">
+                              {message.sender === 'publisher' && (
+                                <div className='border p-2 square bg-lightgray rounded-1 mb-4'>{message.message}</div>
+                              )}
+                            </Col>
+                          </Row>
+                        ))}
+                      </Col>) : (
+                      <Col xs={12} md={8}>
+                        {translate(languageData, "noMsgAvailable.")}
+                      </Col>
+                    )}
+                  </Row>
+                  <Row className='mt-5'>
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, "Action")}</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                      <div className="wrap-input100 validate-input mb-0 d-flex gap-2" data-bs-validate="Password is required">
+                        <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sentMsgPublisher")}</Button>
+                        {chatData.length > 0 && chatData.some(message => message.sender === 'publisher') && (
+                          <Button className='btn-danger' onClick={handleRejectClick}>
+                            {translate(languageData, "IhaveRejected")}
+                          </Button>
+                        )}
+                      </div>
+
+                    </Col>
+
+                  </Row>
+                  <Modal show={showChatModal} onHide={handleChatModalClose} size="lg">
+                    <Modal.Header closeButton>
+                      <Modal.Title>
+                        {modalType === "reject"
+                          ? translate(languageData, "sendMessage")
+                          : translate(languageData, "sentMsgPublisher")}
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Row className='align-items-center mt-2'>
+                        <Col xs={12} md={4}>
+                          <span>
+                            {translate(languageData, "sendMessage")}
+                          </span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                            <textarea className="input100" type="text" name="comment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setSendMsg(e.target.value)} />
+                          </div>
+                        </Col>
+
+                      </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button className='btn-info' onClick={handleSendMsgPublisher}>{modalType === "reject"
+                        ? translate(languageData, "sendMessage")
+                        : translate(languageData, "sentMsgPublisher")}</Button>
+                      <Button variant="secondary" onClick={handleChatModalClose}>
+                        {translate(languageData, 'close')}
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
                 </div>
               </Card.Body>
             </Card>

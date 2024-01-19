@@ -1,8 +1,25 @@
 body {
     top: 0px !important;
-   }
+}
 
-   body > .skiptranslate > iframe.skiptranslate {
+body>.skiptranslate>iframe.skiptranslate {
     display: none !important;
     visibility: hidden !important;
-   }
+}
+
+
+.timeline {
+    z-index: 1;
+    width: 1px !important;
+}
+
+.chat-image {
+    z-index: 2;
+}
+
+.bg-lightgray {
+    background-color: #e7e8e9 !important;
+}
+
+
+

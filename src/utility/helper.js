@@ -42,11 +42,11 @@ export const countLinksInEditor = (editorContent) => {
 
 export const modules = {
    toolbar: [
-       [{ 'header': '1' }, { 'header': '2' }],
-       ['bold', 'italic', 'underline', 'strike'],
-       [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-       ['link', 'image'],
-       ['clean']
+      [{ 'header': '1' }, { 'header': '2' }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link', 'image'],
+      ['clean']
    ],
 };
 
@@ -56,3 +56,15 @@ export const formats = [
    'list', 'bullet',
    'link', 'image'
 ];
+
+
+export const caseInsensitiveSort = (rowA, rowB) => {
+   const a = rowA.title ? String(rowA.title).toLowerCase() : '';
+   const b = rowB.title ? String(rowB.title).toLowerCase() : '';
+ 
+   console.log('Comparing:', a, b);
+ 
+   return a.localeCompare(b);
+ };
+ 
+ 

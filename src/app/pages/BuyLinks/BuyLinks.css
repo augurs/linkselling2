@@ -50,3 +50,7 @@ select.btn-primary option {
   border-color: rgb(96, 151, 8)  !important;
   box-shadow: none !important;
 }
+
+.ql-container.ql-snow {
+  height: 300px !important;
+}

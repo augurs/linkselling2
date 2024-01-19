@@ -43,6 +43,8 @@ export const updaterResubmitarticle = (data, id) => {
     formData.append("user_status", data.userStatus);
 }
   formData.append("comment", data.comment);
+  formData.append("publisher_msg", data.publisherMsgText);
+
 
 
   return axios
@@ -133,8 +135,28 @@ export const portalArticleDetailsReject = (id, article, comment) => {
   formData.append("type", article);
 
 
+
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/portal-reject-article/${id}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const portalArticleDetailsMessage = (id, article, message) => {
+
+  const formData = new FormData();
+  formData.append("message", message);
+  formData.append("type", article);
+
+
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/portal-send-message/${id}`, formData)
     .then((res) => {
       return res.data;
     })
