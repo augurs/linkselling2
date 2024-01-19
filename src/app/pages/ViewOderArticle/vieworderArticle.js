@@ -148,7 +148,7 @@ function VieworderArticle() {
 
   const chatSectionShow = async () => {
     setLoading(true);
-    const res = await chatSectionService(id);
+    const res = await chatSectionService(id, articleid);
 
     if (res.success === true) {
       setChatData(res.data);

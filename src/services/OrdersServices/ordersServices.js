@@ -42,9 +42,6 @@ export const ordersListArticle = (id) => {
   };
 
   export const chatSectionService = (id, articleType) => {
-    // console.log(id, "45");
-    // console.log(articleType, "45");
-
     return axios
       .get(`${baseURL2}/LinkSellingSystem/public/api/article-messages/${articleType}/${id}`)
       .then((res) => {
