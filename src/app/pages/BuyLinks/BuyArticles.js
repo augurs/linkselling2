@@ -587,6 +587,8 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.protalType,
+            selector: (row) => row.portalLink,
+            sortable: true,
             cell: (row) => (
                 <div className="my-2 d-flex align-items-center gap-1">
                     <div >
@@ -662,6 +664,7 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.dr,
+            sortable:true,
             center: true,
             cell: (row) => (
                 <div>
@@ -683,6 +686,7 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.ahrefs,
+            sortable:true,
             center: true,
             cell: (row) => (
                 <div className="text-center">
@@ -704,6 +708,7 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.bestPrice,
+            sortable: true,
             center: true,
         },
 

@@ -109,7 +109,7 @@ const SignUp = () => {
   const signUpErrorsMessage = languageData && languageData?.filter((item) => item.title === 'signUpErrorMessage')[0]?.value || 'signUpErrorMessage';
   const loginFailureMessage2 = languageData && languageData?.filter((item) => item.title === 'loginFailureMessage2')[0]?.value || 'loginFailureMessage2';
   const passwordDoNotMatch = languageData && languageData?.filter((item) => item.title === 'passwordDoNotMatch')[0]?.value || 'passwordDoNotMatch';
-
+  const userNameAlredyTaken = languageData && languageData?.filter((item) => item.title === 'userNameAlredyTaken')[0]?.value || 'userNameAlredyTaken';
 
 
 
@@ -212,7 +212,23 @@ const SignUp = () => {
       });
       setSignUpLoading(false)
       setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
-    } else {
+    }
+    else if (res.message[0] === "The username has already been taken.") {
+      toast(userNameAlredyTaken, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: 'error'
+      });
+      setSignUpLoading(false)
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+    }
+    else {
       toast(loginFailureMessage2, {
         position: "top-center",
         autoClose: 5000,
