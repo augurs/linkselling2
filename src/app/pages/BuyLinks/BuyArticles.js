@@ -42,6 +42,7 @@ import { IoTicketOutline } from 'react-icons/io5';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import { walletBalance } from "../../../services/walletServices/walletService"
 import { modules, formats } from "../../../utility/helper";
+import moment from "moment";
 const BuyArticles = () => {
 
     const initialValues = {
@@ -81,6 +82,7 @@ const BuyArticles = () => {
     const [image, setImage] = useState(null);
     const [imageSource, setImageSource] = useState(null);
     const [date, setDate] = useState('')
+    const [addArtiLead, setAddArtiLead] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
@@ -109,7 +111,21 @@ const BuyArticles = () => {
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [userArticleId, setUserArticleId] = useState()
+    const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
     const userData = JSON.parse(localStorage.getItem('userData'));
+
+
+    useEffect(() => {
+        if (useArticleList) {
+            const data = useArticleList?.find((item) => item?.id == addNewArticleProjectDropdown)
+            setRequestArticleTitle(data?.title)
+            setDate(moment(data?.created_at, 'YYYY/MM/DD').format('YYYY-MM-DD'))
+            setAddArtiLead(data?.lead)
+            setContent(data?.content)
+            setImage(data?.file);
+
+        }
+    }, [addNewArticleProjectDropdown, useArticleList])
 
     useEffect(() => {
         getUserDiscountServices()
@@ -129,6 +145,7 @@ const BuyArticles = () => {
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "RequestArticleWriting")) {
             setUserArticleId('')
+            setAddArtiLead('')
 
         }
     }, [articleType]);
@@ -242,6 +259,7 @@ const BuyArticles = () => {
             setSuggestion('')
             setLinkValues('')
             setAnchorValues('')
+            setAddArtiLead('')
         }
     }, [articleType]);
 
@@ -565,7 +583,8 @@ const BuyArticles = () => {
             typeOfAnchors: item?.type_of_anchor,
             maxLinks: item?.max_links,
             maxArticleLength: item?.max_article_length,
-            minArticleLength: item?.min_article_length
+            minArticleLength: item?.min_article_length,
+            maxLeadLength: item?.max_lead,
 
         }
     })
@@ -664,7 +683,7 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.dr,
-            sortable:true,
+            sortable: true,
             center: true,
             cell: (row) => (
                 <div>
@@ -686,7 +705,7 @@ const BuyArticles = () => {
                 </div>
             ),
             selector: (row) => row.ahrefs,
-            sortable:true,
+            sortable: true,
             center: true,
             cell: (row) => (
                 <div className="text-center">
@@ -777,7 +796,7 @@ const BuyArticles = () => {
             if (!requestArticleTitle) {
                 toast(translate(languageData, "TitleofArticleField"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -790,7 +809,7 @@ const BuyArticles = () => {
             if (linkCount === 0) {
                 toast(translate(languageData, "Minimum1link"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -805,7 +824,7 @@ const BuyArticles = () => {
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
                 toast(translate(languageData, "Minimum1link"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -818,7 +837,7 @@ const BuyArticles = () => {
             if (!image) {
                 toast(translate(languageData, "ImageField"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -833,7 +852,7 @@ const BuyArticles = () => {
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -849,7 +868,7 @@ const BuyArticles = () => {
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -859,12 +878,29 @@ const BuyArticles = () => {
                 });
                 return;
             }
+
+            if (addArtiLead.length > selectedSubArticles?.maxLeadLength) {
+                const maxLeadLength = selectedSubArticles?.maxLeadLength;
+                const errorMessage = `${translate(languageData, "maxLeadLength")}: ${maxLeadLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+
         }
         if (articleType === translate(languageData, "RequestArticleWriting")) {
             if (provideSubject && (!provideSubjectText || provideSubjectText.trim() === '')) {
                 toast(translate(languageData, "SubjectFieldNotEmpty"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -877,7 +913,7 @@ const BuyArticles = () => {
             if (linkValues == 0) {
                 toast(translate(languageData, "Minimum1link"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -890,7 +926,7 @@ const BuyArticles = () => {
             if (anchorValues == 0) {
                 toast(translate(languageData, "Min1anchor"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -903,7 +939,7 @@ const BuyArticles = () => {
             if (linkValues.some((link) => !isValidUrl(link))) {
                 toast(translate(languageData, "InvalidLink"), {
                     position: "top-center",
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -939,13 +975,14 @@ const BuyArticles = () => {
             anchor: anchorValues,
             artId: userArticleId,
             publisherMsgText: publisherMsgText,
+            addArtiLead: addArtiLead,
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
                 position: "top-center",
-                autoClose: 5000,
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -1299,6 +1336,7 @@ const BuyArticles = () => {
         };
     });
 
+    console.log(articleTableData, "1324");
 
     const handleUseArticleClick = (item) => {
         if (item.id === userArticleId) {
@@ -1793,7 +1831,7 @@ const BuyArticles = () => {
                                                         {articlePackages?.map((item, index) => {
                                                             return (
 
-                                                                <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill'>
+                                                                <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill d-flex justify-content-center'>
                                                                     <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px" }}>
                                                                         <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
@@ -1865,11 +1903,7 @@ const BuyArticles = () => {
                                                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
                                                                     <input className="input100" type="text" name="title" placeholder={translate(languageData, "writeSubject")} style={{ paddingLeft: "15px" }} onChange={(e) => setProvideSubjectText(e.target.value)} value={provideSubjectText} />
                                                                 </div>
-                                                                {/* {provideSubject && (!provideSubjectText || provideSubjectText.trim() === '') && (
-                                                                    <div>
-                                                                        <span className="text-danger">{translate(languageData, "SubjectFieldNotEmpty")}</span>
-                                                                    </div>
-                                                                )} */}
+
                                                             </Col>
                                                         </Row>
                                                     )}
@@ -1945,7 +1979,25 @@ const BuyArticles = () => {
 
                                             {articleType === translate(languageData, "AddNewArticle") &&
                                                 <div>
+                                                    <Row className='align-items-center '>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "artilstProject")} *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="form-group">
+                                                                <select name="project" class=" form-select" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
+                                                                    <option label={translate(languageData, "artilstProject")}></option>
+                                                                    {useArticleList?.map((item, index) => {
+                                                                        return (
+                                                                            <option value={item.id} key={index}>{item.title}</option>
+                                                                        )
+                                                                    })}
 
+                                                                </select>
+                                                            </div>
+                                                            <div className='text-danger text-center mt-1'>{formErrors.project}</div>
+                                                        </Col>
+                                                    </Row>
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "artilstTitle")} *</span>
@@ -1969,7 +2021,23 @@ const BuyArticles = () => {
 
                                                         </Col>
                                                     </Row>
-                                                    <Row className='mt-4 pb-8'>
+                                                    <Row className='align-items-start mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "AddArtiLead")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <textarea className="input100 px-4" type="text" name="lead" cols={6} rows={8} placeholder={translate(languageData, "AddArtiLead")} onChange={(e) => setAddArtiLead(e.target.value)} value={addArtiLead} />
+                                                            </div>
+                                                            {addArtiLead.length > selectedSubArticles?.maxLeadLength && (
+                                                                <Alert variant="danger">
+                                                                    {translate(languageData, "maxLeadLength")}: {selectedSubArticles?.maxLeadLength}
+                                                                </Alert>
+                                                            )}
+                                                            <p className="text-end">{addArtiLead.length}/{selectedSubArticles?.maxLeadLength} Character</p>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='mt-4 pb-2'>
                                                         <Col xs={12} md={4} className='mt-2'>
                                                             <span>{translate(languageData, "sidebarContent")} *</span>
                                                         </Col>
@@ -1988,10 +2056,15 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{content.length} Character</p>
+                                                            {content.length > selectedSubArticles?.maxArticleLength && (
+                                                                <Alert variant="danger">
+                                                                    {translate(languageData, "maxArticleLength")}: {selectedSubArticles?.maxArticleLength}
+                                                                </Alert>
+                                                            )}
+                                                            <p className="text-end">{content.length}/{selectedSubArticles?.maxArticleLength} Character</p>
                                                         </Col>
                                                     </Row>
-                                                    <Row className='align-items-center mt-5'>
+                                                    <Row className='align-items-center'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "MessageforPublisher")} </span>
                                                         </Col>
@@ -2012,10 +2085,10 @@ const BuyArticles = () => {
 
                                                     <div>
                                                         <Row className='align-items-center mt-5'>
-                                                            <Col xs={12} md={4}>
+                                                            <Col xs={12} sm={12} md={4} lg={4}>
                                                                 <span>{translate(languageData, "image")} *</span>
                                                             </Col>
-                                                            <Col xs={12} md={1}>
+                                                            <Col xs={12} sm={12} md={1} lg={1}>
                                                                 {imageSource && (
                                                                     <div>
                                                                         <img src={imageSource.previewUrl} alt="Selected" />
@@ -2023,15 +2096,15 @@ const BuyArticles = () => {
                                                                 )}
                                                             </Col>
 
-                                                            <Col xs={12} md={2} className="mt-3 mt-md-0">
+                                                            <Col xs={12} sm={12} md={2} lg={2} className="mt-3 mt-md-0">
                                                                 <div>
                                                                     <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
                                                                 </div>
                                                             </Col>
 
-                                                            {translate(languageData, "orselectviapixabay")}
+                                                            <Col md={2} sm={12} lg={2}>{translate(languageData, "orselectviapixabay")}</Col>
 
-                                                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                                            <Col xs={12} sm={12} md={3} lg={3} className='mt-3 mt-md-0'>
                                                                 <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                                                             </Col>
                                                         </Row>
