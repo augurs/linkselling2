@@ -847,7 +847,7 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (content.length > selectedSubArticles?.maxArticleLength) {
+            if (content?.length > selectedSubArticles?.maxArticleLength) {
                 const maxArticleLength = selectedSubArticles?.maxArticleLength;
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
@@ -863,7 +863,7 @@ const BuyArticles = () => {
 
                 return;
             }
-            if (content.length < selectedSubArticles?.minArticleLength) {
+            if (content?.length < selectedSubArticles?.minArticleLength) {
                 const minArticleLength = selectedSubArticles?.minArticleLength;
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
@@ -879,7 +879,7 @@ const BuyArticles = () => {
                 return;
             }
 
-            if (addArtiLead.length > selectedSubArticles?.maxLeadLength) {
+            if (addArtiLead?.length > selectedSubArticles?.maxLeadLength) {
                 const maxLeadLength = selectedSubArticles?.maxLeadLength;
                 const errorMessage = `${translate(languageData, "maxLeadLength")}: ${maxLeadLength}`;
                 toast(errorMessage, {
@@ -1147,7 +1147,7 @@ const BuyArticles = () => {
 
     };
 
-    const numCheckboxesToDisplay = checkboxes.length;
+    const numCheckboxesToDisplay = checkboxes?.length;
     const boxWidth = `${100 / numCheckboxesToDisplay}%`;
 
     //promotion api end//
@@ -1449,7 +1449,7 @@ const BuyArticles = () => {
                                             <div className="d-flex align-items-center">
                                                 <MdAnchor size={20} className="text-primary" />
                                                 <span className="d-flex flex-grow-1 justify-content-center text-primary">
-                                                    {selected.length > 0 ? selected.join(', ') : translate(languageData, "anchorTypes")}
+                                                    {selected?.length > 0 ? selected.join(', ') : translate(languageData, "anchorTypes")}
                                                 </span>
                                             </div>
                                         )}
@@ -1748,7 +1748,7 @@ const BuyArticles = () => {
                                     <option label={translate(languageData, "artilstProject")}></option>
                                     {articlesData2?.map((item, index) => {
                                         return (
-                                            <option value={item?.id} key={index}>{item.name.length > 10 ? item.name.slice(0, 10) + '...' : item.name}</option>
+                                            <option value={item?.id} key={index}>{item?.title?.length > 10 ? item?.title?.slice(0, 10) + '...' : item?.title}</option>
                                         )
                                     })}
                                 </select>
@@ -2029,12 +2029,12 @@ const BuyArticles = () => {
                                                             <div className="wrap-input100 validate-input mb-0">
                                                                 <textarea className="input100 px-4" type="text" name="lead" cols={6} rows={8} placeholder={translate(languageData, "AddArtiLead")} onChange={(e) => setAddArtiLead(e.target.value)} value={addArtiLead} />
                                                             </div>
-                                                            {addArtiLead.length > selectedSubArticles?.maxLeadLength && (
+                                                            {addArtiLead?.length > selectedSubArticles?.maxLeadLength && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "maxLeadLength")}: {selectedSubArticles?.maxLeadLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{addArtiLead.length}/{selectedSubArticles?.maxLeadLength} Character</p>
+                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.maxLeadLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='mt-4 pb-2'>
@@ -2056,12 +2056,12 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
-                                                            {content.length > selectedSubArticles?.maxArticleLength && (
+                                                            {content?.length > selectedSubArticles?.maxArticleLength && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "maxArticleLength")}: {selectedSubArticles?.maxArticleLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{content.length}/{selectedSubArticles?.maxArticleLength} Character</p>
+                                                            <p className="text-end">{content?.length}/{selectedSubArticles?.maxArticleLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='align-items-center'>
