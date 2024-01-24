@@ -164,18 +164,12 @@ export const updateRequestedArticles = (viewArticle, suggestion, editor, status)
 export const orderArticles = (formValues, orderPrice, articleType) => {
   console.log(formValues, "85");
   const formData = new FormData();
-  formData.append("quantity", formValues.quantity);
   formData.append("article", articleType);
   formData.append("project", formValues.project);
-  formData.append("country", formValues.country);
-  formData.append("title_of_article", formValues.title);
-  formData.append("attachment", formValues.attachment)
-  formData.append("placing_link", formValues.placingLink)
-  formData.append("phone", formValues.phone)
-  formData.append("email", formValues.email)
-  formData.append("gross_amount", orderPrice)
+  formData.append("gross_amount", orderPrice);
+  formData.append("articlesubject", formValues.writeSubject? formValues.writeSubject: "we provide subject");
+  formData.append("suggestion", formValues.suggestion);
   formData.append("user_id", userData?.id)
-  formData.append("comment", userData?.id)
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/order-article`, formData)

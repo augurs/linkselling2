@@ -22,19 +22,9 @@ const OrderArticle = () => {
 
     const initialValues = {
         articleType: "",
-        country: "",
         project: "",
-        countryOfPublication: "",
-        quantity: "",
-        title: "",
-        imageAction: "",
-        placingLink: "",
-        lead: "",
-        attachment: "",
-        contactForm: "",
-        phone: "",
-        email: "",
-        comment: "",
+        writeSubject: "",
+        suggestion: "",
     };
 
 
@@ -48,6 +38,8 @@ const OrderArticle = () => {
     const [orderLoading, setOrderLoading] = useState(false)
     const [articlePackages, setArticlePackages] = useState([])
     const [orderId, setOrderId] = useState(1);
+    const [weProvideSubject, setWeProvideSubject] = useState(true);
+    const [provideSubject, setProvideSubject] = useState(false);
     const navigate = useNavigate()
 
 
@@ -110,12 +102,27 @@ const OrderArticle = () => {
 
     const orderArticleServices = async () => {
         setOrderLoading(true);
+        if (provideSubject && !formValues.writeSubject) {
+            toast(translate(languageData, "SubjectFieldNotEmpty"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+    
+            setOrderLoading(false);
+            return;
+        }
         const res = await orderArticles(formValues, orderPrice, articleType);
 
         if (res.success === true) {
             toast(translate(languageData, "OrderAddedSuccessfully"), {
                 position: "top-center",
-                autoClose: 5000,
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -133,7 +140,7 @@ const OrderArticle = () => {
                     const errorMessage = errorMessages.join('. ');
                     toast(errorMessage, {
                         position: "top-center",
-                        autoClose: 5000,
+                        autoClose: 2000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -146,7 +153,7 @@ const OrderArticle = () => {
         } else {
             toast("Something went wrong", {
                 position: "top-center",
-                autoClose: 5000,
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -165,32 +172,32 @@ const OrderArticle = () => {
         let isValid = true;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
-    
+
         if (!values.project) {
             error.project = translate(languageData, "PleaseSelectYourProject");
             isValid = false;
         }
-    
+
         if (!values.country) {
             error.country = translate(languageData, "PleaseSelectYourCountry");
             isValid = false;
         }
-    
+
         if (!values.quantity) {
             error.quantity = translate(languageData, "PleaseEnterArticleQuantity");
             isValid = false;
         }
-    
+
         if (!values.title) {
             error.title = translate(languageData, "PleaseEnterArticleTitle");
             isValid = false;
         }
-    
+
         if (!values.imageAction) {
             error.imageAction = translate(languageData, "PleaseSelectYourImage");
             isValid = false;
         }
-    
+
         if (!values.placingLink) {
             error.placingLink = translate(languageData, "PleaseEnterPlacingLink");
             isValid = false;
@@ -198,22 +205,22 @@ const OrderArticle = () => {
             error.placingLink = translate(languageData, "InvalidURLFormat");
             isValid = false;
         }
-    
+
         if (!values.phone) {
             error.phone = translate(languageData, "PleaseEnterPhoneNumber");
             isValid = false;
         }
-    
+
         if (!values.attachment) {
             error.attachment = translate(languageData, "PleaseAttachmentRequired");
             isValid = false;
         }
-    
+
         if (!values.comment) {
             error.comment = translate(languageData, "PleaseAddYourComment");
             isValid = false;
         }
-    
+
         if (!values.email) {
             error.email = translate(languageData, "PleaseEnterEmail");
             isValid = false;
@@ -221,11 +228,11 @@ const OrderArticle = () => {
             error.email = translate(languageData, "InvalidEmailFormat");
             isValid = false;
         }
-    
+
         setFormErrors(error);
         return isValid;
     }
-    
+
 
     const TooltipLink = ({ id, children, title }) => (
         <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
@@ -281,9 +288,7 @@ const OrderArticle = () => {
                                     <span>{translate(languageData, "ArticleType")} </span>
                                 </Col>
                                 <Col xs={12} md={8} className="mt-3 mt-md-0 d-flex justify-content-center">
-                                    <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData, "artilistPaidArticle")}</Button>
-                                    {/* <Button className={`btn ${articleType === 'guest' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("guest")}>{translate(languageData, "artilistGuestArticle")}</Button>
-                                    <Button className={`btn ${articleType === 'personal' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("personal")}>{translate(languageData, "artilistArticlePersonalUse")}</Button> */}
+                                    <Button className={`btn ${articleType === 'paid' ? 'btn-primary' : 'btn-outline-primary'}  rounded-0 `} onClick={() => articleOrderType("paid")}>{translate(languageData, "RequestArticleWriting")}</Button>
                                 </Col>
                             </Row>
                         </Col>
@@ -307,28 +312,6 @@ const OrderArticle = () => {
                                         </select>
                                     </div>
                                     <div className='text-danger text-center mt-1'>{formErrors.project}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col lg={10} className='mt-1 pb-6 ' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "CountryOfPublication")}</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="form-group">
-                                        <select name="country" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                            <option label="Country"></option>
-                                            {countries.map((item, index) => {
-                                                return (
-                                                    <option value={item.name} key={index}>{item.name}</option>
-                                                )
-                                            })}
-
-
-                                        </select>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.country}</div>
                                 </Col>
                             </Row>
                         </Col>
@@ -363,144 +346,78 @@ const OrderArticle = () => {
                     </div>
                     <div className='mt-6 border-bottom pb-7'>
                         <div className='fw-semibold'><h4>{translate(languageData, "OrderDetails")}</h4></div>
-                        <Col lg={7} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "NumberOfArticle")} *</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="number" name="quantity" placeholder={translate(languageData, "NumberOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.quantity}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col lg={7} className='mt-6 ' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "TitleOfArticle")} *</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <input className="input100" type="text" name="title" placeholder={translate(languageData, "TitleOfArticle")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-
-                        <Col lg={7} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "ActionMainImage")} *</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="form-group">
-                                        <select name="imageAction" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                            <option label={translate(languageData, "Action")}></option>
-                                            {imageActions.map((item, index) => {
-                                                return (
-                                                    <option key={index}>{item}</option>
-                                                )
-                                            })}
-                                        </select>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.imageAction}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col lg={7} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "CommentsAndRecommendations")} *</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <textarea className="input100" type="text" name="comment" cols={8} rows={10} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.comment}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col lg={7} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "PlacingLink")}*</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                        <textarea className="input100" type="url" name="placingLink" cols={8} rows={10} onChange={(e) => handleChange(e)} style={{ paddingLeft: "15px" }} onBlur={() => validate(formValues)} onKeyDown={() => validate(formValues)}/>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.placingLink}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col lg={7} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "AttachmentsNeededForWork")}</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className='w-100'><FileUpload allowedFileExtensions={allowedAttachmentExtension} getData={handleFiles} name="attachment" /></div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.orderImage}</div>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </div>
-                    <div>
-                        <h5 className='fw-semibold mt-6'>{translate(languageData, "PreferredFormContactWith")}</h5>
-                        <div>
-                            {/* <Col lg={7} className='mt-6' >
-                                <Row className='align-items-center '>
-                                    <Col xs={12} md={4}>
-                                        <span>Form of contact *</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                        <div className="form-group">
-                                            <select name="contactForm" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                                <option label={translate(languageData, "LinksellingChatAnytime")}></option>
-                                                {formOfContactOpts.map((item, index) => {
-                                                    return (
-                                                        <option value={item.value}>{item.value}</option>
-                                                    )
-                                                })}
-                                                <option></option>
-                                            </select>
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors.contactForm}</div>
-                                    </Col>
-                                </Row>
-                            </Col> */}
-                            <Col lg={7} className='mt-6' >
-                                <Row className='align-items-center '>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "BuyArticlePhone")} *</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <input className="input100" type="number" name="phone" placeholder={translate(languageData, "BuyArticlePhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors.phone}</div>
-                                    </Col>
-                                </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "articleSubject")} </span>
                             </Col>
-                            <Col lg={7} className='mt-5' >
-                                <Row className='align-items-center '>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "BuyArticleEmail")} *</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                            <input className="input100" type="email" name="email" placeholder={translate(languageData, "BuyArticleEmail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={() => validate(formValues)}/>
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors.email}</div>
-                                    </Col>
-                                </Row>
+                            <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        id="weProvideSubjectCheckbox"
+                                        checked={weProvideSubject}
+                                        onChange={() => {
+                                            setWeProvideSubject(!weProvideSubject);
+                                            setProvideSubject(false);
+                                        }}
+                                    />
+                                    <label className="form-check-label" htmlFor="weProvideSubjectCheckbox">
+                                        {translate(languageData, "weProvideArticleSubject")}
+                                    </label>
+                                </div>
                             </Col>
+                            <Col xs={12} md={4} className="mt-3 mt-md-0">
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        id="provideSubjectCheckbox"
+                                        checked={provideSubject}
+                                        onChange={() => {
+                                            setProvideSubject(!provideSubject);
+                                            setWeProvideSubject(false);
+                                        }}
+                                    />
+                                    <label className="form-check-label" htmlFor="provideSubjectCheckbox">
+                                        {translate(languageData, "provideArticleSubject")}
+                                    </label>
+                                </div>
+                            </Col>
+                        </Row>
+                        {provideSubject && (
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "writeSubject")} *</span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        <input className="input100" type="text" name="writeSubject" placeholder={translate(languageData, "writeSubject")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                    </div>
+                                </Col>
+                            </Row>
+                        )}
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "writeSuggestion")} </span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Suggestion is required">
+                                    <textarea
+                                        className="input100 px-4"
+                                        name="suggestion"
+                                        placeholder={translate(languageData, "writeSuggestion")}
+                                        onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)}
+                                        maxLength={300}
+                                        rows={8}
+                                        cols={6}
+                                    />
+                                </div>
 
-                        </div>
+                            </Col>
+                        </Row>
                     </div>
+
 
                 </Card.Body>
             </Card>

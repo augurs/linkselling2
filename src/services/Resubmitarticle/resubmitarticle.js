@@ -44,6 +44,8 @@ export const updaterResubmitarticle = (data, id) => {
 }
   formData.append("comment", data.comment);
   formData.append("publisher_msg", data.publisherMsgText);
+  formData.append("lead", data.lead);
+
 
 
 

@@ -82,7 +82,8 @@ const AddArticle = () => {
                 image: dynamicImageUrl,
                 comment: res.data[0].comments,
                 content: res.data[0].content,
-                date: formatDate(res.data[0].created_at)
+                date: formatDate(res.data[0].created_at),
+                lead: res.data[0].short_description,
 
             });
             setShowDropdown(res.data[0].status === 'Published');
@@ -158,11 +159,29 @@ const AddArticle = () => {
                         </Row>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
+                                <span>{translate(languageData, "AddArtiLead")}</span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <div className="wrap-input100 validate-input mb-0">
+                                    {formValues?.lead}
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4} className='mt-2'>
+                                <span>{translate(languageData, "sidebarContent")}</span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3">
+                                <div dangerouslySetInnerHTML={{ __html: formValues?.content }} />
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
                                 <span>{translate(languageData, "CommentsAndRecommendations")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.comment}
+                                    {formValues?.comment || "--"}
                                 </div>
 
                             </Col>
@@ -176,14 +195,6 @@ const AddArticle = () => {
                                     {formValues?.date}
                                 </div>
 
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4} className='mt-2'>
-                                <span>{translate(languageData, "sidebarContent")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3">
-                                <div dangerouslySetInnerHTML={{ __html: formValues?.content }} />
                             </Col>
                         </Row>
                         <Row className='align-items-center mt-5'>
