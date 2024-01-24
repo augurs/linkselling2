@@ -1981,12 +1981,12 @@ const BuyArticles = () => {
                                                 <div>
                                                     <Row className='align-items-center '>
                                                         <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "artilstProject")} *</span>
+                                                            <span>{translate(languageData, "choosearticle")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="form-group">
                                                                 <select name="project" class=" form-select" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
-                                                                    <option label={translate(languageData, "artilstProject")}></option>
+                                                                    <option label={translate(languageData, "ArticleList")}></option>
                                                                     {useArticleList?.map((item, index) => {
                                                                         return (
                                                                             <option value={item.id} key={index}>{item.title}</option>

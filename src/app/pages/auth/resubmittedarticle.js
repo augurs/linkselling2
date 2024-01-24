@@ -19,7 +19,8 @@ const AddArticle = () => {
         comment: "",
         content: "",
         userStatus: "",
-        publisherMsgText: ""
+        publisherMsgText: "",
+        lead: "",
     });
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -87,17 +88,19 @@ const AddArticle = () => {
             const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
                 ...formValues,
-                id: res.data[0].id,
-                title: res.data[0].title,
-                link: res.data[0].max_links,
-                url: res.data[0].link,
+                id: res?.data[0]?.id,
+                title: res?.data[0]?.title,
+                link: res?.data[0]?.max_links,
+                url: res?.data[0]?.link,
                 image: dynamicImageUrl,
-                comment: res.data[0].comment,
-                content: res.data[0].content,
-                status: res.data[0].status,
-                date: formatDate(res.data[0].created_at),
-                minArticleLength: res.data[0].min_article_length,
-                maxArticleLength: res.data[0].max_article_length
+                comment: res?.data[0]?.comment,
+                lead: res?.data[0]?.lead,
+                content: res?.data[0]?.content,
+                status: res?.data[0]?.status,
+                date: formatDate(res?.data[0]?.created_at),
+                minArticleLength: res?.data[0]?.min_article_length,
+                maxArticleLength: res?.data[0]?.max_article_length,
+                maxLeadLength: res?.data[0]?.lead_length
             });
             setDisplayedImage(dynamicImageUrl);
             setShowDropdown(res.data[0].status === 'Published');
@@ -222,6 +225,24 @@ const AddArticle = () => {
 
                 return;
             }
+
+            if (formValues?.lead?.length > formValues?.maxLeadLength) {
+                const maxLeadLength = formValues?.maxLeadLength;
+                const errorMessage = `${translate(languageData, "maxLeadLength")}: ${maxLeadLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
+                return;
+            }
+
 
             const res = await updaterResubmitarticle(formValues, formValues?.id);
             if (res.success === true) {
@@ -365,6 +386,28 @@ const AddArticle = () => {
                                         </div>
                                     </Col>
                                 </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "AddArtiLead")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <div className='wrap-input100 validate-input mb-0'>
+                                            <textarea
+                                                className='input100'
+                                                type='text'
+                                                name='lead'
+                                                style={{ paddingLeft: "15px" }}
+                                                onChange={(e) => handleChange(e)}
+                                                onKeyDown={() => validate(formValues)}
+                                                value={formValues?.lead}
+                                                rows={8}
+                                                cols={6}
+                                            />
+                                        </div>
+                                        <p className="text-end">{formValues?.lead?.length || 0}/{formValues?.maxLeadLength} Character</p>
+                                        <div className='text-danger text-center mt-1'>{formErrors?.lead}</div>
+                                    </Col>
+                                </Row>
                                 <Row className='mt-4 pb-8'>
                                     <Col xs={12} md={4} className='mt-2'>
                                         <span>{translate(languageData, "sidebarContent")} *</span>
@@ -384,7 +427,7 @@ const AddArticle = () => {
                                                 {translate(languageData, "Toomanylinks")} : {formValues?.link}
                                             </Alert>
                                         )}
-                                        <p className="text-end">{editor?.length || 0} Character</p>
+                                        <p className="text-end">{editor?.length || 0}/{formValues?.maxArticleLength} Character</p>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>

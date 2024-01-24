@@ -17,6 +17,7 @@ import Nip from "./app/pages/auth/Nip.js";
 import Header from "./app/Components/Header/header.js";
 import Layout from "./app/Components/Layout/layout.js";
 import ArticleList from "./app/pages/Content/ArticleList.js";
+import ViewAddArticle from "./app/pages/Content/ViewAddArticle.js";
 import AddArticle from "./app/pages/Content/AddArticle.js";
 import OrderArticle from "./app/pages/Content/OrderArticle.js";
 import ProjectList from "./app/pages/MyProjects/ProjectList.js";
@@ -147,6 +148,7 @@ function App() {
         { path: 'orders', element: <Orders /> },
         // { path: 'DomainDetails', element: <Domaindetails /> },
         { path: 'viewArticle/:articleid/:id', element: <VieworderArticle /> },
+        { path: 'viewAddArticle/:id', element: <ViewAddArticle /> },
         { path: 'uploadimagerequestarticle/:id', element: <Uploadimagerequestarticle /> },
         {
           path: '/resubmitarticle/:id',

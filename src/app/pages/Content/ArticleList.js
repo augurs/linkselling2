@@ -3,12 +3,13 @@ import { Button, Col, Dropdown, Row } from 'react-bootstrap'
 import DataTable from 'react-data-table-component';
 import Checkbox from '../../Components/checkbox';
 import { useState } from 'react';
-import { json, useNavigate } from 'react-router-dom';
+import { Link, json, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { getArticles, searchArticles } from '../../../services/articleServices/articleServices';
 import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
+import { FaEye } from 'react-icons/fa';
 
 const ArticleList = () => {
 
@@ -56,53 +57,49 @@ const ArticleList = () => {
 
 
     const columns = [
-        // {
-        //     cell: row => (
-        //         <input
-        //             type="checkbox"
-        //             onChange={() => console.log(row)}
-        //         />
-        //     ),
-        //     sortable: false,
-        //     width: '50px',
-        //     center: true,
-        // },
         {
-            name: translate(languageData,"artilstTitle"),
+            name: translate(languageData, "artilstTitle"),
             selector: row => row.title,
             sortable: true,
             center: true,
         },
         {
-            name:  translate(languageData,"artilisAddingDate"),
+            name: translate(languageData, "artilisAddingDate"),
             selector: row => row.date,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"artilstType")+" "+ translate(languageData,"ArticleListSource"),
+            name: translate(languageData, "artilstType") + " " + translate(languageData, "ArticleListSource"),
             selector: row => row.type,
             sortable: true,
-            cell: row => <button className='btn btn-pill btn-outline-primary'>{translate(languageData,"own")}</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary'>{translate(languageData, "own")}</button>,
             center: true,
         },
         {
-            name: translate(languageData,"ArtilistPublicationCost"),
+            name: translate(languageData, "ArtilistPublicationCost"),
             selector: row => row.cost,
             sortable: true,
             center: true,
         },
         {
-            name: translate(languageData,"artilstStatus"),
-            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>{translate(languageData,"readyForPublication")}</button>,
+            name: translate(languageData, "artilstStatus"),
+            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>{translate(languageData, "readyForPublication")}</button>,
             center: true,
         },
 
-        // {
-        //     name: 'Action',
-        //     cell: row => <button className='btn btn-primary'>Edit</button>,
-        //     center: true,
-        // },
+        {
+            name: translate(languageData, "writingAction"),
+            sortable: true,
+            center: true,
+            cell: (row) => (
+                <div className='d-flex gap-2'>
+                    <Link to={`/viewAddArticle/${row.id}`}>
+                        <FaEye className="icon-view" />
+                    </Link>
+                </div>
+            ),
+        }
     ];
 
 
@@ -213,10 +210,10 @@ const ArticleList = () => {
         <div className='p-4'>
 
             <div className='d-flex flex-wrap '>
-                <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addArticle')}>{translate(languageData,"SidebarAddArticle")}</Button>
+                <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addArticle')}>{translate(languageData, "SidebarAddArticle")}</Button>
                 <Dropdown className='mt-2'>
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                    {translate(languageData,"artilistOrders")}
+                        {translate(languageData, "artilistOrders")}
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
@@ -232,7 +229,7 @@ const ArticleList = () => {
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setSearchTerms({ ...searchTerms, project: e.target.value })}>
-                                <option label={translate(languageData,"artilstProject")}></option>
+                                <option label={translate(languageData, "artilstProject")}></option>
                                 {articleList.map((item, index) => {
                                     return (
                                         <option value={item.project} key={index}>{item.project}</option>
@@ -245,7 +242,7 @@ const ArticleList = () => {
                     </Col>
                     <Col xs={12} sm={6} md={4} className='mb-3'>
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                            <input className="input100" type="text" name="search" placeholder={translate(languageData,"artilstSearch")} onChange={(e) => setSearchTerms({ ...searchTerms, title: e.target.value })} />
+                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} onChange={(e) => setSearchTerms({ ...searchTerms, title: e.target.value })} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
                                 <i className="zmdi zmdi-search" aria-hidden="true"></i>
@@ -255,7 +252,7 @@ const ArticleList = () => {
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setSearchTerms({ ...searchTerms, status: e.target.value })}>
-                                <option label={translate(languageData,"artilstStatus")}></option>
+                                <option label={translate(languageData, "artilstStatus")}></option>
                                 {articleList.map((item, index) => {
                                     return (
                                         <option value={item.status} key={index}>{item.status}</option>
@@ -269,7 +266,7 @@ const ArticleList = () => {
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="type" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Type" >
-                                <option label={translate(languageData,"artilstType")}></option>
+                                <option label={translate(languageData, "artilstType")}></option>
                                 {articleTypeDropOption.map((item, index) => {
                                     return (
                                         <option value={item.value} key={index}>{item.label}</option>
@@ -282,7 +279,7 @@ const ArticleList = () => {
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
                             <select name="source" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Source" >
-                                <option label={translate(languageData,"ArticleListSource")}></option>
+                                <option label={translate(languageData, "ArticleListSource")}></option>
                                 {sourecDropOptions.map((item, index) => {
                                     return (
                                         <option value={item.value} key={index}>{item.label}</option>

@@ -219,6 +219,16 @@ function Portalarticledetails() {
                                     </Row>
                                     <Row className='mt-5'>
                                         <Col xs={12} md={4}>
+                                            <span>{translate(languageData, "AddArtiLead")}</span>
+                                        </Col>
+                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                            <div className="wrap-input100 validate-input mb-0 " data-bs-validate="Password is required">
+                                                {portalArticleDetail[0]?.lead || "--"}
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row className='mt-5'>
+                                        <Col xs={12} md={4}>
                                             <span>{translate(languageData, "sidebarContent")}</span>
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
@@ -284,7 +294,7 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0 " data-bs-validate="Password is required">
-                                                {portalArticleDetail[0]?.comment}
+                                                {portalArticleDetail[0]?.comment || "--"}
                                             </div>
                                         </Col>
                                     </Row>

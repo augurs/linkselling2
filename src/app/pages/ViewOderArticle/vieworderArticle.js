@@ -235,7 +235,7 @@ function VieworderArticle() {
                 <h3 className="fw-semibold">{translate(languageData, 'ArticleDetails')}</h3>
               </Card.Header>
               <Card.Body>
-                <div className="">
+                <div>
                   <Row className="mt-5">
                     <Col xs={12} md={4}>
                       <span>{translate(languageData, 'TitleOfArticle')}</span>
@@ -243,6 +243,16 @@ function VieworderArticle() {
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input mb-0">
                         {portalArticleDetail[0]?.title ?? ''}
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row className="mt-5">
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, 'AddArtiLead')}</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                      <div className="wrap-input100 validate-input mb-0">
+                        {portalArticleDetail[0]?.lead ?? ''}
                       </div>
                     </Col>
                   </Row>
