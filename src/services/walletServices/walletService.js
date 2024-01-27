@@ -15,6 +15,19 @@ export const walletBalance = (id) => {
 };
 
 
+export const showReferralLink = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-refer-code/${id}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
 
 export const updateWallet = (data) => {
   const { id, amount } = data;

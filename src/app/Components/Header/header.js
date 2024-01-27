@@ -3,6 +3,8 @@ import { Button, Container, Dropdown, FormControl, InputGroup, Nav, Navbar } fro
 import { useNavigate, Link } from 'react-router-dom'
 import LanguageSelect from '../Language/languageSelect';
 import WalletBalance from '../Wallet/Wallet';
+import Referral from '../Referral/Referral'
+
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { useCart } from '../../Context/cartListContext';
 import { FaHome } from 'react-icons/fa';
@@ -74,12 +76,14 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                             </div>
                         </div> */}
                     </div>
-
+                    <div className='btn btn-outline-primary me-2'>
+                        < Referral />
+                    </div>
                     <div className='me-4'>
                         <LanguageSelect />
                     </div>
                     <div className='btn btn-outline-primary me-2'>
-                    <WalletBalance />
+                        <WalletBalance />
                     </div>
                     <div className="position-relative">
                         <AiOutlineShoppingCart size={25} className='me-4' onClick={() => navigate('/cart')} />
