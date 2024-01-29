@@ -3,7 +3,6 @@ import { Button, Container, Dropdown, FormControl, InputGroup, Nav, Navbar } fro
 import { useNavigate, Link } from 'react-router-dom'
 import LanguageSelect from '../Language/languageSelect';
 import WalletBalance from '../Wallet/Wallet';
-import Referral from '../Referral/Referral'
 
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { useCart } from '../../Context/cartListContext';
@@ -75,9 +74,6 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                                 </Dropdown>
                             </div>
                         </div> */}
-                    </div>
-                    <div className='btn btn-outline-primary me-2'>
-                        < Referral />
                     </div>
                     <div className='me-4'>
                         <LanguageSelect />

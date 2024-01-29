@@ -40,6 +40,7 @@ import '../src/assets/css/custom.css'
 import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 import VieworderArticle from "./app/pages/ViewOderArticle/vieworderArticle.js";
 import NipDetails from "./app/pages/auth/nipDetails.js";
+import { WalletProvider } from "./app/Context/walletContext.js";
 
 function App() {
 
@@ -170,7 +171,9 @@ function App() {
       <SidebarProvider>
         <CustomCartContext>
           <CustomLanguageContext>
+            <WalletProvider >
             <RouterProvider router={browserRouter} />
+            </WalletProvider>
           </CustomLanguageContext>
         </CustomCartContext>
       </SidebarProvider>

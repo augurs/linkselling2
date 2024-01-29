@@ -20,13 +20,14 @@ export const login = (formValues , currLang) => {
     });
 };
 
-export const signup = (formValues) => {
+export const signup = (formValues, language, refId) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/register-user`, {
       name: formValues.username,
       email: formValues.email,
       password: formValues.password,
-      language: formValues.language
+      language: language,
+      referralCode: refId
     })
     .then((res) => {
       return res.data;

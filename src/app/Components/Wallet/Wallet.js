@@ -4,40 +4,21 @@ import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { updateWallet, walletBalance } from "../../../services/walletServices/walletService"
 import { translate } from '../../../utility/helper';
 import { useLanguage } from "../../Context/languageContext";
+import { useWallet } from "../../Context/walletContext";
 
 const WalletBalance = () => {
     const userData = JSON.parse(localStorage.getItem('userData'));
-    const [balance, setBalance] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [newBalance, setNewBalance] = useState('');
-    const [taxPercentage, setTaxPercentage] = useState(23); // Change this to your tax percentage
+    const [taxPercentage, setTaxPercentage] = useState(23);
     const [taxAmount, setTaxAmount] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const { languageData } = useLanguage();
+    const { showWalletBalance, balance } = useWallet();
 
     useEffect(() => {
-        showWalletServices();
+        showWalletBalance();
     }, []);
-    
-
-    const { languageData } = useLanguage();
-
-    const showWalletServices = async () => {
-        setLoading(true);
-        try {
-            const res = await walletBalance(userData?.id);
-            if (res.success === true) {
-                setBalance(res.data.wallet_amount);
-                setLoading(false);
-            } else {
-                console.error('API call failed:', res);
-                setLoading(false);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setLoading(false);
-        }
-    };
 
     const calculateTaxAndTotalAmount = (amount) => {
         const tax = (amount * taxPercentage) / 100;

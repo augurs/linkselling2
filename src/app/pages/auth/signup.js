@@ -7,7 +7,7 @@ import globalLoader from '../../../assets/images/loader.svg'
 import LanguageSelect from '../../Components/Language/languageSelect';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../Context/languageContext';
-
+import { useLocation } from 'react-router-dom';
 const SignUp = () => {
 
   const initialValues = {
@@ -19,6 +19,10 @@ const SignUp = () => {
     marketing: false,
     privacy: false,
   };
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const refId = queryParams.get('ref');
 
   const { t, i18n } = useTranslation()
 
@@ -112,7 +116,7 @@ const SignUp = () => {
   const userNameAlredyTaken = languageData && languageData?.filter((item) => item.title === 'userNameAlredyTaken')[0]?.value || 'userNameAlredyTaken';
 
 
-
+console.log(refId, "119");
 
   const signUpServices = async () => {
     setSignUpLoading(true);
@@ -180,7 +184,7 @@ const SignUp = () => {
       ...formValues,
       language: currLang
     }
-    const res = await signup(values, currLang);
+    const res = await signup(values, currLang, refId ? refId: '');
     if (res.success === true) {
       toast(signUpSuccessMessage, {
         position: "top-center",
