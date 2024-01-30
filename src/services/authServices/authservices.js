@@ -3,13 +3,13 @@ import { baseURL2 } from "../../utility/data";
 
 
 
-export const login = (formValues , currLang) => {
+export const login = (formValues, currLang) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/login`, {
       email: formValues.email,
       first_name: formValues.username,
       password: formValues.password,
-      language : currLang
+      language: currLang
     })
     .then((res) => {
       return res.data;
@@ -20,13 +20,14 @@ export const login = (formValues , currLang) => {
     });
 };
 
-export const signup = (formValues) => {
+export const signup = (formValues, language, refId) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/register-user`, {
       name: formValues.username,
       email: formValues.email,
       password: formValues.password,
-      language: formValues.language
+      language: language,
+      referralCode: refId
     })
     .then((res) => {
       return res.data;
@@ -54,7 +55,7 @@ export const forgotPassword = (email) => {
 };
 
 
-export const registerNip = (values , id) => {
+export const registerNip = (values, id) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/get-gus-response`, {
       nip_number: values.nipNumber,
@@ -84,7 +85,7 @@ export const thankupage = () => {
 
 
 
-export const userprofileModal = (id, Email, Phone ) => {
+export const userprofileModal = (id, Email, Phone) => {
 
   const formData = new FormData();
   formData.append("id", id);
@@ -105,7 +106,7 @@ export const userprofileModal = (id, Email, Phone ) => {
 
 
 
-export const updateNip = (values , id) => {
+export const updateNip = (values, id) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/update-nip-details`, {
       apartment_number: values.apartment_number ? values.apartment_number : 0,
@@ -121,6 +122,70 @@ export const updateNip = (values , id) => {
     })
     .then((res) => {
       return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+
+export const signUpPublisher = (formValues, language) => {
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-register`, {
+      username: formValues.username,
+      email: formValues.email,
+      password: formValues.password,
+      language: language,
+    })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const loginPublisher = (formValues, currLang) => {
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-login`, {
+      email: formValues.email,
+      first_name: formValues.username,
+      password: formValues.password,
+      language: currLang
+    })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+export const autoLoginPublisher = (id) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-detail/${id}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const sendingUserLoggedin = (logged_in, id) => {
+  const formData = new FormData();
+  formData.append("logged_in", logged_in);
+  formData.append("id", id);
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-logged_in`, formData)
+    .then((res) => {
+      return res.data;
     })
     .catch((error) => {
       console.log(error);

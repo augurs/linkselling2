@@ -201,6 +201,13 @@ function Login() {
                         {languageData && languageData?.filter((item) => item.title === 'haveAnAccount')[0]?.value || 'haveAnAccount'}
                         <a className="text-primary ms-1" onClick={() => navigate('/signUp')} style={{ cursor: "pointer" }}>{languageData && languageData?.filter((item) => item.title === 'haveAnAccount2')[0]?.value || 'haveAnAccount2'}</a>
                       </p>
+                      <p className="text-dark mb-0">
+                        OR
+                      </p>
+                      <p className="text-dark mb-0">
+                        {languageData && languageData?.filter((item) => item.title === 'loginWithPublisher')[0]?.value || 'loginWithPublisher'}
+                        <a className="text-primary ms-1" onClick={() => navigate('/login/publisher')} style={{ cursor: "pointer" }}>{languageData && languageData?.filter((item) => item.title === 'clickHere')[0]?.value || 'clickHere'}</a>
+                      </p>
                     </div>
                   </Form>
                 </Card.Body>

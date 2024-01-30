@@ -13,6 +13,8 @@ import { Button, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 import UserProfileModal from './userProfileModal';
 import { ToastContainer } from 'react-toastify';
 import { walletBalance } from "../../../services/walletServices/walletService"
+import Referral from '../Referral/Referral'
+import { FaUserFriends } from 'react-icons/fa';
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -193,13 +195,10 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
                             </Link>
                         </li>
-                        {/* {translate(languageData,"sidebarInvoices")}
-                        <li className="slide" style={{ cursor: "pointer" }}>
-                            <a className="side-menu__item has-link" data-bs-toggle="slide">
-                                <span className="side-menu__icon"><BsPencil size={20} style={{ color: "gray!important" }} /></span>
-                                <span className="side-menu__label">{translate(languageData, "sidebarAddYourOwnText")}</span>
-                            </a>
-                        </li> */}
+                        <li className="slide" style={{ cursor: "pointer" }} >
+                            < Referral />
+                        </li>
+                        
 
 
                         {/* Other menu items */}
@@ -211,6 +210,9 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                 </div>
+                {/* <div className='btn btn-outline-primary me-2'>
+                        < Referral />
+                    </div> */}
                 <div>
                     <ul className="side-menu mt-3 border-top border-3">
                         <OverlayTrigger trigger="hover" delay={{ show: 800, hide: 810 }} placement="top" overlay={popoverUserProfile} rootClose>
