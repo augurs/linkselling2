@@ -30,9 +30,7 @@ const SignUp = () => {
 
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
-  const [signUpLoading, setSignUpLoading] = useState(false)
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState();
-  const [showModal, setShowModal] = useState(false)
+  const [signUpLoading, setSignUpLoading] = useState(false);
 
   const currLang = localStorage.getItem('lang');
 
@@ -57,7 +55,7 @@ const SignUp = () => {
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
     setFormValues({ ...formValues, [name]: checked });
-    validate({ ...formValues, [name]: checked }); // Call validate with the updated checkbox status
+    validate({ ...formValues, [name]: checked });
   }
   
 
@@ -336,6 +334,8 @@ console.log(refId, "119");
                     </div>
                     <div className="text-center pt-3">
                       <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount')[0]?.value || 'alreadyHaveAnAccount'}<a onClick={() => navigate('/Login')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount2')[0]?.value || 'alreadyHaveAnAccount2'}</a></p>
+                      <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'OR')[0]?.value || 'OR'}</p>
+                      <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'registeredwithpublisher')[0]?.value || 'registeredwithpublisher'}<a onClick={() => navigate('/signUp/publisher')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'clickHere')[0]?.value || 'clickHere'}</a></p>
                     </div>
                   </Form>
                 </Card.Body>

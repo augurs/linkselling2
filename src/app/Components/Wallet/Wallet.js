@@ -53,7 +53,7 @@ const WalletBalance = () => {
         <div>
             <div onClick={() => setShowModal(true)}>
                 <FaWallet style={{ fontSize: "20px", marginRight: "6px" }} />
-                {balance} PLN{' '}
+                {balance? balance: 0} PLN{' '}
                 <FaPlus
                     style={{ cursor: "pointer" }}
                 />

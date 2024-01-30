@@ -27,7 +27,7 @@ const Referral = () => {
     const [isDataPresent, setIsDataPresent] = useState(true);
     const [referralListData, setReferralListData] = useState([])
     const [showWithdrawalFields, setShowWithdrawalFields] = useState(false);
-    const { showWalletBalance } = useWallet();
+    const { showWalletBalance, balance } = useWallet();
     useEffect(() => {
         if (showReferralModal) {
             showReferralLinkServices();
@@ -118,6 +118,34 @@ const Referral = () => {
 
     const withdrawalReferralAmountServices = async () => {
         setLoading(true)
+        if (!formValues.amount) {
+            toast(translate(languageData, "PleaseEnterAmount"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setLoading(false)
+            return;
+        }
+        if (!formValues.ReferralPdf) {
+            toast(translate(languageData, "PleaseEnterPdf"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setLoading(false)
+            return;
+        }
         const res = await withdrawalReferral(formValues, userData?.id)
         if (res.success === true) {
             toast(translate(languageData, "withdrawalSuccessfully"), {
@@ -134,6 +162,19 @@ const Referral = () => {
             setFormValues(initialValues);
             showWalletBalance()
             setLoading(false)
+        } else if (res.success === false && res.message == "Please enter less than amount of your Balance") {
+            toast(translate(languageData, "PleaseenterlessthanamountofyourBalance"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setFormValues(initialValues);
+            setLoading(false)
         } else {
             toast(translate(languageData, "loginFailureMessage2"), {
                 position: "top-center",
@@ -148,6 +189,9 @@ const Referral = () => {
             setLoading(false)
         }
     }
+
+    console.log(balance, "193");
+    console.log(formValues.amount, "194");
 
     return (
         <div>
@@ -171,28 +215,35 @@ const Referral = () => {
                     <Form.Group as={Row} controlId="balanceAmount">
                         <Col><Form.Label>{translate(languageData, "referalLink")} : </Form.Label></Col>
                         <Col sm="8">
-                            <span style={{ cursor: 'pointer' }} onClick={copyReferralLink}>{`${baseURL2}/signUp?ref=${referralLink.code}`} <FaCopy /></span>
+                            <span className="text-break" style={{ cursor: 'pointer' }} onClick={copyReferralLink}>{`${baseURL2}/signUp?ref=${referralLink.code}`} <FaCopy /></span>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="balanceAmount" className='d-flex align-items-center'>
                         <Col>{translate(languageData, "referralAmount")} : </Col>
                         <Col sm="8" className='d-flex align-items-center gap-2'>
-                            <span>{referralLink?.referralBalance} zł</span>
+                            <span>{referralLink?.referralBalance != null ? referralLink?.referralBalance : 0} zł</span>
                             <span className='btn btn-outline-info' onClick={handleMakeWithdrawal}>
                                 {translate(languageData, "makeWithdrawal")}
                             </span>
                         </Col>
                     </Form.Group>
+                    <Form.Group as={Row} controlId="balanceAmount">
+                        <Col>{translate(languageData, "accountBalance")} : </Col>
+                        <Col sm="8">
+                            <span style={{ cursor: 'pointer' }} >{balance ? balance : 0} zł</span>
+                        </Col>
+                    </Form.Group>
                     {showWithdrawalFields && (
                         <>
                             <Form.Group as={Row} controlId="withdrawalAmount">
-                                <Col><Form.Label>{translate(languageData, "enterAmount")} : </Form.Label></Col>
+                                <Col><Form.Label>{translate(languageData, "enterAmount")} * : </Form.Label></Col>
                                 <Col sm="8">
                                     <Form.Control type="number" name="amount" onChange={(e) => setFormValues({ ...formValues, amount: e.target.value })} />
+                                    {parseFloat(formValues?.amount) > balance ? <span className='text-danger'>{translate(languageData, "PleaseenterlessthanamountofyourBalance")}</span> : ""}
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row} controlId="uploadPdf">
-                                <Col><Form.Label>{translate(languageData, "uploadPDF")} : </Form.Label></Col>
+                                <Col><Form.Label>{translate(languageData, "uploadPDF")} * : </Form.Label></Col>
                                 <Col sm="8">
                                     <FileUpload allowedFileExtensions={['.pdf']} getData={(selectedFile) => setFormValues({ ...formValues, ReferralPdf: selectedFile })} name="ReferralPdf" />
                                 </Col>

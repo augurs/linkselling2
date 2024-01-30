@@ -3,6 +3,8 @@ import Login from './app/pages/auth/login.js'
 import Thanks from './app/pages/auth/thankyou.js'
 import Thanksarticle from './app/pages/auth/thankforarticle.js'
 import SignUp from './app/pages/auth/signup.js'
+import PublisherSignUp from './app/pages/auth/publisherSignUp.js'
+import PublisherLogin from './app/pages/auth/publisherLogin.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
 import Portalarticledetails from './app/pages/auth/portalarticledetails.js'
@@ -16,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import Nip from "./app/pages/auth/Nip.js";
 import Header from "./app/Components/Header/header.js";
 import Layout from "./app/Components/Layout/layout.js";
+import PublisherLayout from "./app/Components/Layout/publisherLayout.js";
 import ArticleList from "./app/pages/Content/ArticleList.js";
 import ViewAddArticle from "./app/pages/Content/ViewAddArticle.js";
 import AddArticle from "./app/pages/Content/AddArticle.js";
@@ -41,6 +44,11 @@ import { SidebarProvider } from "./app/Context/togglerBarContext.js";
 import VieworderArticle from "./app/pages/ViewOderArticle/vieworderArticle.js";
 import NipDetails from "./app/pages/auth/nipDetails.js";
 import { WalletProvider } from "./app/Context/walletContext.js";
+
+//publisher pages 
+import PublisherDashboard from "./app/pages/publisherPages/Dashboard/dashboard.js";
+
+
 
 function App() {
 
@@ -110,6 +118,14 @@ function App() {
       element: <SignUp />
     },
     {
+      path: '/signUp/publisher',
+      element: <PublisherSignUp />
+    },
+    {
+      path: '/login/publisher',
+      element: <PublisherLogin />
+    },
+    {
       path: '/forgotpassword',
       element: <ForgotPassword />
     },{
@@ -163,7 +179,17 @@ function App() {
       path: '/nip/:id',
       element: <Nip />
 
-    }
+    },
+
+    //---------------publisher pages router--------------------------
+    {
+      path: "/publisher/dashboard",
+      element: <PublisherLayout />,
+      children: [
+        { index: true, element: <PublisherDashboard /> },
+        // { path: 'articleList', element: <ArticleList /> },
+      ]
+    },
   ])
 
   return (
