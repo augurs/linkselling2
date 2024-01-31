@@ -48,7 +48,11 @@ import PublisherSignUp from './app/pages/publisherPages/Auth/publisherSignUp.js'
 import PublisherLogin from './app/pages/publisherPages/Auth/publisherLogin.js'
 import PublisherDashboard from "./app/pages/publisherPages/Dashboard/dashboard.js";
 import PublisherPublications from "./app/pages/publisherPages/Publications/publications.js";
-import PublisherMyDomains from "./app/pages/publisherPages/MyDomains/PublisherDomain.js";
+import PublisherMyDomains from "./app/pages/publisherPages/MyDomains/listDomain.js";
+import PublisherMyOffer from "./app/pages/publisherPages/MyDomains/myOffer.js";
+import PublisherAddDomain from "./app/pages/publisherPages/MyDomains/addDomain.js";
+
+
 
 
 
@@ -190,8 +194,10 @@ function App() {
       element: <PublisherLayout />,
       children: [
         { index: true, element: <PublisherDashboard /> },
-        { path: '/publisher/myDomain', element: <PublisherMyDomains /> },
+        { path: '/publisher/listDomain', element: <PublisherMyDomains /> },
+        { path: '/publisher/myOffer', element: <PublisherMyOffer /> },
         { path: '/publisher/publications', element: <PublisherPublications /> },
+        { path: '/publisher/addDomain', element: <PublisherAddDomain /> },
       ]
     },
   ])
