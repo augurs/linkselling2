@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import "./login.css"
-import { autoLoginPublisher, loginPublisher, sendingUserLoggedin } from '../../../services/authServices/authservices';
-import globalLoader from '../../../assets/images/loader.svg'
+import "../../auth/login.css"
+import { autoLoginPublisher, loginPublisher, sendingUserLoggedin } from '../../../../services/authServices/authservices';
+import globalLoader from '../../../../assets/images/loader.svg'
 import { ToastContainer, toast } from 'react-toastify';
-import LanguageSelect from '../../Components/Language/languageSelect';
+import LanguageSelect from '../../../Components/Language/languageSelect';
 import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../../Context/languageContext';
-import { translate } from '../../../utility/helper';
+import { useLanguage } from '../../../Context/languageContext';
+import { translate } from '../../../../utility/helper';
 import { useLocation } from 'react-router-dom';
 
 function Login() {
@@ -25,7 +25,7 @@ function Login() {
 
   useEffect(() => {
     if (userData) {
-      navigate('/publisher/dashboard')
+      navigate('/publisher')
     }
   }, [])
 
@@ -113,7 +113,7 @@ function Login() {
         type: 'success'
       });
       setTimeout(() => {
-        navigate('/publisher/dashboard')
+        navigate('/publisher')
       }, 1000);
 
     } else if (res.message === "The provided credentials are incorrect") {
@@ -180,7 +180,7 @@ function Login() {
         type: 'success'
       });
       setTimeout(() => {
-        navigate('/publisher/dashboard')
+        navigate('/publisher')
       }, 1000);
       setLoading(false)
       sendingUserLoggedin(1, res?.data[0]?.id)
@@ -217,7 +217,7 @@ function Login() {
       <div className="page">
         <div>
           <Container className="col col-login mx-auto text-center">
-            <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'title')[0]?.value || 'title'}</h2>
+            <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'publisherTitle')[0]?.value || 'publisherTitle'}</h2>
           </Container>
           <Container className="container-login100">
             <div className="wrap-0login10 p-0">

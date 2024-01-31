@@ -3,8 +3,6 @@ import Login from './app/pages/auth/login.js'
 import Thanks from './app/pages/auth/thankyou.js'
 import Thanksarticle from './app/pages/auth/thankforarticle.js'
 import SignUp from './app/pages/auth/signup.js'
-import PublisherSignUp from './app/pages/auth/publisherSignUp.js'
-import PublisherLogin from './app/pages/auth/publisherLogin.js'
 import ForgotPassword from "./app/pages/auth/forgotPassword.js";
 import Resubmnittedarticle from './app/pages/auth/resubmittedarticle.js'
 import Portalarticledetails from './app/pages/auth/portalarticledetails.js'
@@ -46,7 +44,12 @@ import NipDetails from "./app/pages/auth/nipDetails.js";
 import { WalletProvider } from "./app/Context/walletContext.js";
 
 //publisher pages 
+import PublisherSignUp from './app/pages/publisherPages/Auth/publisherSignUp.js'
+import PublisherLogin from './app/pages/publisherPages/Auth/publisherLogin.js'
 import PublisherDashboard from "./app/pages/publisherPages/Dashboard/dashboard.js";
+import PublisherPublications from "./app/pages/publisherPages/Publications/publications.js";
+import PublisherMyDomains from "./app/pages/publisherPages/MyDomains/PublisherDomain.js";
+
 
 
 
@@ -183,11 +186,12 @@ function App() {
 
     //---------------publisher pages router--------------------------
     {
-      path: "/publisher/dashboard",
+      path: "/publisher",
       element: <PublisherLayout />,
       children: [
         { index: true, element: <PublisherDashboard /> },
-        // { path: 'articleList', element: <ArticleList /> },
+        { path: '/publisher/myDomain', element: <PublisherMyDomains /> },
+        { path: '/publisher/publications', element: <PublisherPublications /> },
       ]
     },
   ])

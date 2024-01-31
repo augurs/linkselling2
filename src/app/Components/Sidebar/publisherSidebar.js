@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MdDashboard } from 'react-icons/md';
+import { MdDashboard, MdLanguage , MdLibraryBooks } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import "./sidebar.css";
@@ -34,10 +34,22 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                    <li className="slide" style={{ cursor: "pointer" }}>
-                            <Link to='/publisher/dashboard' className="side-menu__item has-link" data-bs-toggle="slide">
+                    <li className="slide">
+                            <Link to='/publisher' className="side-menu__item has-link" data-bs-toggle="slide">
                                 <span className="side-menu__icon"><MdDashboard size={20} style={{ color: "gray!important" }} /></span>
                                 <span className="side-menu__label">{translate(languageData, "dashboard")}</span>
+                            </Link>
+                        </li>
+                        <li className="slide">
+                            <Link to='/publisher/myDomain' className="side-menu__item has-link" data-bs-toggle="slide">
+                                <span className="side-menu__icon"><MdLanguage size={20} style={{ color: "gray!important" }} /></span>
+                                <span className="side-menu__label">{translate(languageData, "myDomains")}</span>
+                            </Link>
+                        </li>
+                        <li className="slide">
+                            <Link to='/publisher/publications' className="side-menu__item has-link" data-bs-toggle="slide">
+                                <span className="side-menu__icon"><MdLibraryBooks size={20} style={{ color: "gray!important" }} /></span>
+                                <span className="side-menu__label">{translate(languageData, "publications")}</span>
                             </Link>
                         </li>
                     </ul>

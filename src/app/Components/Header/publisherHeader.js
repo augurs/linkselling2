@@ -9,13 +9,6 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
 
     const navigate = useNavigate();
 
-    const { cartContextData } = useCart()
-
-    const logout = () => {
-        localStorage.removeItem('userData')
-        navigate('/login')
-    }
-
     return (
         <>
             <Navbar expand="lg" className="app-header header sticky border-bottom">
@@ -32,7 +25,7 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                         </Navbar.Brand>
                     </div>
                     <div className='d-flex m-2'>
-                        <Link onClick={() => navigate('/publisher/dashboard')}>
+                        <Link onClick={() => navigate('/publisher')}>
                             <FaHome style={{ marginTop: "-3px" }} size={25} />
                         </Link>
                     </div>

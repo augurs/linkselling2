@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { BiUserCircle } from 'react-icons/bi';
 import { PiArticleLight } from 'react-icons/pi';
 import { BsPencil, BsFillBagCheckFill } from 'react-icons/bs';
-import { AiOutlineProject,} from 'react-icons/ai';
+import { AiOutlineProject, } from 'react-icons/ai';
 import { PiLinkSimpleThin } from 'react-icons/pi';
-import { LiaFileInvoiceDollarSolid} from 'react-icons/lia';
+import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import "./sidebar.css";
@@ -81,7 +81,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         {translate(languageData, 'SidebarOrderArticle')}
                     </Link>
                     <Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath('/requestedArticles')}>
-                    {translate(languageData, "viewRequestedArticle")}
+                        {translate(languageData, "viewRequestedArticle")}
                     </Link>
                 </div>
             </Popover.Body>
@@ -105,7 +105,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         <Popover id="popover-content" >
             <Popover.Body className='d-flex flex-column justify-content-center align-items-center'>
                 <div className='mb-2 border-bottom border-2'>
-                <h3 className='border-bottom border-3 text-center'>{translate(languageData, "UserProfile")}</h3>
+                    <h3 className='border-bottom border-3 text-center'>{translate(languageData, "UserProfile")}</h3>
                     <Link className="slide-item" >{`${translate(languageData, "emailSignUp")} : ${userDetails?.email}`}</Link>
                     <Link className="slide-item" >{userDetails?.phone_number !== null ? `${translate(languageData, "PhoneNumber")} : ${userDetails?.phone_number}` : `${translate(languageData, "PhoneNumber")} :  --`}</Link>
                 </div>
@@ -198,7 +198,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         <li className="slide" style={{ cursor: "pointer" }} >
                             < Referral />
                         </li>
-                        
+
 
 
                         {/* Other menu items */}
@@ -225,7 +225,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </OverlayTrigger>
                     </ul></div>
             </div>
-            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} userDetails={userDetails} showWalletServices={showWalletServices}/>
+            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} userDetails={userDetails} showWalletServices={showWalletServices} />
             <ToastContainer />
         </div>
 

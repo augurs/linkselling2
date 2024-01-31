@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Card, Container, Form} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
-import { signUpPublisher } from '../../../services/authServices/authservices';
+import { signUpPublisher } from '../../../../services/authServices/authservices';
 import { ToastContainer, toast } from 'react-toastify';
-import globalLoader from '../../../assets/images/loader.svg'
-import LanguageSelect from '../../Components/Language/languageSelect';
-import { useLanguage } from '../../Context/languageContext';
+import globalLoader from '../../../../assets/images/loader.svg'
+import LanguageSelect from '../../../Components/Language/languageSelect';
+import { useLanguage } from '../../../Context/languageContext';
 const SignUp = () => {
 
   const initialValues = {
@@ -236,7 +236,7 @@ const SignUp = () => {
       <div className="page">
         <div>
           <Container className="col col-login mx-auto text-center">
-            <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'title')[0]?.value || 'title'} </h2>
+            <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'publisherTitle')[0]?.value || 'publisherTitle'} </h2>
           </Container>
           <Container className="container-login100">
             <div className="wrap-0login10 p-0">
