@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MdDashboard } from 'react-icons/md';
+import { MdDashboard, MdLanguage , MdLibraryBooks } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../Context/languageContext';
 import "./sidebar.css";
@@ -8,7 +8,18 @@ import { Button} from 'react-bootstrap';
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("publisherData"));
+
+    const [menuType, setMenuType] = useState("")
     const { languageData } = useLanguage()
+
+    const handleSidbarToggle = (type) => {
+        if (menuType === "") {
+            setMenuType(type)
+        } else {
+            setMenuType("")
+        }
+
+    }
 
 
     return (
@@ -34,10 +45,26 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                    <li className="slide" style={{ cursor: "pointer" }}>
-                            <Link to='/publisher/dashboard' className="side-menu__item has-link" data-bs-toggle="slide">
+                    <li className="slide">
+                            <Link to='/publisher' className="side-menu__item has-link" data-bs-toggle="slide">
                                 <span className="side-menu__icon"><MdDashboard size={20} style={{ color: "gray!important" }} /></span>
                                 <span className="side-menu__label">{translate(languageData, "dashboard")}</span>
+                            </Link>
+                        </li>
+                        <li className={`slide ${menuType === "myDomains" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("myDomains")}>
+                            <a className={`side-menu__item has-link ${menuType === "myDomains" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
+                                <span className="side-menu__icon"><MdLanguage size={20} /></span>
+                                <span className="side-menu__label">{translate(languageData, "myDomains")}</span><i class="angle fa fa-angle-right"></i>
+                            </a>
+                            <ul class="slide-menu">
+                                <li><Link to="/publisher/listDomain" class="slide-item" >{translate(languageData, "listDomain")}</Link></li>
+                                <li><Link to="/publisher/listOffer" class="slide-item" >{translate(languageData, "myOffer")}</Link></li>
+                                </ul>
+                        </li>
+                        <li className="slide">
+                            <Link to='/publisher/publications' className="side-menu__item has-link" data-bs-toggle="slide">
+                                <span className="side-menu__icon"><MdLibraryBooks size={20} style={{ color: "gray!important" }} /></span>
+                                <span className="side-menu__label">{translate(languageData, "publications")}</span>
                             </Link>
                         </li>
                     </ul>
