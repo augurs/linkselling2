@@ -43,6 +43,7 @@ const OfferList = () => {
             articleMaxLength: item.article_max_length? item.article_max_length: 0,
             articleMinLength: item.article_min_length? item.article_min_length: 0,
             leadLength: item.lead_length?item.lead_length: 0,
+            contactEmail: item?.contact_email
         }
     })
 
@@ -60,7 +61,7 @@ const OfferList = () => {
         },
         {
             name: translate(languageData, "leadLength"),
-            selector: row => `${row.leadLength} zł`,
+            selector: row => `${row.leadLength}`,
             sortable: true,
         },
         {
@@ -77,6 +78,12 @@ const OfferList = () => {
             name: translate(languageData, "articleMaxLength"),
             selector: row => `${row.articleMaxLength}`,
             sortable: true,
+        },
+        {
+            name: translate(languageData, "BuyArticleEmail"),
+            selector: row => `${row.contactEmail}`,
+            sortable: true,
+            wrap: true
         },
 
     ]

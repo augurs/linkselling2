@@ -52,7 +52,8 @@ const Myoffer = () => {
   };
 
 
-  console.log(formValues.enterDomain, "55");
+  console.log(formValues.contactMail, "55");
+
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
   };
@@ -90,6 +91,132 @@ const Myoffer = () => {
 
   const addPublisherOfferServices = async () => {
     setOrderLoading(true);
+    if (!formValues.enterDomain) {
+      toast(translate(languageData, "enterDomain"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.contactPhone) {
+      toast(translate(languageData, "enterContact"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.contactMail) {
+      toast(translate(languageData, "enterMail"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.category) {
+      toast(translate(languageData, "enterCategory"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.maxLinks) {
+      toast(translate(languageData, "enterMaxLinks"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.price) {
+      toast(translate(languageData, "enterPrice"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.articleMaxLength) {
+      toast(translate(languageData, "enterArticleMaxLength"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.articleMinLength) {
+      toast(translate(languageData, "enterArticleMinLength"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
+    if (!formValues.leadLength) {
+      toast(translate(languageData, "enterLeadLength"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
     const res = await addPublisherOffer(formValues, publisherData?.user?.id);
     if (res.success === true) {
       toast(translate(languageData, "offerAddedSuccessfully"), {
@@ -160,13 +287,13 @@ const Myoffer = () => {
           <div className='mt-6 border-bottom'>
             {activeStep === 1 && (
               <>
-              <Row className='align-items-center mt-5'>
+                <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
                     <span>{translate(languageData, "enterDomain")} *</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="form-group">
-                      <Form.Select size="lg" name="enterDomain" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
+                      <Form.Select size="lg" name="enterDomain" value={formValues?.enterDomain} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
                         <option label={translate(languageData, "enterDomain")} className='bg-primary'></option>
                         {domainList?.map((item, index) => {
                           return (
@@ -184,7 +311,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="price" placeholder={translate(languageData, "price")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" name="price" placeholder={translate(languageData, "price")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.price} />
                     </div>
                   </Col>
                 </Row>
@@ -194,7 +321,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="form-group">
-                      <Form.Select size="lg" name="category" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
+                      <Form.Select size="lg" name="category" value={formValues?.category} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
                         <option label={translate(languageData, "category")} className='bg-primary'></option>
                         {categoryList?.map((item, index) => {
                           return (
@@ -208,7 +335,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "Language")} *</span>
+                    <span>{translate(languageData, "Language")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -235,7 +362,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "typeofAnchors")} *</span>
+                    <span>{translate(languageData, "typeofAnchors")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -262,7 +389,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "Nofollow")} *</span>
+                    <span>{translate(languageData, "Nofollow")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -293,7 +420,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="maxLinks" placeholder={translate(languageData, "maxLinks")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" name="maxLinks" value={formValues?.maxLinks} placeholder={translate(languageData, "maxLinks")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
                   </Col>
                 </Row>
@@ -303,7 +430,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} />
                     </div>
                   </Col>
                 </Row>
@@ -313,7 +440,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
                   </Col>
                 </Row>
@@ -334,7 +461,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="articleMaxLength" placeholder={translate(languageData, "articleMaxLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" value={formValues?.articleMaxLength} name="articleMaxLength" placeholder={translate(languageData, "articleMaxLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
                   </Col>
                 </Row>
@@ -344,7 +471,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="articleMinLength" placeholder={translate(languageData, "articleMinLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" value={formValues?.articleMinLength} name="articleMinLength" placeholder={translate(languageData, "articleMinLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
                   </Col>
                 </Row>
@@ -354,13 +481,13 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="leadLength" placeholder={translate(languageData, "leadLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="number" value={formValues?.leadLength} name="leadLength" placeholder={translate(languageData, "leadLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "ArticleGoesToHomepage")} *</span>
+                    <span>{translate(languageData, "ArticleGoesToHomepage")} </span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -399,7 +526,7 @@ const Myoffer = () => {
               <>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsCasino")} *</span>
+                    <span>{translate(languageData, "acceptsCasino")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -426,7 +553,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsGambling")} *</span>
+                    <span>{translate(languageData, "acceptsGambling")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -453,7 +580,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsErotic")} *</span>
+                    <span>{translate(languageData, "acceptsErotic")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -480,7 +607,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsLoan")} *</span>
+                    <span>{translate(languageData, "acceptsLoan")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -507,7 +634,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsDating")} *</span>
+                    <span>{translate(languageData, "acceptsDating")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -534,7 +661,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsCBD")} *</span>
+                    <span>{translate(languageData, "acceptsCBD")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -561,7 +688,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsCrypto")} *</span>
+                    <span>{translate(languageData, "acceptsCrypto")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
@@ -588,7 +715,7 @@ const Myoffer = () => {
                 </Row>
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
-                    <span>{translate(languageData, "acceptsMedic")} *</span>
+                    <span>{translate(languageData, "acceptsMedic")}</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
