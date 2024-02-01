@@ -5,7 +5,6 @@ import globalLoader from '../../../../assets/images/loader.svg'
 import { translate } from '../../../../utility/helper'
 import { useLanguage } from '../../../Context/languageContext'
 import DataTable from 'react-data-table-component'
-import { FaEye, FaLink } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Col, Row } from 'react-bootstrap'
 import { listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
@@ -46,22 +45,22 @@ const DomainList = () => {
 
   const columns = [
     {
-      name: translate(languageData, "Domain"),
+      name: translate(languageData, "domainName"),
       selector: row => `${row?.url}`,
       sortable: true,
     },
     {
-      name: translate(languageData, "Our price"),
+      name: translate(languageData, "ourPrice"),
       selector: row => `${row.our_price} zł`,
       sortable: true,
     },
     {
-      name: translate(languageData, "client_price"),
+      name: translate(languageData, "clientPrice"),
       selector: row => `${row.client_price} zł`,
       sortable: true,
     },
     {
-      name: translate(languageData, "language"),
+      name: translate(languageData, "Language"),
       selector: row => `${row.language}`,
       sortable: true,
     },
@@ -87,7 +86,7 @@ const DomainList = () => {
             </Col>
             <Col xs={12} sm={6} md={4}>
               <div className="d-flex justify-content-end">
-                <Link onClick={() => navigate("/publisher/addDomain")}><Button>{translate(languageData, "Add Domain")}</Button></Link>
+                <Link onClick={() => navigate("/publisher/addDomain")}><Button>{translate(languageData, "addDomain")}</Button></Link>
               </div>
             </Col>
           </Row>

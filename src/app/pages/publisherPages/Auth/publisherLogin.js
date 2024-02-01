@@ -44,7 +44,6 @@ function Login() {
 
   const { t } = useTranslation();
   const { languageData } = useLanguage();
-  // const currLang = localStorage.getItem('lang');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +56,7 @@ function Login() {
   const loginSuccessMessage = languageData && languageData?.filter((item) => item.title === 'loginSuccessMessage')[0]?.value || 'loginSuccessMessage';
   const loginFailurMessage1 = languageData && languageData?.filter((item) => item.title === 'loginFailureMessage1')[0]?.value || 'loginFailureMessage1';
   const loginFailureMessage2 = languageData && languageData?.filter((item) => item.title === 'loginFailureMessage2')[0]?.value || 'loginFailureMessage2';
-  const alreadyusedLink = languageData && languageData?.filter((item) => item.title === 'alreadyusedLink')[0]?.value || 'alreadyusedLink';
+  const alreadyusedLink = languageData && languageData?.filter((item) => item.title === 'alreadyLinkUsed')[0]?.value || 'alreadyLinkUsed';
   const loginSuccessMessageAuto = languageData && languageData?.filter((item) => item.title === 'loginSuccessMessage')[0]?.value || 'loginSuccessMessage';
 
 
@@ -91,10 +90,13 @@ function Login() {
 
   const loginService = async () => {
     setLoading(true)
+
+    localStorage.removeItem('userData');
     const res = await loginPublisher(
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language
     );
+    console.log(res, "100");
     if (res.success === true) {
       setLoading(false)
       localStorage.setItem('publisherData', JSON.stringify(res))
@@ -160,9 +162,10 @@ function Login() {
 
   const autoLoginPublisherServices = async () => {
     setLoading(true)
+    localStorage.removeItem("userData");
     const res = await autoLoginPublisher(LoginAutoId)
-    console.log(res?.data[0].logged_in, "169");
-    if (res?.success === true && res?.data[0].logged_in == "0") {
+    console.log(res?.user.logged_in, "166");
+    if (res?.success === true && res?.user.logged_in == "0") {
       setLoginAutoPublisher(res?.data)
       localStorage.setItem('publisherData', JSON.stringify(res))
       if (!language) {
@@ -183,9 +186,8 @@ function Login() {
         navigate('/publisher')
       }, 1000);
       setLoading(false)
-      sendingUserLoggedin(1, res?.data[0]?.id)
-    } else if (res?.data[0]?.logged_in == "1") {
-      setLoginAutoPublisher(res?.data)
+      sendingUserLoggedin(1, res?.user?.id)
+    } else if (res?.user?.logged_in == "1") {
       toast(alreadyusedLink, {
         position: "top-center",
         autoClose: 2000,

@@ -58,7 +58,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                             </a>
                             <ul class="slide-menu">
                                 <li><Link to="/publisher/listDomain" class="slide-item" >{translate(languageData, "listDomain")}</Link></li>
-                                <li><Link to="/publisher/myOffer" class="slide-item" >{translate(languageData, "myOffer")}</Link></li>
+                                <li><Link to="/publisher/listOffer" class="slide-item" >{translate(languageData, "myOffer")}</Link></li>
                                 </ul>
                         </li>
                         <li className="slide">

@@ -78,6 +78,7 @@ function Login() {
 
   const loginService = async () => {
     setLoading(true)
+    localStorage.removeItem('publisherData');
     const res = await login(
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language

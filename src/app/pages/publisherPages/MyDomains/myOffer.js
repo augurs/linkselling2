@@ -6,8 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../../assets/images/loader.svg'
 import { translate } from '../../../../utility/helper';
 import { useLanguage } from '../../../Context/languageContext';
-import { addDomainUrl, listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices';
-import { categoryofferList } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices';
+import { listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices';
+import { addPublisherOffer, categoryofferList } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices';
 
 const Myoffer = () => {
   const initialValues = {
@@ -16,24 +16,24 @@ const Myoffer = () => {
     language: "pl",
     category: "",
     maxLinks: "",
-    typeofAnchors: "EMA",
-    Nofollow: "No",
+    typeofAnchors: "ema",
+    Nofollow: "0",
     contactMail: "",
     contactPhone: "",
 
     articleMaxLength: "",
     articleMinLength: "",
     leadLength: "",
-    ArticleGoesToHomepage: "No",
+    ArticleGoesToHomepage: "0",
 
-    acceptsCasino: "No",
-    acceptsGambling: "No",
-    acceptsErotic: "No",
-    acceptsLoan: "No",
-    acceptsDating: "No",
-    acceptsCBD: "No",
-    acceptsCrypto: "No",
-    acceptsMedic: "No",
+    acceptsCasino: "0",
+    acceptsGambling: "0",
+    acceptsErotic: "0",
+    acceptsLoan: "0",
+    acceptsDating: "0",
+    acceptsCBD: "0",
+    acceptsCrypto: "0",
+    acceptsMedic: "0",
 
 
   };
@@ -51,6 +51,8 @@ const Myoffer = () => {
     setActiveStep(activeStep + 1);
   };
 
+
+  console.log(formValues.enterDomain, "55");
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
   };
@@ -86,26 +88,11 @@ const Myoffer = () => {
     }
   }
 
-  const orderArticleServices = async () => {
+  const addPublisherOfferServices = async () => {
     setOrderLoading(true);
-    if (!formValues.enterUrl) {
-      toast(translate(languageData, "DomainFieldNotEmpty"), {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        type: 'error'
-      });
-
-      setOrderLoading(false);
-      return;
-    }
-    const res = await addDomainUrl(formValues, publisherData?.user?.id, currLang);
+    const res = await addPublisherOffer(formValues, publisherData?.user?.id);
     if (res.success === true) {
-      toast(translate(languageData, "DomainAddedSuccessfully"), {
+      toast(translate(languageData, "offerAddedSuccessfully"), {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: false,
@@ -167,6 +154,7 @@ const Myoffer = () => {
       <Card className='mt-4'>
         <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
           <h4 className='fw-semibold'>{translate(languageData, "myOffer")}</h4>
+          <Button className="btn btn-outline-primary" onClick={() => navigate('/publisher/listOffer')}>{translate(languageData, "back")}</Button>
         </Card.Header>
         <Card.Body>
           <div className='mt-6 border-bottom'>
@@ -187,7 +175,7 @@ const Myoffer = () => {
                         })}
                       </Form.Select>
                     </div>
-                    <div className='text-danger text-center mt-1'>{formErrors.project}</div>
+                    <div className='text-danger text-center mt-1'>{formErrors?.enterDomain}</div>
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -210,7 +198,7 @@ const Myoffer = () => {
                         <option label={translate(languageData, "category")} className='bg-primary'></option>
                         {categoryList?.map((item, index) => {
                           return (
-                            <option value={item.name} key={index}>{item.name}</option>
+                            <option value={item.id} key={index}>{item.name}</option>
                           )
                         })}
                       </Form.Select>
@@ -253,20 +241,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="EMA"
-                        label="EMA"
+                        id="ema"
+                        label="ema"
                         name='typeofAnchors'
-                        value="EMA"
-                        checked={formValues.typeofAnchors === 'EMA'}
+                        value="ema"
+                        checked={formValues.typeofAnchors === 'ema'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Brand"
+                        id="brand"
                         label="Brand"
-                        value="Brand"
+                        value="brand"
                         name='typeofAnchors'
-                        checked={formValues.typeofAnchors === 'Brand'}
+                        checked={formValues.typeofAnchors === 'brand'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -280,20 +268,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='Nofollow'
-                        value="No"
-                        checked={formValues.Nofollow === 'No'}
+                        value="0"
+                        checked={formValues.Nofollow === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='Nofollow'
-                        checked={formValues.Nofollow === 'Yes'}
+                        checked={formValues.Nofollow === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -378,20 +366,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='ArticleGoesToHomepage'
-                        value="No"
-                        checked={formValues.ArticleGoesToHomepage === 'No'}
+                        value="0"
+                        checked={formValues.ArticleGoesToHomepage === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='ArticleGoesToHomepage'
-                        checked={formValues.ArticleGoesToHomepage === 'Yes'}
+                        checked={formValues.ArticleGoesToHomepage === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -417,20 +405,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsCasino'
-                        value="No"
-                        checked={formValues.acceptsCasino === 'No'}
+                        value="0"
+                        checked={formValues.acceptsCasino === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsCasino'
-                        checked={formValues.acceptsCasino === 'Yes'}
+                        checked={formValues.acceptsCasino === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -444,20 +432,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsGambling'
-                        value="No"
-                        checked={formValues.acceptsGambling === 'No'}
+                        value="0"
+                        checked={formValues.acceptsGambling === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsGambling'
-                        checked={formValues.acceptsGambling === 'Yes'}
+                        checked={formValues.acceptsGambling === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -471,20 +459,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsErotic'
-                        value="No"
-                        checked={formValues.acceptsErotic === 'No'}
+                        value="0"
+                        checked={formValues.acceptsErotic === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsErotic'
-                        checked={formValues.acceptsErotic === 'Yes'}
+                        checked={formValues.acceptsErotic === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -498,20 +486,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsLoan'
-                        value="No"
-                        checked={formValues.acceptsLoan === 'No'}
+                        value="0"
+                        checked={formValues.acceptsLoan === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsLoan'
-                        checked={formValues.acceptsLoan === 'Yes'}
+                        checked={formValues.acceptsLoan === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -525,20 +513,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsDating'
-                        value="No"
-                        checked={formValues.acceptsDating === 'No'}
+                        value="0"
+                        checked={formValues.acceptsDating === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsDating'
-                        checked={formValues.acceptsDating === 'Yes'}
+                        checked={formValues.acceptsDating === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -552,20 +540,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsCBD'
-                        value="No"
-                        checked={formValues.acceptsCBD === 'No'}
+                        value="0"
+                        checked={formValues.acceptsCBD === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsCBD'
-                        checked={formValues.acceptsCBD === 'Yes'}
+                        checked={formValues.acceptsCBD === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -579,20 +567,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsCrypto'
-                        value="No"
-                        checked={formValues.acceptsCrypto === 'No'}
+                        value="0"
+                        checked={formValues.acceptsCrypto === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsCrypto'
-                        checked={formValues.acceptsCrypto === 'Yes'}
+                        checked={formValues.acceptsCrypto === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -606,20 +594,20 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0 d-flex gap-5">
                       <Form.Check
                         type="radio"
-                        id="No"
+                        id="0"
                         label="No"
                         name='acceptsMedic'
-                        value="No"
-                        checked={formValues.acceptsMedic === 'No'}
+                        value="0"
+                        checked={formValues.acceptsMedic === '0'}
                         onChange={(e) => handleChange(e)}
                       />
                       <Form.Check
                         type="radio"
-                        id="Yes"
+                        id="1"
                         label="Yes"
-                        value="Yes"
+                        value="1"
                         name='acceptsMedic'
-                        checked={formValues.acceptsMedic === 'Yes'}
+                        checked={formValues.acceptsMedic === '1'}
                         onChange={(e) => handleChange(e)}
                       />
                     </div>
@@ -631,7 +619,7 @@ const Myoffer = () => {
                   </Col>
                   <Col lg={5} className='mt-5 mb-2 d-flex'>
                     <Button className='d-flex ms-auto' onClick={handlePrevious}>{translate(languageData, "clickPrevious")}</Button>
-                    <Button className='d-flex ms-2'> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData, "addOffer")}</Button>
+                    <Button className='d-flex ms-2' onClick={() => addPublisherOfferServices()}> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData, "addOffer")}</Button>
 
                   </Col>
                 </Row>
