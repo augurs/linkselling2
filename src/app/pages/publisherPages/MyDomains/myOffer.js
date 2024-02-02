@@ -21,11 +21,13 @@ const Myoffer = () => {
     contactMail: "",
     contactPhone: "",
 
+    //2nd tab fields
     articleMaxLength: "",
     articleMinLength: "",
     leadLength: "",
     ArticleGoesToHomepage: "0",
 
+    //3rd tab fields
     acceptsCasino: "0",
     acceptsGambling: "0",
     acceptsErotic: "0",
@@ -34,15 +36,12 @@ const Myoffer = () => {
     acceptsCBD: "0",
     acceptsCrypto: "0",
     acceptsMedic: "0",
-
-
   };
 
   const [formValues, setFormValues] = useState(initialValues)
   const [formErrors, setFormErrors] = useState({})
   const [orderLoading, setOrderLoading] = useState(false)
   const [categoryList, setCategoryList] = useState([]);
-  const [domainList, setDomainList] = useState([])
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -50,9 +49,6 @@ const Myoffer = () => {
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
-
-
-  console.log(formValues.contactMail, "55");
 
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
@@ -64,7 +60,6 @@ const Myoffer = () => {
 
   useEffect(() => {
     categoryofferListServices()
-    domainListServices()
   }, [])
 
   const categoryofferListServices = async () => {
@@ -78,16 +73,6 @@ const Myoffer = () => {
     }
   }
 
-  const domainListServices = async () => {
-    setLoading(true)
-    const res = await listDomain(publisherData?.user?.id)
-    if (res.success === true) {
-      setDomainList(res?.data)
-      setLoading(false)
-    } else {
-      setLoading(false);
-    }
-  }
 
   const addPublisherOfferServices = async () => {
     setOrderLoading(true);
@@ -217,6 +202,20 @@ const Myoffer = () => {
       setOrderLoading(false);
       return;
     }
+    if (formValues?.articleMinLength >= formValues?.articleMaxLength) {
+      toast(translate(languageData, "lessThanMaxLength"), {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+  }
     const res = await addPublisherOffer(formValues, publisherData?.user?.id);
     if (res.success === true) {
       toast(translate(languageData, "offerAddedSuccessfully"), {
@@ -229,7 +228,8 @@ const Myoffer = () => {
         progress: undefined,
         type: 'success'
       });
-    } else if (res.success === false && res.message.url[0] === "The url has already been taken.") {
+      setFormValues(initialValues);
+    } else if (res.success === false && res.message[0] === "The url has already been taken.") {
       toast(translate(languageData, "TheurlHasAlreadyBeenTaken"), {
         position: "top-center",
         autoClose: 2000,
@@ -292,15 +292,8 @@ const Myoffer = () => {
                     <span>{translate(languageData, "enterDomain")} *</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
-                    <div className="form-group">
-                      <Form.Select size="lg" name="enterDomain" value={formValues?.enterDomain} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                        <option label={translate(languageData, "enterDomain")} className='bg-primary'></option>
-                        {domainList?.map((item, index) => {
-                          return (
-                            <option value={item.id} key={index}>{item.url}</option>
-                          )
-                        })}
-                      </Form.Select>
+                    <div className="wrap-input100 validate-input mb-0">
+                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} />
                     </div>
                     <div className='text-danger text-center mt-1'>{formErrors?.enterDomain}</div>
                   </Col>
@@ -473,6 +466,7 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0">
                       <input className="input100" type="number" value={formValues?.articleMinLength} name="articleMinLength" placeholder={translate(languageData, "articleMinLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
+                    {parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength) ? <span className='text-danger'>{translate(languageData, "lessThanMaxLength")}</span>: ""}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>

@@ -16,6 +16,7 @@ const DomainList = () => {
   const [domainList, setDomainList] = useState([])
   const [loading, setLoading] = useState(false)
   const [isDataPresent, setIsDataPresent] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     domainListServices()
   }, [])
@@ -33,13 +34,21 @@ const DomainList = () => {
     }
   }
 
-  const tableData = domainList?.map((item) => {
+  const tableData = domainList?.filter((item) =>
+    (item?.url && item?.url.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    ((typeof item?.our_price === 'number' ? item?.our_price.toString() : item?.our_price) &&
+      (typeof item?.our_price === 'number' ? item?.our_price.toString().toLowerCase().includes(searchTerm.toLowerCase()) : item?.our_price)) ||
+    (item?.language && typeof item?.language === 'string' && item?.language.toLowerCase().includes(searchTerm.toLowerCase()))
+  ).map((item) => {
     return {
       url: item?.url,
       our_price: item?.our_price,
       client_price: item?.client_price,
       language: item?.language,
       id: item?.id,
+      ahreTraffic: item?.ahref_traffic,
+      Dr: item?.dr,
+      status: item?.status
     }
   })
 
@@ -55,14 +64,47 @@ const DomainList = () => {
       sortable: true,
     },
     {
-      name: translate(languageData, "clientPrice"),
-      selector: row => `${row.client_price} zł`,
-      sortable: true,
-    },
-    {
       name: translate(languageData, "Language"),
       selector: row => `${row.language}`,
       sortable: true,
+    },
+    {
+      name: translate(languageData, "ahrefTraffic"),
+      selector: row => `${row.ahreTraffic}`,
+      sortable: true,
+    },
+    {
+      name: translate(languageData, "Dr"),
+      selector: row => `${row.Dr}`,
+      sortable: true,
+    },
+    {
+      name: translate(languageData, "artilstStatus"),
+      selector: (row) => row.status,
+      sortable: true,
+      cell: (row) => {
+        let buttonClass = "text-primary";
+        let buttonText = "";
+
+        switch (row.status) {
+          case "Deactive":
+            buttonClass = "text-danger";
+            buttonText = <h6>{translate(languageData, "deactive")}</h6>;
+            break;
+          case "Active":
+            buttonClass = "text-primary";
+            buttonText = <h6>{translate(languageData, "active")}</h6>;
+            break;
+
+          default:
+            buttonText = row.status;
+        }
+        return (
+          <span className={`${buttonClass}`}>
+            {buttonText}
+          </span>
+        );
+      },
     },
 
   ]
@@ -77,7 +119,7 @@ const DomainList = () => {
           <Row className='flex justify-content-between'>
             <Col xs={12} sm={6} md={4} >
               <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} />
+                <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 <span className="focus-input100"></span>
                 <span className="symbol-input100">
                   <i className="zmdi zmdi-search" aria-hidden="true"></i>

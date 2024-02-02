@@ -52,6 +52,8 @@ import PublisherMyDomains from "./app/pages/publisherPages/MyDomains/listDomain.
 import PublisherMyOffer from "./app/pages/publisherPages/MyDomains/myOffer.js";
 import PublisherAddDomain from "./app/pages/publisherPages/MyDomains/addDomain.js";
 import PublisherlistOffer from "./app/pages/publisherPages/MyDomains/listOffer.js";
+import UpdateOffer from "./app/pages/publisherPages/MyDomains/updateOffer.js";
+
 
 
 
@@ -201,6 +203,7 @@ function App() {
         { path: '/publisher/publications', element: <PublisherPublications /> },
         { path: '/publisher/addDomain', element: <PublisherAddDomain /> },
         { path: '/publisher/listOffer', element: <PublisherlistOffer /> },
+        { path: '/publisher/updateOffer/:domainId', element: <UpdateOffer /> },
 
       ]
     },

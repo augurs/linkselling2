@@ -54,7 +54,7 @@ const AddDomain = () => {
                 type: 'success'
             });
         } else if (res.success === false && res.message.url[0]==="The url has already been taken.") {
-            toast(translate(languageData, "TheurlHasAlreadyBeenTaken"), {
+            toast(`${translate(languageData, "TheurlHasAlreadyBeenTaken")}: ${res?.admin_email}`, {
                 position: "top-center",
                 autoClose: 2000,
                 hideProgressBar: false,
