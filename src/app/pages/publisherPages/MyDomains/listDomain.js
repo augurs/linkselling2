@@ -118,8 +118,8 @@ const DomainList = () => {
         <div className='my-4'>
           <Row className='flex justify-content-between'>
             <Col xs={12} sm={6} md={4} >
-              <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <div className="wrap-input100 validate-input mb-0">
+                <input className="input100" type="search" name="search" placeholder={translate(languageData, "artilstSearch")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 <span className="focus-input100"></span>
                 <span className="symbol-input100">
                   <i className="zmdi zmdi-search" aria-hidden="true"></i>
