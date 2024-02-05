@@ -166,7 +166,7 @@ const OfferList = () => {
                         </Col>
                         <Col xs={12} sm={6} md={4}>
                             <div className="d-flex justify-content-end">
-                                <Link onClick={() => navigate("/publisher/myOffer")}><Button>{translate(languageData, "addOffer")}</Button></Link>
+                                <Link onClick={() => navigate("/publisher/myOffer/0")}><Button>{translate(languageData, "addOffer")}</Button></Link>
                             </div>
                         </Col>
                     </Row>

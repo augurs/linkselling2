@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, Row, Form } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../../assets/images/loader.svg'
 import { translate } from '../../../../utility/helper';
@@ -11,7 +11,7 @@ import { addPublisherOffer, categoryofferList } from '../../../../services/Publi
 
 const Myoffer = () => {
   const initialValues = {
-    enterDomain: "",
+    enterDomain: '',
     price: "",
     language: "pl",
     category: "",
@@ -60,7 +60,26 @@ const Myoffer = () => {
 
   useEffect(() => {
     categoryofferListServices()
+    domainListServices()
   }, [])
+
+  const { domainId } = useParams();
+
+  const domainListServices = async () => {
+    setLoading(true)
+    const res = await listDomain(publisherData?.user?.id)
+    const selectedDomain = res?.data.find((domain) => domain?.id === parseInt(domainId));
+
+    if (res.success === true) {
+      setFormValues({
+        ...initialValues,
+        enterDomain: selectedDomain?.url || "",
+      });
+      setLoading(false)
+    } else {
+      setLoading(false);
+    }
+  }
 
   const categoryofferListServices = async () => {
     setLoading(true)
@@ -204,18 +223,18 @@ const Myoffer = () => {
     }
     if (formValues?.articleMinLength >= formValues?.articleMaxLength) {
       toast(translate(languageData, "lessThanMaxLength"), {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          type: 'error'
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
       });
       setOrderLoading(false);
       return;
-  }
+    }
     const res = await addPublisherOffer(formValues, publisherData?.user?.id);
     if (res.success === true) {
       toast(translate(languageData, "offerAddedSuccessfully"), {
@@ -228,6 +247,9 @@ const Myoffer = () => {
         progress: undefined,
         type: 'success'
       });
+      setTimeout(() => {
+        navigate('/publisher/listOffer')
+      }, 1000);
       setFormValues(initialValues);
     } else if (res.success === false && res.message[0] === "The url has already been taken.") {
       toast(translate(languageData, "TheurlHasAlreadyBeenTaken"), {
@@ -466,7 +488,7 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0">
                       <input className="input100" type="number" value={formValues?.articleMinLength} name="articleMinLength" placeholder={translate(languageData, "articleMinLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
-                    {parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength) ? <span className='text-danger'>{translate(languageData, "lessThanMaxLength")}</span>: ""}
+                    {parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength) ? <span className='text-danger'>{translate(languageData, "lessThanMaxLength")}</span> : ""}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>

@@ -7,6 +7,7 @@ import { useLanguage } from '../../../Context/languageContext'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Col, Row } from 'react-bootstrap'
+import { FaPlus } from 'react-icons/fa'
 import { listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
 const DomainList = () => {
 
@@ -59,11 +60,6 @@ const DomainList = () => {
       sortable: true,
     },
     {
-      name: translate(languageData, "ourPrice"),
-      selector: row => `${row.our_price} zł`,
-      sortable: true,
-    },
-    {
       name: translate(languageData, "Language"),
       selector: row => `${row.language}`,
       sortable: true,
@@ -106,6 +102,18 @@ const DomainList = () => {
         );
       },
     },
+    {
+      name: translate(languageData, 'writingAction'),
+      cell: (row) => (
+          <div className='d-flex gap-2'>
+              <Link to={`/publisher/myOffer/${row.id}`}>
+                <Button className='d-flex gap-1 align-items-center'>
+                  <FaPlus className='icon-link text-white'/>Add Offer
+                  </Button>
+              </Link>
+          </div>
+      ),
+  },
 
   ]
 

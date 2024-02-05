@@ -199,7 +199,7 @@ function App() {
       children: [
         { index: true, element: <PublisherDashboard /> },
         { path: '/publisher/listDomain', element: <PublisherMyDomains /> },
-        { path: '/publisher/myOffer', element: <PublisherMyOffer /> },
+        { path: '/publisher/myOffer/:domainId', element: <PublisherMyOffer /> },
         { path: '/publisher/publications', element: <PublisherPublications /> },
         { path: '/publisher/addDomain', element: <PublisherAddDomain /> },
         { path: '/publisher/listOffer', element: <PublisherlistOffer /> },
