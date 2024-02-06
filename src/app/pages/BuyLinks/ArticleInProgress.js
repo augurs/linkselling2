@@ -13,6 +13,8 @@ const ArticleInProgress = () => {
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
     const [projectListData, setProjectList] = useState([])
+    const [searchText, setSearchText] = useState('');
+    const [selectprojectText, setSelectprojectText] = useState('');
     const userData = JSON.parse(localStorage.getItem("userData"));
     const [isDataPresent, setIsDataPresent] = useState(true);
 
@@ -43,8 +45,13 @@ const ArticleInProgress = () => {
         }
     };
 
-
-    const tableData = data?.map((item) => {
+    const tableData = data
+    .filter((item) =>
+        (item?.title && item?.title.toLowerCase().includes(searchText.toLowerCase())) ||
+        (item?.portal && typeof item?.portal === 'string' && item?.portal.toLowerCase().includes(searchText.toLowerCase()))
+    )
+    .filter((item) => selectprojectText ? item?.project === selectprojectText : true)
+    .map((item) => {
         return {
             portal: item?.portal,
             price: item?.price,
@@ -57,7 +64,8 @@ const ArticleInProgress = () => {
             title: item?.title,
             type: item?.type
         }
-    })
+    });
+
 
     const columns = [
 
@@ -248,11 +256,11 @@ const ArticleInProgress = () => {
                 <Row>
                     <Col xs={12} sm={6} md={6} className=''>
                         <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Project">
+                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Project" value={selectprojectText} onChange={(e) => setSelectprojectText(e.target.value)}>
                                 <option label={translate(languageData, "artilstProject")}></option>
                                 {projectListData?.map((item, index) => {
                                     return (
-                                        <option value={item.id} key={index}>{item.name}</option>
+                                        <option value={item.name} key={index}>{item.name}</option>
 
                                     )
                                 })}
@@ -262,55 +270,14 @@ const ArticleInProgress = () => {
                     </Col>
                     <Col xs={12} sm={6} md={6} className='mb-3'>
                         <div className="wrap-input100 validate-input mb-0">
-                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} />
+                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
                                 <i className="zmdi zmdi-search" aria-hidden="true"></i>
                             </span>
                         </div>
                     </Col>
-                    {/* <Col xs={12} sm={6} md={4} className=''>
-                        <div className="form-group">
-                            <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
-                                <option label={translate(languageData, "artilstStatus")}></option>
-                                {status.map((item, index) => {
-                                    return (
-                                        <option value={item} key={index}>{item}</option>
-                                    )
-                                })}
-                            </select>
-                        </div>
-                    </Col> */}
                 </Row>
-                {/* <Row>
-                    <Col xs={12} sm={6} md={4} className=''>
-                        <div className='border border-muted d-flex align-items-center bg-white mb-3' style={{ height: "45px" }}>
-                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                <Form.Check
-                                    id='checkguarantee'
-                                    className='pe-2'
-                                />
-                                <span className='mt-1'> {translate(languageData, "36MonthGuarantee")}</span>
-                            </label>
-                        </div>
-
-                    </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
-                        <div className='border border-muted d-flex align-items-center bg-white' style={{ height: "45px" }}>
-                            <label className="custom-control custom-checkbox mx-auto d-flex mt-1">
-                                <Form.Check
-                                    id='checkguarantee'
-                                    className='pe-2'
-                                />
-                                <span className='mt-1'> {translate(languageData, "PromotionOnFacebook")}</span>
-
-                            </label>
-                        </div>
-                    </Col>
-
-                </Row> */}
-
-
             </div>
             <div className='mt-5'>
                 {loading ? (
@@ -330,7 +297,7 @@ const ArticleInProgress = () => {
                         }}
                     />
                 ) : (
-                    <Col lg={12}  className="text-center mt-5">
+                    <Col lg={12} className="text-center mt-5">
                         <div className="input100">
                             <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
                         </div>

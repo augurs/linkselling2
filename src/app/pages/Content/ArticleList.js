@@ -1,9 +1,8 @@
 import React from 'react'
 import { Button, Col, Dropdown, Row } from 'react-bootstrap'
 import DataTable from 'react-data-table-component';
-import Checkbox from '../../Components/checkbox';
 import { useState } from 'react';
-import { Link, json, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { getArticles, searchArticles } from '../../../services/articleServices/articleServices';
 import globalLoader from '../../../assets/images/loader.svg'
@@ -20,7 +19,6 @@ const ArticleList = () => {
     const [loading, setLoading] = useState(false)
 
     const userData = JSON.parse(localStorage.getItem('userData'))
-
     const navigate = useNavigate();
 
 
@@ -48,13 +46,6 @@ const ArticleList = () => {
     }
 
     const { languageData } = useLanguage();
-
-
-
-
-
-
-
 
     const columns = [
         {
@@ -218,9 +209,6 @@ const ArticleList = () => {
 
                     <Dropdown.Menu>
                         <Dropdown.Item onClick={() => handleOrders("Order an Article")}>Order an Article</Dropdown.Item>
-                        {/* <Dropdown.Item onClick={() => handleOrders("Order infographic")}>Order infographic</Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleOrders("Order a text")}>Order a text</Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleOrders("Request for proposals")}>Request for proposals</Dropdown.Item> */}
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
@@ -265,19 +253,6 @@ const ArticleList = () => {
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
-                            <select name="type" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Type" >
-                                <option label={translate(languageData, "artilstType")}></option>
-                                {articleTypeDropOption.map((item, index) => {
-                                    return (
-                                        <option value={item.value} key={index}>{item.label}</option>
-                                    )
-                                })}
-
-                            </select>
-                        </div>
-                    </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
-                        <div className="form-group">
                             <select name="source" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Source" >
                                 <option label={translate(languageData, "ArticleListSource")}></option>
                                 {sourecDropOptions.map((item, index) => {
@@ -291,9 +266,6 @@ const ArticleList = () => {
                     </Col>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="input-group">
-                            {/* <div className="input-group-text bg-primary-transparent text-primary">
-                                <i className="fe fe-calendar text-20"></i>
-                            </div> */}
                             <input className="form-control" id="datepicker-date" placeholder="MM/DD/YYYY" type="date" style={{ height: "45px" }} max={new Date().toISOString().split("T")[0]} onChange={(e) => setSearchTerms({ ...searchTerms, date: e.target.value })} />
                         </div>
                     </Col>
@@ -301,26 +273,15 @@ const ArticleList = () => {
 
 
             </div>
-            {/* <div className='mt-4'>
-                <Button className='btn btn-primary btn-w-md me-2 mt-2'>Export to ZIP</Button>
-                <Button className='btn btn-primary btn-w-md me-2 mt-2'>Move to Archive</Button>
-                <Button className='btn btn-primary btn-w-md mt-2'>Move to Archive</Button>
-            </div> */}
             <div className='mt-5'>
                 {loading ?
                     <div className='d-flex justify-content-between align-items-center'>
                         <img src={globalLoader} className='mx-auto' />
                     </div> :
                     <DataTable
-                        // selectableRowsComponent={Checkbox}
                         columns={columns}
                         data={data}
                         noDataComponent={noDataComponent}
-                    // selectableRows
-                    // selectableRowsHighlight
-                    // selectableRowsHeader
-                    // selectableRowsHeaderComponent={checkboxHeader}
-
                     />}
             </div>
 

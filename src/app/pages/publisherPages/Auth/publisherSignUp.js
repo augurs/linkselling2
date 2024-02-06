@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { Card, Container, Form} from 'react-bootstrap'
+import { Card, Container, Form } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 import { signUpPublisher } from '../../../../services/authServices/authservices';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../../assets/images/loader.svg'
 import LanguageSelect from '../../../Components/Language/languageSelect';
 import { useLanguage } from '../../../Context/languageContext';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css';
 const SignUp = () => {
 
   const initialValues = {
@@ -13,6 +15,7 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: '',
+    phoneNumber: "",
     terms: false,
     marketing: false,
     privacy: false,
@@ -34,12 +37,18 @@ const SignUp = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
+
+  const handlePhoneNumberChange = (value) => {
+    setFormValues({ ...formValues, phoneNumber: value });
+  };
+
+  console.log(formValues)
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
     setFormValues({ ...formValues, [name]: checked });
     validate({ ...formValues, [name]: checked });
   }
-  
+
 
 
 
@@ -62,6 +71,10 @@ const SignUp = () => {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
       isValid = false;
     }
+    if (!values.phoneNumber) {
+      error.phoneNumber = languageData && languageData?.filter((item) => item.title === 'PleaseEnterPhoneNumber')[0]?.value || 'PleaseEnterPhoneNumber';
+      isValid = false;
+    }
     if (!values.confirmPassword) {
       error.confirmPassword = languageData && languageData?.filter((item) => item.title === 'confirmPasswordError')[0]?.value || 'confirmPasswordError';
       isValid = false;
@@ -77,7 +90,7 @@ const SignUp = () => {
       error.marketing = languageData && languageData?.filter((item) => item.title === 'marketing')[0]?.value || 'marketing';
       isValid = false;
     }
-  
+
     if (!values.privacy) {
       error.privacy = languageData && languageData?.filter((item) => item.title === 'privacy')[0]?.value || 'privacy';
       isValid = false;
@@ -102,6 +115,21 @@ const SignUp = () => {
       toast(languageData && languageData?.filter((item) => item.title === 'terms')[0]?.value || 'terms', {
         position: "top-center",
         autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: "error",
+      });
+      setSignUpLoading(false);
+      return;
+    }
+    if (!formValues.phoneNumber) {
+      toast(languageData && languageData?.filter((item) => item.title === 'PleaseEnterPhoneNumber')[0]?.value || 'Please Enter Phone Number', {
+        position: "top-center",
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -284,6 +312,18 @@ const SignUp = () => {
                       </span>
                     </div>
                     <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.confirmPassword}</div>
+                    <div className='wrap-input100 validate-input mb-0 mt-2'>
+                      <PhoneInput
+                        className='input100 px-3 d-flex flex-Row'
+                        international
+                        defaultCountry="PL"
+                        placeholder={languageData && languageData?.filter((item) => item.title === 'PleaseEnterPhoneNumber')[0]?.value || 'PleaseEnterPhoneNumber'}
+                        value={formValues.phoneNumber}
+                        onChange={(e) => handlePhoneNumberChange(e)}
+                        onKeyUp={() => validate(formValues)}
+                      />
+                    </div>
+                    <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.phoneNumber}</div>
                     <label className="custom-control custom-checkbox mt-4">
                       <input type="checkbox" className="custom-control-input" name='terms' onChange={handleCheckbox} checked={formValues.terms} />
                       <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition2')[0]?.value || 'singUpTermsAndCondition2'}</a></span>
@@ -323,7 +363,7 @@ const SignUp = () => {
               </Card>
             </div>
           </Container>
-          
+
         </div>
       </div>
     </div>

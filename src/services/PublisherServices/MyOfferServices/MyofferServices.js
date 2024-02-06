@@ -25,6 +25,8 @@ export const addPublisherOffer = (formValues, id) => {
   formData.append("max_links", formValues?.maxLinks);
   formData.append("nofollow", formValues?.Nofollow);
   formData.append("contact_email", formValues?.contactMail);
+  formData.append("Article_goes_home_page", formValues?.ArticleGoesToHomepage);
+  formData.append("no_of_days", formValues?.numberOfDays);
   formData.append("contact_phone", formValues?.contactPhone);
   formData.append("article_max_length", formValues?.articleMaxLength);
   formData.append("article_min_length", formValues?.articleMinLength);

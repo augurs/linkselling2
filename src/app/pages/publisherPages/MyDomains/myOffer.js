@@ -8,24 +8,28 @@ import { translate } from '../../../../utility/helper';
 import { useLanguage } from '../../../Context/languageContext';
 import { listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices';
 import { addPublisherOffer, categoryofferList } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices';
+import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from 'material-ui-core';
+import { MenuProps } from '../../../../utility/data';
 
 const Myoffer = () => {
+  const publisherData = JSON.parse(localStorage.getItem("publisherData"))
   const initialValues = {
     enterDomain: '',
     price: "",
     language: "pl",
-    category: "",
+    category: [],
     maxLinks: "",
     typeofAnchors: "ema",
     Nofollow: "0",
-    contactMail: "",
-    contactPhone: "",
+    contactMail: publisherData?.user?.email,
+    contactPhone: publisherData?.user?.mobile_no,
 
     //2nd tab fields
     articleMaxLength: "",
     articleMinLength: "",
     leadLength: "",
     ArticleGoesToHomepage: "0",
+    numberOfDays: "1",
 
     //3rd tab fields
     acceptsCasino: "0",
@@ -45,7 +49,6 @@ const Myoffer = () => {
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
@@ -53,8 +56,6 @@ const Myoffer = () => {
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
   };
-
-  const publisherData = JSON.parse(localStorage.getItem("publisherData"))
   const currLang = localStorage.getItem('lang');
   const { languageData } = useLanguage()
 
@@ -296,6 +297,25 @@ const Myoffer = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const handleNumberOfDaysChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'numberOfDays' && parseInt(value) < 1) {
+        setFormValues({ ...formValues, [name]: 1 });
+    } else if (name === 'numberOfDays' && parseInt(value) > 30) {
+        setFormValues({ ...formValues, [name]: 30 });
+    } else {
+        setFormValues({ ...formValues, [name]: value });
+    }
+};
+
+
+  const handleCategoryChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFormValues({ ...formValues, category: typeof value === 'string' ? value.split(',') : value });
+  };
+
   return (
     <div>
 
@@ -335,19 +355,29 @@ const Myoffer = () => {
                     <span>{translate(languageData, "category")} *</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
-                    <div className="form-group">
-                      <Form.Select size="lg" name="category" value={formValues?.category} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                        <option label={translate(languageData, "category")} className='bg-primary'></option>
-                        {categoryList?.map((item, index) => {
-                          return (
-                            <option value={item.id} key={index}>{item.name}</option>
-                          )
-                        })}
-                      </Form.Select>
+                    <div className="wrap-input100 validate-input mb-0">
+                      <FormControl className='input100'>
+                        <InputLabel id="demo-multiple-name-label" className='px-3'>{translate(languageData, "category")}</InputLabel>
+                        <Select
+                          labelId="demo-multiple-name-label"
+                          id="demo-multiple-name"
+                          multiple
+                          value={formValues?.category}
+                          onChange={handleCategoryChange}
+                          input={<OutlinedInput label="Name" />}
+                          MenuProps={MenuProps}
+                        >
+                          {categoryList?.map((item, index) => (
+                            <MenuItem key={index} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </div>
-                    <div className='text-danger text-center mt-1'>{formErrors.project}</div>
                   </Col>
                 </Row>
+
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
                     <span>{translate(languageData, "Language")}</span>
@@ -528,6 +558,19 @@ const Myoffer = () => {
                     </div>
                   </Col>
                 </Row>
+                {formValues?.ArticleGoesToHomepage == "1" ?
+                  <Row className='align-items-center mt-5'>
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, "numberOfDays")} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                      <div className="wrap-input100 validate-input mb-0">
+                        <input className="input100" type="number" value={formValues?.numberOfDays} name="numberOfDays" placeholder={translate(languageData, "numberOfDays")} style={{ paddingLeft: "15px" }} onChange={(e) => handleNumberOfDaysChange(e)} onKeyDown={() => validate(formValues)} />
+                      </div>
+                      {!formValues?.numberOfDays? <span className='text-danger'>{(translate(languageData, "enterNumberOfDays"))}</span>: ""}
+                    </Col>
+                  </Row>
+                  : ""}
                 <Row className='w-100 d-flex justify-content-end'>
                   <Col lg={6} className='ms-2'>
                   </Col>

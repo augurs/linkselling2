@@ -138,6 +138,7 @@ export const signUpPublisher = (formValues, language) => {
       email: formValues.email,
       password: formValues.password,
       language: language,
+      mobile_no: formValues.phoneNumber
     })
     .then((res) => {
       return res.data;

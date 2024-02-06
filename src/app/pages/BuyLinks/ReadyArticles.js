@@ -424,63 +424,13 @@ const ReadyArticles = () => {
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="input-group">
-                            {/* <div className="input-group-text bg-primary-transparent text-primary">
-                                <i className="fe fe-calendar text-20"></i>
-                            </div> */}
                             <input className="form-control" id="datepicker-date" placeholder="MM/DD/YYYY" type="date" style={{ height: "45px" }} max={new Date().toISOString().split("T")[0]} />
-                        </div>
-                    </Col>
-                    <Col xs={12} sm={6} md={4} className=''>
-                        <div className="form-group">
-                            <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
-                                <option label={translate(languageData, "ArticleIndexationStatus")}></option>
-                                {indexationStatus.map((item, index) => {
-                                    return (
-                                        <option value={item} key={index}>{item}</option>
-                                    )
-                                })}
-                            </select>
                         </div>
                     </Col>
                 </Row>
 
-
             </div>
             <div className='mt-5'>
-                <OverlayTrigger
-                    placement={"top"}
-                    overlay={
-                        <Tooltip >
-                            Go to Reports
-                        </Tooltip>
-                    }
-                >
-                    <Dropdown as={ButtonGroup} drop={"down"} className="mb-4">
-
-                        <Button variant="primary">{translate(languageData, "Details")}</Button>
-
-                        <Dropdown.Toggle split variant="primary" id="dropdown-split-basic" />
-                        <Dropdown.Menu>
-                            <Dropdown.Item href="#/action-1">{translate(languageData, "Details")}</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">{translate(languageData, "PaidModification")}</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">{translate(languageData, "CheckPublication")}</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">{translate(languageData, "CheckIndexing")}</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </OverlayTrigger>
-
-                <OverlayTrigger
-                    placement={"top"}
-                    overlay={
-                        <Tooltip >
-                            Checking the correctness of Article publication, indexing status and indexing orders from all articles and for selected project
-                        </Tooltip>
-                    }
-                >
-                    <Button variant="primary" className='ms-4' style={{ marginTop: "-17px" }} onClick={() => setShowIndexationModal(true)}>{translate(languageData, "VerificationIndexationArticles")}</Button>
-
-                </OverlayTrigger>
-
                 {loading ? (
                     <div className='d-flex justify-content-between align-items-center'>
                         <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
