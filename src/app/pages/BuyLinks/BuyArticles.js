@@ -54,7 +54,7 @@ const BuyArticles = () => {
         webAddress: "",
         publicationLang: "",
     }
-
+    const lang = localStorage.getItem("lang");
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
     const [formValues, setFormValues] = useState(initialValues);
@@ -108,12 +108,12 @@ const BuyArticles = () => {
     const [suggestion, setSuggestion] = useState('')
     const [provideSubjectText, setProvideSubjectText] = useState('')
     const [publisherMsgText, setPublisherMsgText] = useState('')
+    const [cardLang, setCardLang] = useState(lang)
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [userArticleId, setUserArticleId] = useState()
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
     const userData = JSON.parse(localStorage.getItem('userData'));
-
 
     useEffect(() => {
         if (useArticleList) {
@@ -126,6 +126,8 @@ const BuyArticles = () => {
 
         }
     }, [addNewArticleProjectDropdown, useArticleList])
+
+    
 
     useEffect(() => {
         getUserDiscountServices()
@@ -305,6 +307,11 @@ const BuyArticles = () => {
             setPublisherMsgText('')
         }
     }, [articleType])
+
+    useEffect(()=>{
+        if(lang)
+        setCardLang(lang)
+    }, [lang])
 
 
     useEffect(() => {
@@ -1080,7 +1087,7 @@ const BuyArticles = () => {
         const filteredData = res?.data?.filter(item => item.status === 'Active');
         setArticlesData2(filteredData);
     }
-    
+
     useEffect(() => {
         articleListServices()
     }, [])
@@ -1751,8 +1758,8 @@ const BuyArticles = () => {
                                                                         <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
                                                                             <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
-                                                                            <h6>{item.name} </h6>
-                                                                            <Link >{item?.description}</Link>
+                                                                            <h6>{cardLang=="en" ? item.name : item.polish_name} </h6>
+                                                                            <Link >{cardLang=="en" ? item?.description: item?.polish_description}</Link>
                                                                             {/* <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                                             </div> */}
@@ -1900,11 +1907,11 @@ const BuyArticles = () => {
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="form-group">
-                                                                <select name="project" class=" form-select" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
-                                                                    <option label={translate(languageData, "ArticleList")}></option>
+                                                                <select name="project" className="input100 px-3" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
+                                                                    <option className="input100" label={translate(languageData, "ArticleList")}></option>
                                                                     {useArticleList?.map((item, index) => {
                                                                         return (
-                                                                            <option value={item.id} key={index}>{item.title}</option>
+                                                                            <option className="input100" value={item.id} key={index}>{item.title}</option>
                                                                         )
                                                                     })}
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-import { Button, Card, Col, Row} from 'react-bootstrap'
+import { Button, Card, Col, Row } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../../assets/images/loader.svg'
@@ -16,6 +16,7 @@ const AddDomain = () => {
     const [formValues, setFormValues] = useState(initialValues)
     const [formErrors, setFormErrors] = useState({})
     const [orderLoading, setOrderLoading] = useState(false)
+    const [touched, setTouched] = useState(false);
     const navigate = useNavigate()
 
     const publisherData = JSON.parse(localStorage.getItem("publisherData"))
@@ -26,18 +27,8 @@ const AddDomain = () => {
 
     const addDomainServices = async () => {
         setOrderLoading(true);
-        if (!formValues.enterUrl) {
-            toast(translate(languageData, "DomainFieldNotEmpty"), {
-                position: "top-center",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'error'
-            });
-
+        const isValid = validate(formValues);
+        if (!isValid) {
             setOrderLoading(false);
             return;
         }
@@ -55,8 +46,8 @@ const AddDomain = () => {
             });
             setTimeout(() => {
                 navigate('/publisher/listDomain')
-              }, 1000);
-        } else if (res.success === false && res.message.url[0]==="The url has already been taken.") {
+            }, 1000);
+        } else if (res.success === false && res.message.url[0] === "The url has already been taken.") {
             toast(`${translate(languageData, "TheurlHasAlreadyBeenTaken")}: ${res?.admin_email}`, {
                 position: "top-center",
                 autoClose: 2000,
@@ -67,8 +58,8 @@ const AddDomain = () => {
                 progress: undefined,
                 type: 'error'
             });
-        }else{
-            toast(translate(languageData,"somethingwentwrong"), {
+        } else {
+            toast(translate(languageData, "somethingwentwrong"), {
                 position: "top-center",
                 autoClose: 2000,
                 hideProgressBar: false,
@@ -85,21 +76,26 @@ const AddDomain = () => {
 
 
     const validate = (values) => {
-        let error = {};
+        let errors = {};
         let isValid = true;
+        const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+
         if (!values.enterUrl) {
-            error.enterUrl = translate(languageData, "PleaseEnterArticleTitle");
+            errors.enterUrl = translate(languageData, "PleaseEnterArticleTitle");
+            isValid = false;
+        } else if (!urlRegex.test(values.enterUrl)) {
+            errors.enterUrl = translate(languageData, "InvalidUrlFormat");
             isValid = false;
         }
 
-        setFormErrors(error);
+        setFormErrors(errors);
         return isValid;
     }
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormValues({ ...formValues, [name]: value });
-    // };
+    const handleBlur = () => {
+        setTouched(true);
+        validate(formValues);
+    };
 
     return (
         <div>
@@ -115,8 +111,11 @@ const AddDomain = () => {
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0">
-                                    <input className="input100" type="text" name="enterUrl" placeholder={translate(languageData, "enterDomainUrl")} style={{ paddingLeft: "15px" }} onChange={(e) => setFormValues({ ...formValues, enterUrl: e.target.value })} onKeyDown={() => validate(formValues)} />
+                                    <input className="input100" type="text" name="enterUrl" placeholder={translate(languageData, "enterDomainUrl")} style={{ paddingLeft: "15px" }} onChange={(e) => setFormValues({ ...formValues, enterUrl: e.target.value })} onKeyDown={handleBlur} onBlur={handleBlur} />
                                 </div>
+                                {touched && formErrors.enterUrl && (
+                                    <div className="text-danger">{formErrors.enterUrl}</div>
+                                )}
                             </Col>
                         </Row>
                         <Row className='w-100 d-flex justify-content-end'>
@@ -124,7 +123,7 @@ const AddDomain = () => {
                             <Col lg={6} className='ms-2'>
                             </Col>
                             <Col lg={5} className='mt-5 mb-2'>
-                                <Button className='d-flex ms-auto' onClick={() => addDomainServices()}> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData, "addDomain")}</Button>
+                                <Button className='d-flex ms-auto' onClick={() => addDomainServices()} disabled={formErrors.enterUrl }> {orderLoading ? <img src={globalLoader} alt='loader' width={20} /> : translate(languageData, "addDomain")}</Button>
                             </Col>
                         </Row>
                     </div>

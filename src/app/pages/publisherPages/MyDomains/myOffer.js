@@ -48,6 +48,7 @@ const Myoffer = () => {
   const [categoryList, setCategoryList] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false)
+  const [touched, setTouched] = useState(false);
   const navigate = useNavigate()
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -222,7 +223,7 @@ const Myoffer = () => {
       setOrderLoading(false);
       return;
     }
-    if (formValues?.articleMinLength >= formValues?.articleMaxLength) {
+    if (parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength)) {
       toast(translate(languageData, "lessThanMaxLength"), {
         position: "top-center",
         autoClose: 2000,
@@ -248,9 +249,6 @@ const Myoffer = () => {
         progress: undefined,
         type: 'success'
       });
-      setTimeout(() => {
-        navigate('/publisher/listOffer')
-      }, 1000);
       setFormValues(initialValues);
     } else if (res.success === false && res.message[0] === "The url has already been taken.") {
       toast(translate(languageData, "TheurlHasAlreadyBeenTaken"), {
@@ -279,18 +277,46 @@ const Myoffer = () => {
     setOrderLoading(false);
   };
 
-
   const validate = (values) => {
-    let error = {};
+    let errors = {};
     let isValid = true;
-    if (!values.enterUrl) {
-      error.enterUrl = translate(languageData, "PleaseEnterArticleTitle");
-      isValid = false;
+    const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{9,12}$/;
+
+    if (!values.enterDomain) {
+        errors.enterDomain = translate(languageData, 'enterDomainUrl');
+        isValid = false;
+    } else if (!urlRegex.test(values.enterDomain)) {
+        errors.enterDomain = translate(languageData, 'InvalidLink');
+        isValid = false;
     }
 
-    setFormErrors(error);
+    if (!values.contactMail) {
+        errors.contactMail = translate(languageData, 'PleaseEnterEmail');
+        isValid = false;
+    } else if (!emailRegex.test(values.contactMail)) {
+        errors.contactMail = translate(languageData, 'signUpEmailError2');
+        isValid = false;
+    }
+
+    if (!values.contactPhone) {
+        errors.contactPhone = translate(languageData, 'PleaseEnterPhoneNumber');
+        isValid = false;
+    } else if (!phoneRegex.test(values.contactPhone)) {
+        errors.contactPhone = translate(languageData, 'InvalidPhoneFormat');
+        isValid = false;
+    }
+
+    setFormErrors(errors);
     return isValid;
-  }
+};
+
+
+  const handleBlur = () => {
+    setTouched(true);
+    validate(formValues);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -300,13 +326,13 @@ const Myoffer = () => {
   const handleNumberOfDaysChange = (e) => {
     const { name, value } = e.target;
     if (name === 'numberOfDays' && parseInt(value) < 1) {
-        setFormValues({ ...formValues, [name]: 1 });
+      setFormValues({ ...formValues, [name]: 1 });
     } else if (name === 'numberOfDays' && parseInt(value) > 30) {
-        setFormValues({ ...formValues, [name]: 30 });
+      setFormValues({ ...formValues, [name]: 30 });
     } else {
-        setFormValues({ ...formValues, [name]: value });
+      setFormValues({ ...formValues, [name]: value });
     }
-};
+  };
 
 
   const handleCategoryChange = (event) => {
@@ -335,9 +361,9 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} />
+                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} onBlur={handleBlur}/>
                     </div>
-                    <div className='text-danger text-center mt-1'>{formErrors?.enterDomain}</div>
+                    {touched && formErrors.enterDomain && <div className="text-danger">{formErrors.enterDomain}</div>}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -475,8 +501,9 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} />
+                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur}/>
                     </div>
+                    {touched && formErrors.contactPhone && <div className="text-danger">{formErrors.contactPhone}</div>}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -485,15 +512,16 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={handleBlur}/>
                     </div>
+                    {touched && formErrors.contactMail && <div className="text-danger">{formErrors.contactMail}</div>}
                   </Col>
                 </Row>
                 <Row className='w-100 d-flex justify-content-end'>
                   <Col lg={6} className='ms-2'>
                   </Col>
                   <Col lg={5} className='mt-5 mb-2'>
-                    <Button className='d-flex ms-auto' onClick={handleNext}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.price || !formValues.maxLinks || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>
@@ -567,7 +595,7 @@ const Myoffer = () => {
                       <div className="wrap-input100 validate-input mb-0">
                         <input className="input100" type="number" value={formValues?.numberOfDays} name="numberOfDays" placeholder={translate(languageData, "numberOfDays")} style={{ paddingLeft: "15px" }} onChange={(e) => handleNumberOfDaysChange(e)} onKeyDown={() => validate(formValues)} />
                       </div>
-                      {!formValues?.numberOfDays? <span className='text-danger'>{(translate(languageData, "enterNumberOfDays"))}</span>: ""}
+                      {!formValues?.numberOfDays ? <span className='text-danger'>{(translate(languageData, "enterNumberOfDays"))}</span> : ""}
                     </Col>
                   </Row>
                   : ""}
@@ -576,7 +604,7 @@ const Myoffer = () => {
                   </Col>
                   <Col lg={5} className='mt-5 mb-2 d-flex'>
                     <Button className='d-flex ms-auto' onClick={handlePrevious}>{translate(languageData, "clickPrevious")}</Button>
-                    <Button className='d-flex ms-2' onClick={handleNext}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-2' onClick={handleNext} disabled={parseFloat(formValues.articleMinLength) > parseFloat(formValues.articleMaxLength)|| !formValues.articleMinLength || !formValues.articleMaxLength || !formValues.leadLength}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>

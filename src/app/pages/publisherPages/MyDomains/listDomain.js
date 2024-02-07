@@ -105,15 +105,20 @@ const DomainList = () => {
     {
       name: translate(languageData, 'writingAction'),
       cell: (row) => (
-          <div className='d-flex gap-2'>
-              <Link to={`/publisher/myOffer/${row.id}`}>
-                <Button className='d-flex gap-1 align-items-center'>
-                  <FaPlus className='icon-link text-white'/>Add Offer
-                  </Button>
-              </Link>
-          </div>
+        <div className='d-flex gap-2'>
+          {row?.status == "Active" ?
+            <Link to={`/publisher/myOffer/${row.id}`}>
+              <Button className='d-flex gap-1 align-items-center'>
+                <FaPlus className='icon-link text-white' />Add Offer
+              </Button>
+            </Link> :
+            <Button className='d-flex gap-1 align-items-center' disabled>
+              <FaPlus className='icon-link text-white' />Add Offer
+            </Button>}
+
+        </div>
       ),
-  },
+    },
 
   ]
 
