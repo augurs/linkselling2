@@ -33,6 +33,18 @@ export const addProjects = (values, id) => {
       });
   };
 
+  export const projectChangeStatus = (id) => {
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/project-change-status/${id}`)
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
   export const getProject = (id) => {
     return axios
       .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`)
@@ -62,13 +74,13 @@ export const addProjects = (values, id) => {
       });
   };
 
-  export const searchProject = (values, id) => {
+  export const searchProject = (values, id, status) => {
     console.log(values , "66");
     return axios
       .post(`${baseURL2}/LinkSellingSystem/public/api/search-project/${id}`, {
         language: values.language ? values.language : "" ,
         name: values.title,
-        
+        status: status,
       })
       .then((res) => {
         return res?.data;

@@ -2,7 +2,6 @@ import React from 'react'
 import { Button, Container, Navbar } from 'react-bootstrap'
 import { useNavigate, Link } from 'react-router-dom'
 import LanguageSelect from '../Language/languageSelect';
-import { useCart } from '../../Context/cartListContext';
 import { FaHome } from 'react-icons/fa';
 
 const Header = ({ toggleSiderbar, setModalShow }) => {

@@ -8,6 +8,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import LanguageSelect from '../../Components/Language/languageSelect';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../Context/languageContext';
+import { useWallet } from '../../Context/walletContext';
+
 import { translate } from '../../../utility/helper';
 
 
@@ -28,7 +30,7 @@ function Login() {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false)
-
+  const { showWalletBalance } = useWallet();
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -100,6 +102,7 @@ function Login() {
         theme: "colored",
         type: 'success'
       });
+      showWalletBalance()
       setTimeout(() => {
         navigate('/')
         localStorage.removeItem('nipData')
@@ -146,10 +149,6 @@ function Login() {
       setLoading(false)
     }
   }
-
-
-
-
 
   return (
     <div className='ltr login-img'>

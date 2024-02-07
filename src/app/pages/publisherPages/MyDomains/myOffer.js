@@ -1,31 +1,37 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, Row, Form } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../../assets/images/loader.svg'
 import { translate } from '../../../../utility/helper';
 import { useLanguage } from '../../../Context/languageContext';
 import { listDomain } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices';
 import { addPublisherOffer, categoryofferList } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices';
+import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from 'material-ui-core';
+import { MenuProps } from '../../../../utility/data';
 
 const Myoffer = () => {
+  const publisherData = JSON.parse(localStorage.getItem("publisherData"))
   const initialValues = {
-    enterDomain: "",
+    enterDomain: '',
     price: "",
     language: "pl",
-    category: "",
+    category: [],
     maxLinks: "",
     typeofAnchors: "ema",
     Nofollow: "0",
-    contactMail: "",
-    contactPhone: "",
+    contactMail: publisherData?.user?.email,
+    contactPhone: publisherData?.user?.mobile_no,
 
+    //2nd tab fields
     articleMaxLength: "",
     articleMinLength: "",
     leadLength: "",
     ArticleGoesToHomepage: "0",
+    numberOfDays: "1",
 
+    //3rd tab fields
     acceptsCasino: "0",
     acceptsGambling: "0",
     acceptsErotic: "0",
@@ -34,31 +40,23 @@ const Myoffer = () => {
     acceptsCBD: "0",
     acceptsCrypto: "0",
     acceptsMedic: "0",
-
-
   };
 
   const [formValues, setFormValues] = useState(initialValues)
   const [formErrors, setFormErrors] = useState({})
   const [orderLoading, setOrderLoading] = useState(false)
   const [categoryList, setCategoryList] = useState([]);
-  const [domainList, setDomainList] = useState([])
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false)
+  const [touched, setTouched] = useState(false);
   const navigate = useNavigate()
-
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
 
-
-  console.log(formValues.contactMail, "55");
-
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
   };
-
-  const publisherData = JSON.parse(localStorage.getItem("publisherData"))
   const currLang = localStorage.getItem('lang');
   const { languageData } = useLanguage()
 
@@ -66,6 +64,24 @@ const Myoffer = () => {
     categoryofferListServices()
     domainListServices()
   }, [])
+
+  const { domainId } = useParams();
+
+  const domainListServices = async () => {
+    setLoading(true)
+    const res = await listDomain(publisherData?.user?.id)
+    const selectedDomain = res?.data.find((domain) => domain?.id === parseInt(domainId));
+
+    if (res.success === true) {
+      setFormValues({
+        ...initialValues,
+        enterDomain: selectedDomain?.url || "",
+      });
+      setLoading(false)
+    } else {
+      setLoading(false);
+    }
+  }
 
   const categoryofferListServices = async () => {
     setLoading(true)
@@ -78,16 +94,6 @@ const Myoffer = () => {
     }
   }
 
-  const domainListServices = async () => {
-    setLoading(true)
-    const res = await listDomain(publisherData?.user?.id)
-    if (res.success === true) {
-      setDomainList(res?.data)
-      setLoading(false)
-    } else {
-      setLoading(false);
-    }
-  }
 
   const addPublisherOfferServices = async () => {
     setOrderLoading(true);
@@ -217,6 +223,20 @@ const Myoffer = () => {
       setOrderLoading(false);
       return;
     }
+    if (parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength)) {
+      toast(translate(languageData, "lessThanMaxLength"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setOrderLoading(false);
+      return;
+    }
     const res = await addPublisherOffer(formValues, publisherData?.user?.id);
     if (res.success === true) {
       toast(translate(languageData, "offerAddedSuccessfully"), {
@@ -229,7 +249,8 @@ const Myoffer = () => {
         progress: undefined,
         type: 'success'
       });
-    } else if (res.success === false && res.message.url[0] === "The url has already been taken.") {
+      setFormValues(initialValues);
+    } else if (res.success === false && res.message[0] === "The url has already been taken.") {
       toast(translate(languageData, "TheurlHasAlreadyBeenTaken"), {
         position: "top-center",
         autoClose: 2000,
@@ -256,22 +277,69 @@ const Myoffer = () => {
     setOrderLoading(false);
   };
 
-
   const validate = (values) => {
-    let error = {};
+    let errors = {};
     let isValid = true;
-    if (!values.enterUrl) {
-      error.enterUrl = translate(languageData, "PleaseEnterArticleTitle");
-      isValid = false;
+    const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{9,12}$/;
+
+    if (!values.enterDomain) {
+        errors.enterDomain = translate(languageData, 'enterDomainUrl');
+        isValid = false;
+    } else if (!urlRegex.test(values.enterDomain)) {
+        errors.enterDomain = translate(languageData, 'InvalidLink');
+        isValid = false;
     }
 
-    setFormErrors(error);
+    if (!values.contactMail) {
+        errors.contactMail = translate(languageData, 'PleaseEnterEmail');
+        isValid = false;
+    } else if (!emailRegex.test(values.contactMail)) {
+        errors.contactMail = translate(languageData, 'signUpEmailError2');
+        isValid = false;
+    }
+
+    if (!values.contactPhone) {
+        errors.contactPhone = translate(languageData, 'PleaseEnterPhoneNumber');
+        isValid = false;
+    } else if (!phoneRegex.test(values.contactPhone)) {
+        errors.contactPhone = translate(languageData, 'InvalidPhoneFormat');
+        isValid = false;
+    }
+
+    setFormErrors(errors);
     return isValid;
-  }
+};
+
+
+  const handleBlur = () => {
+    setTouched(true);
+    validate(formValues);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
+  };
+
+  const handleNumberOfDaysChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'numberOfDays' && parseInt(value) < 1) {
+      setFormValues({ ...formValues, [name]: 1 });
+    } else if (name === 'numberOfDays' && parseInt(value) > 30) {
+      setFormValues({ ...formValues, [name]: 30 });
+    } else {
+      setFormValues({ ...formValues, [name]: value });
+    }
+  };
+
+
+  const handleCategoryChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setFormValues({ ...formValues, category: typeof value === 'string' ? value.split(',') : value });
   };
 
   return (
@@ -292,17 +360,10 @@ const Myoffer = () => {
                     <span>{translate(languageData, "enterDomain")} *</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
-                    <div className="form-group">
-                      <Form.Select size="lg" name="enterDomain" value={formValues?.enterDomain} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                        <option label={translate(languageData, "enterDomain")} className='bg-primary'></option>
-                        {domainList?.map((item, index) => {
-                          return (
-                            <option value={item.id} key={index}>{item.url}</option>
-                          )
-                        })}
-                      </Form.Select>
+                    <div className="wrap-input100 validate-input mb-0">
+                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} onBlur={handleBlur}/>
                     </div>
-                    <div className='text-danger text-center mt-1'>{formErrors?.enterDomain}</div>
+                    {touched && formErrors.enterDomain && <div className="text-danger">{formErrors.enterDomain}</div>}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -320,19 +381,29 @@ const Myoffer = () => {
                     <span>{translate(languageData, "category")} *</span>
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
-                    <div className="form-group">
-                      <Form.Select size="lg" name="category" value={formValues?.category} onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                        <option label={translate(languageData, "category")} className='bg-primary'></option>
-                        {categoryList?.map((item, index) => {
-                          return (
-                            <option value={item.id} key={index}>{item.name}</option>
-                          )
-                        })}
-                      </Form.Select>
+                    <div className="wrap-input100 validate-input mb-0">
+                      <FormControl className='input100'>
+                        <InputLabel id="demo-multiple-name-label" className='px-3'>{translate(languageData, "category")}</InputLabel>
+                        <Select
+                          labelId="demo-multiple-name-label"
+                          id="demo-multiple-name"
+                          multiple
+                          value={formValues?.category}
+                          onChange={handleCategoryChange}
+                          input={<OutlinedInput label="Name" />}
+                          MenuProps={MenuProps}
+                        >
+                          {categoryList?.map((item, index) => (
+                            <MenuItem key={index} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </div>
-                    <div className='text-danger text-center mt-1'>{formErrors.project}</div>
                   </Col>
                 </Row>
+
                 <Row className='align-items-center mt-5'>
                   <Col xs={12} md={4}>
                     <span>{translate(languageData, "Language")}</span>
@@ -430,8 +501,9 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} />
+                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur}/>
                     </div>
+                    {touched && formErrors.contactPhone && <div className="text-danger">{formErrors.contactPhone}</div>}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -440,15 +512,16 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={handleBlur}/>
                     </div>
+                    {touched && formErrors.contactMail && <div className="text-danger">{formErrors.contactMail}</div>}
                   </Col>
                 </Row>
                 <Row className='w-100 d-flex justify-content-end'>
                   <Col lg={6} className='ms-2'>
                   </Col>
                   <Col lg={5} className='mt-5 mb-2'>
-                    <Button className='d-flex ms-auto' onClick={handleNext}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.price || !formValues.maxLinks || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>
@@ -473,6 +546,7 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0">
                       <input className="input100" type="number" value={formValues?.articleMinLength} name="articleMinLength" placeholder={translate(languageData, "articleMinLength")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
+                    {parseFloat(formValues?.articleMinLength) >= parseFloat(formValues?.articleMaxLength) ? <span className='text-danger'>{translate(languageData, "lessThanMaxLength")}</span> : ""}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -512,12 +586,25 @@ const Myoffer = () => {
                     </div>
                   </Col>
                 </Row>
+                {formValues?.ArticleGoesToHomepage == "1" ?
+                  <Row className='align-items-center mt-5'>
+                    <Col xs={12} md={4}>
+                      <span>{translate(languageData, "numberOfDays")} *</span>
+                    </Col>
+                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                      <div className="wrap-input100 validate-input mb-0">
+                        <input className="input100" type="number" value={formValues?.numberOfDays} name="numberOfDays" placeholder={translate(languageData, "numberOfDays")} style={{ paddingLeft: "15px" }} onChange={(e) => handleNumberOfDaysChange(e)} onKeyDown={() => validate(formValues)} />
+                      </div>
+                      {!formValues?.numberOfDays ? <span className='text-danger'>{(translate(languageData, "enterNumberOfDays"))}</span> : ""}
+                    </Col>
+                  </Row>
+                  : ""}
                 <Row className='w-100 d-flex justify-content-end'>
                   <Col lg={6} className='ms-2'>
                   </Col>
                   <Col lg={5} className='mt-5 mb-2 d-flex'>
                     <Button className='d-flex ms-auto' onClick={handlePrevious}>{translate(languageData, "clickPrevious")}</Button>
-                    <Button className='d-flex ms-2' onClick={handleNext}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-2' onClick={handleNext} disabled={parseFloat(formValues.articleMinLength) > parseFloat(formValues.articleMaxLength)|| !formValues.articleMinLength || !formValues.articleMaxLength || !formValues.leadLength}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>

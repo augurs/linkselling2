@@ -54,7 +54,7 @@ const BuyArticles = () => {
         webAddress: "",
         publicationLang: "",
     }
-
+    const lang = localStorage.getItem("lang");
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
     const [formValues, setFormValues] = useState(initialValues);
@@ -108,12 +108,12 @@ const BuyArticles = () => {
     const [suggestion, setSuggestion] = useState('')
     const [provideSubjectText, setProvideSubjectText] = useState('')
     const [publisherMsgText, setPublisherMsgText] = useState('')
+    const [cardLang, setCardLang] = useState(lang)
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [userArticleId, setUserArticleId] = useState()
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
     const userData = JSON.parse(localStorage.getItem('userData'));
-
 
     useEffect(() => {
         if (useArticleList) {
@@ -126,6 +126,8 @@ const BuyArticles = () => {
 
         }
     }, [addNewArticleProjectDropdown, useArticleList])
+
+    
 
     useEffect(() => {
         getUserDiscountServices()
@@ -305,6 +307,11 @@ const BuyArticles = () => {
             setPublisherMsgText('')
         }
     }, [articleType])
+
+    useEffect(()=>{
+        if(lang)
+        setCardLang(lang)
+    }, [lang])
 
 
     useEffect(() => {
@@ -1076,9 +1083,11 @@ const BuyArticles = () => {
 
     //slect project api and auto select option with id start
     const articleListServices = async () => {
-        const res = await projectList(userData?.id)
-        setArticlesData2(res?.data)
+        const res = await projectList(userData?.id);
+        const filteredData = res?.data?.filter(item => item.status === 'Active');
+        setArticlesData2(filteredData);
     }
+
     useEffect(() => {
         articleListServices()
     }, [])
@@ -1369,74 +1378,7 @@ const BuyArticles = () => {
                             <h4 className="fw-semibold">{translate(languageData, "BasicFilters")}</h4>
                         </div>
                         <Row className="mt-4" >
-                            {/* <Col xs={12} sm={6} md={4} className="">
-                                <div
-                                    className="wrap-input100 validate-input"
-                                    data-bs-validate="Password is required"
-                                >
-                                    <input
-                                        className="input100"
-                                        type="text"
-                                        name="search"
-                                        placeholder={translate(languageData, "Portal Name")}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                    />
-                                    <span className="focus-input100"></span>
-                                    <span className="symbol-input100">
-                                        <i className="zmdi zmdi-search" aria-hidden="true"></i>
-                                    </span>
-                                </div>
-                            </Col>
-                            <Col xs={12} sm={6} md={4} className="mb-3">
-                                <div
-                                    className="wrap-input100 validate-input mb-0"
-                                    data-bs-validate="Password is required"
-                                >
-                                    <input
-                                        className="input100"
-                                        type="text"
-                                        name="price"
-                                        placeholder={translate(languageData, "EnterTopic")}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                    />
-                                    <span className="focus-input100"></span>
-                                    <span className="symbol-input100">
-                                        <i className="zmdi zmdi-search" aria-hidden="true"></i>
-                                    </span>
-                                </div>
-                            </Col> */}
                             <Col xs={12} sm={12} md={4} className="">
-                                {/* <FormControl fullWidth onMouseEnter={handletoggle}>
-
-                                    <Select
-                                        labelId="typeofanchors-label"
-                                        id="typeofanchors"
-                                        multiple
-                                        value={typeAnchors}
-                                        onChange={handleAnchorsType}
-                                        input={<OutlinedInput name="typeofanchors" />}
-                                        renderValue={(selected) => selected.join(', ')}
-                                        style={{ height: "40px" }}
-                                        displayEmpty={true}
-                                        IconComponent={() => (
-                                            <MdOutlineKeyboardArrowDown
-                                                size={20}
-                                                className='me-1 MuiSvgIcon-root MuiSelect-icon'
-                                            />
-                                        )}
-                                    >
-                                        <MenuItem value="" disabled>
-                                            {translate(languageData, "Select Anchor Types")}
-                                        </MenuItem>
-                                        {anchorTypes.map((name, index) => (
-                                            <MenuItem key={index} value={name.type} className='check_list'>
-                                                <Checkbox checked={typeAnchors.indexOf(name.type) > -1} />
-                                                <ListItemText primary={name.type} />
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-
-                                </FormControl> */}
                                 <FormControl fullWidth onMouseEnter={handletoggle}>
                                     <Select
                                         labelId="typeofanchors-label"
@@ -1695,25 +1637,6 @@ const BuyArticles = () => {
                         </div>}
                 </div>
 
-
-
-
-
-                {/* <nav aria-label="Page navigation example">
-                    <ul className="pagination">
-                        <li className={`page-item ${paginationArray.length < 2 || page === 1 ? 'disabled' : ''}`} onClick={() => decreasePage()}><a className="page-link" href="#">Previous</a></li>
-                        {paginationArray.map((item, index) => {
-                            return (
-                                <li className="page-item" key={index}><a className={`page-link ${page === item && "bg-primary text-white"}`} href="#">{item}</a></li>
-                            )
-                        })}
-                        <></> : <li className={`page-item ${paginationArray.length < 2 || page === lastPage ? 'disabled' : ''}`} onClick={() => increasePage()}><a class="page-link" href="#">Next</a></li>
-
-                    </ul>
-                </nav> */}
-
-
-
                 <Modal
                     show={showOfferModal}
                     onHide={() => setShowOfferModal(false)}
@@ -1722,7 +1645,6 @@ const BuyArticles = () => {
                 >
                     <Modal.Header>
                         <div>
-                            {/* <p className="mb-1">drseo.blog</p> */}
                             <h4>
                                 {translate(languageData, "SelectionPortalOffer")}: <b>{selectedPublisherArticle?.portalLink}</b>
                             </h4>
@@ -1732,7 +1654,7 @@ const BuyArticles = () => {
                                 <FaPlus style={{ cursor: "pointer" }} className="me-1" />{translate(languageData, "AddProject")}
                             </div>
                             <div>
-                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px" }} className="btn btn-outline-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
+                                <select name={translate(languageData, "artilstProject")} style={{ height: "45px" }} className="btn btn-primary" id="default-dropdown" data-bs-placeholder="Project" onChange={(e) => {
                                     const selectedValue = e.target.value;
                                     setProject(selectedValue);
                                     if (selectedValue.trim() === '') {
@@ -1748,7 +1670,7 @@ const BuyArticles = () => {
                                     <option label={translate(languageData, "artilstProject")}></option>
                                     {articlesData2?.map((item, index) => {
                                         return (
-                                            <option value={item?.id} key={index}>{item?.title?.length > 10 ? item?.title?.slice(0, 10) + '...' : item?.title}</option>
+                                            <option value={item?.id} key={index}>{item?.name?.length > 10 ? item?.name?.slice(0, 10) + '...' : item?.name}</option>
                                         )
                                     })}
                                 </select>
@@ -1836,8 +1758,8 @@ const BuyArticles = () => {
                                                                         <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
                                                                             <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
-                                                                            <h6>{item.name} </h6>
-                                                                            <Link >{item?.description}</Link>
+                                                                            <h6>{cardLang=="en" ? item.name : item.polish_name} </h6>
+                                                                            <Link >{cardLang=="en" ? item?.description: item?.polish_description}</Link>
                                                                             {/* <div className='mt-4'>
                                                                                 <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                                             </div> */}
@@ -1985,11 +1907,11 @@ const BuyArticles = () => {
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                                             <div className="form-group">
-                                                                <select name="project" class=" form-select" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
-                                                                    <option label={translate(languageData, "ArticleList")}></option>
+                                                                <select name="project" className="input100 px-3" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
+                                                                    <option className="input100" label={translate(languageData, "ArticleList")}></option>
                                                                     {useArticleList?.map((item, index) => {
                                                                         return (
-                                                                            <option value={item.id} key={index}>{item.title}</option>
+                                                                            <option className="input100" value={item.id} key={index}>{item.title}</option>
                                                                         )
                                                                     })}
 

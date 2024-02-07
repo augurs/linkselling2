@@ -6,8 +6,9 @@ import { translate } from '../../../../utility/helper'
 import { useLanguage } from '../../../Context/languageContext'
 import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, Col, Row } from 'react-bootstrap'
+import { Button, Col, InputGroup, Row } from 'react-bootstrap'
 import { listoffer } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices'
+import { FaEye, FaEdit } from 'react-icons/fa'
 const OfferList = () => {
 
     const publisherData = JSON.parse(localStorage.getItem('publisherData'))
@@ -16,6 +17,8 @@ const OfferList = () => {
     const [offerList, setOfferList] = useState([])
     const [loading, setLoading] = useState(false)
     const [isDataPresent, setIsDataPresent] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+
     useEffect(() => {
         offerListServices()
     }, [])
@@ -33,19 +36,35 @@ const OfferList = () => {
         }
     }
 
-    const tableData = offerList?.map((item) => {
-        return {
-            url: item?.url,
-            our_price: item?.our_price,
-            client_price: item?.client_price,
-            language: item?.language,
-            id: item?.id,
-            articleMaxLength: item.article_max_length? item.article_max_length: 0,
-            articleMinLength: item.article_min_length? item.article_min_length: 0,
-            leadLength: item.lead_length?item.lead_length: 0,
-            contactEmail: item?.contact_email
-        }
-    })
+    const tableData = offerList
+        ?.filter((item) =>
+            (item?.url && item?.url.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            ((typeof item?.our_price === 'number' ? item?.our_price.toString() : item?.our_price) &&
+                (typeof item?.our_price === 'number' ? item?.our_price.toString().toLowerCase().includes(searchTerm.toLowerCase()) : item?.our_price)) ||
+            ((typeof item?.lead_length === 'number' ? item?.lead_length.toString() : item?.lead_length) &&
+                (typeof item?.lead_length === 'number' ? item?.lead_length.toString().toLowerCase().includes(searchTerm.toLowerCase()) : item?.lead_length)) ||
+            ((typeof item?.article_max_length === 'number' ? item?.article_max_length.toString() : item?.article_max_length) &&
+                (typeof item?.article_max_length === 'number' ? item?.article_max_length.toString().toLowerCase().includes(searchTerm.toLowerCase()) : item?.article_max_length)) ||
+            ((typeof item?.article_min_length === 'number' ? item?.article_min_length.toString() : item?.article_min_length) &&
+                (typeof item?.article_min_length === 'number' ? item?.article_min_length.toString().toLowerCase().includes(searchTerm.toLowerCase()) : item?.article_min_length)) ||
+            (item?.contact_email && typeof item?.contact_email === 'string' && item?.contact_email.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+        .map((item) => {
+            return {
+                url: item?.url,
+                our_price: item?.our_price,
+                client_price: item?.client_price,
+                language: item?.language,
+                id: item?.id,
+                articleMaxLength: item?.article_max_length ? item?.article_max_length : 0,
+                articleMinLength: item?.article_min_length ? item?.article_min_length : 0,
+                leadLength: item?.lead_length ? item?.lead_length : 0,
+                contactEmail: item?.contact_email,
+                status: item?.status,
+            };
+        });
+
+
 
     const columns = [
         {
@@ -85,6 +104,46 @@ const OfferList = () => {
             sortable: true,
             wrap: true
         },
+        {
+            name: translate(languageData, "artilstStatus"),
+            selector: (row) => row.status,
+            sortable: true,
+            cell: (row) => {
+                let buttonClass = "text-primary";
+                let buttonText = "";
+
+                switch (row.status) {
+                    case "Deactive":
+                        buttonClass = "text-danger";
+                        buttonText = <h6>{translate(languageData, "deactive")}</h6>;
+                        break;
+                    case "Active":
+                        buttonClass = "text-primary";
+                        buttonText = <h6>{translate(languageData, "active")}</h6>;
+                        break;
+
+                    default:
+
+                        buttonText = row.status;
+                }
+
+                return (
+                    <span className={`${buttonClass}`}>
+                        {buttonText}
+                    </span>
+                );
+            },
+        },
+        {
+            name: translate(languageData, 'writingAction'),
+            cell: (row) => (
+                <div className='d-flex gap-2'>
+                    <Link to={`/publisher/updateOffer/${row.id}`}>
+                        <FaEdit className='icon-link' />
+                    </Link>
+                </div>
+            ),
+        },
 
     ]
 
@@ -98,7 +157,7 @@ const OfferList = () => {
                     <Row className='flex justify-content-between'>
                         <Col xs={12} sm={6} md={4} >
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="search" placeholder={translate(languageData, "artilstSearch")} />
+                                <input className="input100" type="search" name="search" placeholder={translate(languageData, "artilstSearch")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="zmdi zmdi-search" aria-hidden="true"></i>
@@ -107,7 +166,7 @@ const OfferList = () => {
                         </Col>
                         <Col xs={12} sm={6} md={4}>
                             <div className="d-flex justify-content-end">
-                                <Link onClick={() => navigate("/publisher/myOffer")}><Button>{translate(languageData, "addOffer")}</Button></Link>
+                                <Link onClick={() => navigate("/publisher/myOffer/0")}><Button>{translate(languageData, "addOffer")}</Button></Link>
                             </div>
                         </Col>
                     </Row>
