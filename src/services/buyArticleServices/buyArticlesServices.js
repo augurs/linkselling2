@@ -72,7 +72,7 @@ export const addToCartArticles = (data, isAddNew) => {
   formData.append("month_guarantee", data.monthGuarantee);
   formData.append("amount", data.amount);
   formData.append("article_amount", data.article_amount);
-  {(!isAddNew && data.articleType !== 'SelectLater') && formData.append("article_id", data.article_id); }
+  formData.append("article_id", data.article_id); 
   formData.append("content", data.content);
   formData.append("image", data.image);
   formData.append("project", data.project);

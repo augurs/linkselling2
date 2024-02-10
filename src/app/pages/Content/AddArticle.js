@@ -15,7 +15,6 @@ import { useEffect } from 'react';
 import JSZip from 'jszip';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const AddArticle = () => {
-
     const initialValues = {
         document: "",
         project: "",

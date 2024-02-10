@@ -19,7 +19,7 @@ function Login() {
     password: "",
   };
 
-  const userData = localStorage.getItem('userData');
+  const userData = JSON.parse(localStorage.getItem('userData'));
 
   useEffect(() => {
     if (userData) {

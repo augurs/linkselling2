@@ -91,8 +91,8 @@ const Updateoffer = () => {
         const { name, value } = e.target;
         if (name === 'numberOfDays' && parseInt(value) < 1) {
             setFormValues({ ...formValues, [name]: 1 });
-        } else if (name === 'numberOfDays' && parseInt(value) > 30) {
-            setFormValues({ ...formValues, [name]: 30 });
+        } else if (name === 'numberOfDays' && parseInt(value) > 29) {
+            setFormValues({ ...formValues, [name]: 29 });
         } else {
             setFormValues({ ...formValues, [name]: value });
         }
@@ -331,15 +331,15 @@ const Updateoffer = () => {
     const validate = (values) => {
         let errors = {};
         let isValid = true;
-        const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+        const urlRegex = /^[^ "]+\.[^ "]+$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^\d{9,12}$/;
+        const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
 
         if (!values.enterDomain) {
             errors.enterDomain = translate(languageData, 'enterDomainUrl');
             isValid = false;
         } else if (!urlRegex.test(values.enterDomain)) {
-            errors.enterDomain = translate(languageData, 'InvalidLink');
+            errors.enterDomain = translate(languageData, 'InvalidDomainFormat');
             isValid = false;
         }
 
@@ -356,6 +356,11 @@ const Updateoffer = () => {
             isValid = false;
         } else if (!phoneRegex.test(values.contactPhone)) {
             errors.contactPhone = translate(languageData, 'InvalidPhoneFormat');
+            isValid = false;
+        }
+
+        if(!values?.maxLinks){
+            errors.maxLinks = translate(languageData, 'enterMaxLinks');
             isValid = false;
         }
 
@@ -516,6 +521,7 @@ const Updateoffer = () => {
                                         <div className="wrap-input100 validate-input mb-0">
                                             <input className="input100" type="number" name="maxLinks" value={formValues?.maxLinks} placeholder={translate(languageData, "maxLinks")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                                         </div>
+                                        {touched && formErrors.maxLinks && <div className="text-danger">{formErrors.maxLinks}</div>}
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>
@@ -524,7 +530,7 @@ const Updateoffer = () => {
                                     </Col>
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0">
-                                            <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur} />
+                                            <input className="input100" type="text" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur} />
                                         </div>
                                         {touched && formErrors.contactPhone && <div className="text-danger">{formErrors.contactPhone}</div>}
 

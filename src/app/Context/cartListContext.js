@@ -14,7 +14,9 @@ function CustomCartContext({ children }) {
     const userData = JSON.parse(localStorage.getItem('userData'));
 
     useEffect(() => {
+        if(userData?.id){
         cartListServices()
+        }
     }, [])
 
     const [cartContextData, setCartContextData] = useState([])

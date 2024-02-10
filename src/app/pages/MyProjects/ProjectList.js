@@ -37,7 +37,7 @@ const ProjectList = () => {
 
     useEffect(() => {
         handleSearchService()
-    }, [searchTerms, activeFilter, projectChangedId])
+    }, [searchTerms, activeFilter])
 
     useEffect(() => {
         projectListServices()
@@ -73,6 +73,9 @@ const ProjectList = () => {
         setLoading(true)
         const res = await projectChangeStatus(id)
         setProjectChangeStatus(res?.data)
+        if(res.success=== true){
+            handleSearchService()
+        }
         setLoading(false)
     }
 

@@ -357,7 +357,6 @@ const BuyArticles = () => {
 
 
     const checkAddedToCart = articles?.some((item) => item?.cart === 'Yes')
-    console.log(checkAddedToCart, "155");
 
     // const requestArticleService = async () => {
     //     const data = {
@@ -970,7 +969,7 @@ const BuyArticles = () => {
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
             article_amount: orderPrice?.split(',')[0],
-            article_id: orderId,
+            article_id: articleType === translate(languageData, "RequestArticleWriting") ? orderId : articleType === translate(languageData, "AddNewArticle") ? addNewArticleProjectDropdown : "",
             project: project,
             content: content,
             image: image,
@@ -1004,6 +1003,7 @@ const BuyArticles = () => {
             setConfirmModal(true)
             cartListServices()
             getPublisherArticlesService()
+            setAddNewArticleProjectDropdown('')
         } else {
             toast(translate(languageData, 'dataNotAddedCart'), {
                 position: "top-center",
@@ -1344,8 +1344,6 @@ const BuyArticles = () => {
             cart: item.cart,
         };
     });
-
-    console.log(articleTableData, "1324");
 
     const handleUseArticleClick = (item) => {
         if (item.id === userArticleId) {
@@ -1964,6 +1962,7 @@ const BuyArticles = () => {
                                                             <span>{translate(languageData, "sidebarContent")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                        <div className="wrap-input100 validate-input mb-0">
                                                             <ReactQuill
                                                                 theme="snow"
                                                                 onChange={handleEditorChange}
@@ -1971,8 +1970,9 @@ const BuyArticles = () => {
                                                                 modules={modules}
                                                                 formats={formats}
                                                                 bounds={'.app'}
-                                                                placeholder="Write content"
+                                                                placeholder={translate(languageData, "writeContent")}
                                                             />
+                                                            </div>
                                                             {linkCount > 0 && linkCount > selectedMaxLinks && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}

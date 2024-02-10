@@ -5,12 +5,13 @@ import globalLoader from '../../../../assets/images/loader.svg'
 import { translate } from '../../../../utility/helper'
 import { useLanguage } from '../../../Context/languageContext'
 import DataTable from 'react-data-table-component'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, InputGroup, Row } from 'react-bootstrap'
-import { listoffer } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices'
+import { viewOffer } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEye, FaEdit } from 'react-icons/fa'
-const OfferList = () => {
+import { useLocation } from 'react-router-dom';
+const ViewOffer = () => {
 
     const publisherData = JSON.parse(localStorage.getItem('publisherData'))
     const { languageData } = useLanguage()
@@ -19,14 +20,17 @@ const OfferList = () => {
     const [loading, setLoading] = useState(false)
     const [isDataPresent, setIsDataPresent] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const domainUrl = queryParams.get('domain');
 
     useEffect(() => {
-        offerListServices()
+        ViewOfferListServices()
     }, [])
 
-    const offerListServices = async () => {
+    const ViewOfferListServices = async () => {
         setLoading(true)
-        const res = await listoffer(publisherData?.user?.id)
+        const res = await viewOffer(domainUrl, publisherData?.user?.id)
         if (res.success === true) {
             setOfferList(res?.data)
             setIsDataPresent(res.data.length > 0);
@@ -99,12 +103,12 @@ const OfferList = () => {
             selector: row => `${row.articleMaxLength}`,
             sortable: true,
         },
-        {
-            name: translate(languageData, "BuyArticleEmail"),
-            selector: row => `${row.contactEmail}`,
-            sortable: true,
-            wrap: true
-        },
+        // {
+        //     name: translate(languageData, "BuyArticleEmail"),
+        //     selector: row => `${row.contactEmail}`,
+        //     sortable: true,
+        //     wrap: true
+        // },
         {
             name: translate(languageData, "artilstStatus"),
             selector: (row) => row.status,
@@ -135,36 +139,36 @@ const OfferList = () => {
                 );
             },
         },
-        {
-            name: translate(languageData, 'writingAction'),
-            cell: (row) => (
-                <div className='d-flex gap-2'>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip id="tooltip">{translate(languageData, "editOffer")}</Tooltip>}
-                    >
-                        <Link to={`/publisher/updateOffer/${row.id}`}>
-                            <FaEdit className='icon-link' />
-                        </Link>
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip id="tooltip">{translate(languageData, "viewAllOffer")}</Tooltip>}
-                    >
-                        <Link to={`/publisher/viewOffer?domain=${row.url}`}>
-                            <FaEye className='icon-link' />
-                        </Link>
-                    </OverlayTrigger>
-                </div >
-            ),
-        },
+        // {
+        //     name: translate(languageData, 'writingAction'),
+        //     cell: (row) => (
+        //         <div className='d-flex gap-2'>
+        //             <OverlayTrigger
+        //                 placement="top"
+        //                 overlay={<Tooltip id="tooltip">{translate(languageData, "editOffer")}</Tooltip>}
+        //             >
+        //                 <Link to={`/publisher/updateOffer/${row.id}`}>
+        //                     <FaEdit className='icon-link' />
+        //                 </Link>
+        //             </OverlayTrigger>
+        //             <OverlayTrigger
+        //                 placement="top"
+        //                 overlay={<Tooltip id="tooltip">{translate(languageData, "viewAllOffer")}</Tooltip>}
+        //             >
+        //                 <Link to={`/publisher/viewOffer/${row.id}`}>
+        //                     <FaEye className='icon-link' />
+        //                 </Link>
+        //             </OverlayTrigger>
+        //         </div >
+        //     ),
+        // },
 
     ]
 
     return (
         <div className='p-4'>
 
-            <h3 className='mt-3 mb-3 text-center'>{translate(languageData, "listOffer")}</h3>
+            <h3 className='mt-3 mb-3 text-center'>{translate(languageData, "viewOffer")}</h3>
 
             <div className='mt-5 w-100'>
                 <div className='my-4'>
@@ -178,11 +182,11 @@ const OfferList = () => {
                                 </span>
                             </div>
                         </Col>
-                        <Col xs={12} sm={6} md={4}>
+                        {/* <Col xs={12} sm={6} md={4}>
                             <div className="d-flex justify-content-end">
                                 <Link onClick={() => navigate("/publisher/myOffer/0")}><Button>{translate(languageData, "addOffer")}</Button></Link>
                             </div>
-                        </Col>
+                        </Col> */}
                     </Row>
                 </div>
                 {loading ? (<div className='d-flex'>
@@ -206,4 +210,4 @@ const OfferList = () => {
     )
 }
 
-export default OfferList
+export default ViewOffer

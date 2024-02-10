@@ -34,3 +34,19 @@ import { baseURL2 } from "../../../utility/data";
         return error.response.data;
       });
   };
+
+  export const suspendOffer = (DomainUrl, id) => {
+    const formData = new FormData();
+    formData.append("url", DomainUrl);
+    formData.append("publisher_id", id);
+  
+    return axios
+      .post(`${baseURL2}/LinkSellingSystem/public/api/change-status-offer`, formData)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
