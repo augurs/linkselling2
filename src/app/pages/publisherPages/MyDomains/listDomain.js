@@ -10,7 +10,9 @@ import { Button, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import { FaPlus } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify';
 import { MdCancel } from 'react-icons/md';
-import { listDomain, suspendOffer } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
+import { listDomain, suspendOffer, uploadCSV } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
+import FileUpload from '../../../Components/FileUpload/FileUpload'
+
 const DomainList = () => {
 
   const publisherData = JSON.parse(localStorage.getItem('publisherData'))
@@ -20,9 +22,18 @@ const DomainList = () => {
   const [loading, setLoading] = useState(false)
   const [isDataPresent, setIsDataPresent] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   useEffect(() => {
     domainListServices()
   }, [])
+
+  useEffect(() => {
+    if (selectedFile !== null) {
+      uploadCSVServices()
+    }
+  }, [selectedFile])
+
+
 
   const domainListServices = async () => {
     setLoading(true)
@@ -152,13 +163,21 @@ const DomainList = () => {
       cell: (row) => (
         <div className='d-flex gap-2'>
           {row?.status == "Active" ?
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip id="tooltip">{translate(languageData, "addOffer")}</Tooltip>}
-            >
-              <Link to={`/publisher/myOffer/${row.id}`}>
-                <FaPlus className='icon-link' />
-              </Link></OverlayTrigger>
+            <>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip id="tooltip">{translate(languageData, "addOffer")}</Tooltip>}
+              >
+                <Link to={`/publisher/myOffer/${row.id}`}>
+                  <FaPlus className='icon-link' />
+                </Link></OverlayTrigger>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip id="tooltip">{translate(languageData, "suspendOffer")}</Tooltip>}
+              >
+                <Link className='d-flex gap-1 align-items-center' onClick={() => suspendOfferServices(row?.url)}>
+                  <MdCancel className='icon-link' />
+                </Link></OverlayTrigger></>
             :
             <OverlayTrigger
               placement="top"
@@ -168,21 +187,62 @@ const DomainList = () => {
               <Button disabled className='bg-transparent'>
                 <FaPlus className='icon-link' />
               </Button></OverlayTrigger>}
-          {row?.status == "Active" ?
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip id="tooltip">{translate(languageData, "suspendOffer")}</Tooltip>}
-            >
-              <Link className='d-flex gap-1 align-items-center' onClick={() => suspendOfferServices(row?.url)}>
-                <MdCancel className='icon-link' />
-              </Link></OverlayTrigger>
-            : ""}
         </div>
       ),
 
     },
 
   ]
+
+  const handleFileChange = (file) => {
+    setSelectedFile(file);
+  }
+
+  const uploadCSVServices = async () => {
+    setLoading(true);
+    const res = await uploadCSV(selectedFile, publisherData?.user?.id);
+    if (res.success === true) {
+      toast(translate(languageData, "csvFileUploadSuccessfully"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'success'
+      });
+      domainListServices()
+      setLoading(false);
+    } else if (res.success === false && res.message.file[0] === "The file must be a file of type: csv.") {
+      toast(`${translate(languageData, "pleaseUploadCsvFile")}: ${res?.admin_email}`, {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setSelectedFile("")
+    } else {
+      toast(translate(languageData, "somethingwentwrong"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setSelectedFile(null)
+    }
+
+    setLoading(false);
+  };
+
 
   return (
     <div className='p-4'>
@@ -202,8 +262,15 @@ const DomainList = () => {
               </div>
             </Col>
             <Col xs={12} sm={6} md={4}>
-              <div className="d-flex justify-content-end">
+              <div className="d-flex justify-content-end gap-2">
                 <Link onClick={() => navigate("/publisher/addDomain")}><Button>{translate(languageData, "addDomain")}</Button></Link>
+                <FileUpload
+                  allowedFileExtensions={['.csv']}
+                  buttonName={translate(languageData, "uploadCsv")}
+                  classNames='p-1 file-upload'
+                  getData={handleFileChange}
+                  name='document'
+                />
               </div>
             </Col>
           </Row>

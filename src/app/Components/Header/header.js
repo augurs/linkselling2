@@ -81,7 +81,7 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                     <div className='btn btn-outline-primary me-2'>
                         <WalletBalance />
                     </div>
-                    <div className="position-relative">
+                    <div className="position-relative" style={{cursor: "pointer"}}>
                         <AiOutlineShoppingCart size={25} className='me-4' onClick={() => navigate('/cart')} />
                         {cartContextData?.length > 0 && <span className="badge bg-primary rounded-circle" style={{ position: 'absolute', top: '-10px', right: '4px' }}>{cartContextData?.length}</span>}
                     </div>

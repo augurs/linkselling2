@@ -205,13 +205,8 @@ const Cart = () => {
         // },
         {
             name: translate(languageData, 'ProjectName'),
-            selector: (row) => row.project_name,
+            selector: (row) => row?.project_name? row?.project_name : "--",
             center: true,
-            cell: (row) => (
-                <div>
-                    <div>{row.project_name}</div>
-                </div>
-            ),
             width: "10VW"
         },
         {
@@ -226,20 +221,20 @@ const Cart = () => {
                 </div>
             ),
         },
-        {
-            name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
-                visible={true}
-                height="30"
-                width="30"
-                ariaLabel="blocks-loading"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
-            /> : translate(languageData, 'buyNow')} </button>,
-            center: true,
-            //  width: '180px'
-        },
+        // {
+        //     name: translate(languageData, "Action"),
+        //     cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
+        //         visible={true}
+        //         height="30"
+        //         width="30"
+        //         ariaLabel="blocks-loading"
+        //         wrapperStyle={{}}
+        //         wrapperClass="blocks-wrapper"
+        //         colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+        //     /> : translate(languageData, 'buyNow')} </button>,
+        //     center: true,
+        //     //  width: '180px'
+        // },
         {
             name: translate(languageData, "cartRemove"),
             cell: row => <div style={{ cursor: "pointer" }}> {loading.deleteLoading && deleteId === row?.id ? <ColorRing

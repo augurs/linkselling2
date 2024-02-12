@@ -22,6 +22,7 @@ import ViewAddArticle from "./app/pages/Content/ViewAddArticle.js";
 import AddArticle from "./app/pages/Content/AddArticle.js";
 import OrderArticle from "./app/pages/Content/OrderArticle.js";
 import ProjectList from "./app/pages/MyProjects/ProjectList.js";
+import ViewPurchaseDomain from "./app/pages/MyProjects/viewPurchaseDomain.js";
 import AddProjects from "./app/pages/MyProjects/AddProjects.js";
 import EditProjects from "./app/pages/MyProjects/EditArticles.js";
 import ArticleInProgress from "./app/pages/BuyLinks/ArticleInProgress.js";
@@ -184,6 +185,7 @@ function App() {
           path: '/resubmitarticle/:id',
           element: <Resubmnittedarticle />
         },
+        { path: '/viewRelatedPurchaseDomain/:id', element: <ViewPurchaseDomain /> },
 
       ]
     },

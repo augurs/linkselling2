@@ -956,6 +956,35 @@ const BuyArticles = () => {
                 return;
             }
         }
+        if (articleType === translate(languageData, "UseArticle")) {
+            if (useArticleList?.length == 0) {
+                toast(translate(languageData, "pleaseAddAnArticle&SelctArticle"), {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+            if (!userArticleId) {
+                toast(translate(languageData, "selectAnArticleThenAddToCart"), {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+            
+        }
 
         const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
         const data = {

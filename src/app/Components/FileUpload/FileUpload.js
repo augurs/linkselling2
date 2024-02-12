@@ -3,7 +3,7 @@ import "./fileupload.css"
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { useEffect } from 'react';
-const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) => {
+const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, buttonName, classNames }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
 
@@ -68,14 +68,14 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) =>
 
     return (
         <div
-            className={`file-upload ${isDragging ? 'dragging' : ''} w-100`}
+            className={`${classNames ? `file-upload p-1` : "file-upload"}  ${isDragging ? 'dragging' : ''} w-100`}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
             {/* <p></p> */}
-            <button onClick={handleButtonClick}>{translate(languageData , "AddArtiSelecrDragFile")}</button>
+            <button onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
             <input
                 type="file"
                 className="hidden-input"
@@ -83,9 +83,9 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage }) =>
                 onChange={handleInputChange}
                 name={name}
             />
-            {uploadedFilesName && (
+            {/* {uploadedFilesName && (
                 <p>Uploaded File: {uploadedFilesName}</p>
-            )}
+            )} */}
         </div>
     );
 };

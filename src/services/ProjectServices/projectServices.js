@@ -97,3 +97,15 @@ export const addProjects = (values, id) => {
 //   webAddress: "",
 //   publicationLang: "",
 //   publicationCountry: ""
+
+export const viewPurchaseDomainlist = (uId, pId) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/project-show-links/${uId}/${pId}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

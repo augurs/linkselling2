@@ -46,25 +46,25 @@ const ArticleInProgress = () => {
     };
 
     const tableData = data
-    .filter((item) =>
-        (item?.title && item?.title.toLowerCase().includes(searchText.toLowerCase())) ||
-        (item?.portal && typeof item?.portal === 'string' && item?.portal.toLowerCase().includes(searchText.toLowerCase()))
-    )
-    .filter((item) => selectprojectText ? item?.project === selectprojectText : true)
-    .map((item) => {
-        return {
-            portal: item?.portal,
-            price: item?.price,
-            project: item?.project,
-            date1: item?.created_at,
-            status: item?.status,
-            name: item?.name,
-            id: item?.id,
-            link: item?.link,
-            title: item?.title,
-            type: item?.type
-        }
-    });
+        .filter((item) =>
+            (item?.title && item?.title.toLowerCase().includes(searchText.toLowerCase())) ||
+            (item?.portal && typeof item?.portal === 'string' && item?.portal.toLowerCase().includes(searchText.toLowerCase()))
+        )
+        .filter((item) => selectprojectText ? item?.project === selectprojectText : true)
+        .map((item) => {
+            return {
+                portal: item?.portal,
+                price: item?.price,
+                project: item?.project,
+                date1: item?.created_at,
+                status: item?.status,
+                name: item?.name,
+                id: item?.id,
+                link: item?.link,
+                title: item?.title,
+                type: item?.type
+            }
+        });
 
 
     const columns = [
@@ -81,12 +81,11 @@ const ArticleInProgress = () => {
             selector: row => row.project,
             selector: row => row.portal,
             cell: (row) => (
+
                 <div className='mt-2 mb-2'>
-                    <Link to={`http://${row.title}`} target="_blank" style={{ textDecoration: "underline" }}>
-                        {row.title}
-                    </Link>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.project}</div>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.portal}</div>
+                    {row.title}
+                    <div className='text-muted'><small>{row.project}</small></div>
+                    <div className='text-muted'><small><Link to={`http://${row.portal}`} target="_blank" style={{ textDecoration: "underline" }}>{row.portal}</Link></small></div>
                 </div>
             ),
             sortable: true,
