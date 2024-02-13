@@ -24,8 +24,8 @@ const AddArticle = () => {
     const [showDropdown, setShowDropdown] = useState(true);
 
     const { languageData } = useLanguage();
-
-
+    const { id } = useParams();
+    const allowedImageExtension = ['.jpg', '.gif', '.png']
     const userData2 = JSON.parse(localStorage.getItem("userData"))
 
 
@@ -47,9 +47,6 @@ const AddArticle = () => {
             });
     };
 
-
-    const { id } = useParams();
-
     const languagesOpts = [
         {
             value: "AcceptPublication",
@@ -66,10 +63,9 @@ const AddArticle = () => {
     }
 
     useEffect(() => {
-        resubmitimg()
-
+        resubmitImg()
     }, [])
-    const resubmitimg = async () => {
+    const resubmitImg = async () => {
         const res = await uploadimagereqarticle(userData2?.id, id)
         if (res.success === true) {
             const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
@@ -102,15 +98,12 @@ const AddArticle = () => {
     };
 
 
-    const allowedImageExtension = ['.jpg', '.gif', '.png']
-
-
 
     const updateResubmitArticleServices = async () => {
         setLoading(true)
         const res = await updaterimagrequestedarticle(formValues, formValues?.id)
         if (res.success === true) {
-            toast(translate(languageData, "articleAddedSuccessfully"), {
+            toast(translate(languageData, "responseUpdateSuccessfully"), {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -219,6 +212,8 @@ const AddArticle = () => {
 
                             </Col>
                         </Row>
+                        {!showDropdown && (
+                        <>
                         <h2 className='mt-5'>{translate(languageData, "UpdateImage")} *</h2>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
@@ -237,13 +232,14 @@ const AddArticle = () => {
                                 <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
+                        </>)}
                         {showDropdown && (
                             <Row className='align-items-center mt-5'>
                                 <Col xs={12} md={4}>
                                     <span>{translate(languageData, "Status")}</span>
                                 </Col>
                                 <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={formValues?.value}/>
                                 </Col>
 
                             </Row>)}

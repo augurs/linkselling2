@@ -24,6 +24,7 @@ function Portalarticledetails() {
     const [portalLang, setPortalLang] = useState([])
     const [modalType, setModalType] = useState("");
     const [chatData, setChatData] = useState([]);
+    const [buttonsVisible, setButtonsVisible] = useState(true);
 
 
 
@@ -146,7 +147,7 @@ function Portalarticledetails() {
                     progress: undefined,
                     type: 'success'
                 });
-
+                setButtonsVisible(false);
                 ordersListServices();
                 setShowModal(false);
             } else {
@@ -338,8 +339,9 @@ function Portalarticledetails() {
                                 </div>
                             </Card.Body>
                             <Card.Footer className='d-flex gap-2'>
+                            {buttonsVisible && (<>
                                 <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
-                                <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button>
+                                <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button></>)}
                                 <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sendMessage")}</Button>
                             </Card.Footer>
                         </Card>
