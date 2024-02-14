@@ -16,15 +16,36 @@ function Portallinkupdatewithid() {
 
     const userData = localStorage.getItem('userData');
     const [link, setLink] = useState('');
-
+    const [touched, setTouched] = useState(false);
+    const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(false)
-    const [portalArticleDetail, setPortalArticleDetail] = useState([])
 
     const navigate = useNavigate();
 
     const { t } = useTranslation();
     const { languageData } = useLanguage();
 
+    useEffect(() => {
+        if (touched) {
+            validate(link);
+        }
+    }, [link, touched]);
+    const validate = (value) => {
+        const errors = {};
+        const urlRegex = /^[^ "]+\.[^ "]+$/;
+
+        if (!value) {
+            errors.link = translate(languageData, "enterDomain");
+        } else if (!urlRegex.test(value)) {
+            errors.link = translate(languageData, "InvalidDomainFormat");
+        }
+
+        setFormErrors(errors);
+    };
+
+    const handleBlur = () => {
+        setTouched(true);
+    };
 
     const language = localStorage.getItem('lang')
     const submitlinkportal = async () => {
@@ -83,9 +104,11 @@ function Portallinkupdatewithid() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                <input className="input100" type="url" name="title" placeholder={translate(languageData, "writingUrl")} style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} />
+                                                <input className="input100" type="url" name="title" placeholder={translate(languageData, "writingUrl")} style={{ paddingLeft: "15px" }} onChange={(e) => setLink(e.target.value)} onKeyDown={handleBlur} onBlur={handleBlur}/>
                                             </div>
-                                            {/* <div className='text-danger text-center mt-1'>{formErrors.title}</div> */}
+                                            {touched && link && (
+                                                <div className="text-danger">{formErrors?.link}</div>
+                                            )}
                                         </Col>
 
                                     </Row>

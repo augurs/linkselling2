@@ -109,3 +109,18 @@ export const viewPurchaseDomainlist = (uId, pId) => {
       return error.response.data;
     });
 };
+
+export const uploadDocx = (docx) => {
+  const formData = new FormData();
+  formData.append("file", docx);
+
+  return axios
+  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

@@ -10,11 +10,11 @@ import globalLoader from '../../../assets/images/loader.svg'
 import ReactQuill from 'react-quill';
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
-import { projectList } from '../../../services/ProjectServices/projectServices';
+import { projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
-import JSZip from 'jszip';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 const AddArticle = () => {
+
     const initialValues = {
         document: "",
         project: "",
@@ -28,24 +28,30 @@ const AddArticle = () => {
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
     const [articleType, setArticleType] = useState('chooselater')
-    const [editor, setEditor] = useState()
     const [articlesData2, setArticlesData2] = useState([]);
     const [title, setTitle] = useState('');
     const [lead, setLead] = useState('');
     const [content, setContent] = useState('');
-    const [fileName, setFileName] = useState('');
     const [displayedImage, setDisplayedImage] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const userData2 = JSON.parse(localStorage.getItem("userData"))
-    
+    console.log(content, "38");
     const { languageData } = useLanguage();
     const navigate = useNavigate()
-    useEffect(() => {
-        setEditor(content)
-    }, [fileName, content])
+
+    // useEffect(() => {
+    //     setContent(content)
+    // }, [content])
 
     useEffect(() => {
         setFormValues({ ...formValues, title: title, lead: lead })
-    }, [title, fileName, lead])
+    }, [title, lead])
+
+    useEffect(() => {
+        if (selectedFile !== null) {
+            uploadDocxServices()
+        }
+      }, [selectedFile])
 
     //pixabay Image selct start//
 
@@ -72,45 +78,6 @@ const AddArticle = () => {
     const allowedDocExtensions = ['.docx'];
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
-
-    //*docsx reader code//
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setFileName(file.name);
-
-        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-                const arrayBuffer = event.target.result;
-                const blob = new Blob([arrayBuffer]);
-
-                extractTextFromDocx(blob);
-            };
-
-            reader.readAsArrayBuffer(file);
-        } else {
-            setTitle('Invalid file type. Please upload a DOCX file.');
-        }
-    };
-
-    const extractTextFromDocx = async (blob) => {
-        const zip = new JSZip();
-
-        zip.loadAsync(blob).then(async (zip) => {
-
-            zip.file('word/document.xml').async('string').then((docXml) => {
-
-                const textContent = docXml.replace(/<[^>]+>/g, '');
-                setContent(textContent);
-
-                setTitle(textContent.substr(0, 50));
-                setLead(textContent.substr(50, 50));
-            });
-        });
-    };
-    //docsx reader code//*
-
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
         const reader = new FileReader();
@@ -119,13 +86,6 @@ const AddArticle = () => {
         };
         reader.readAsDataURL(file);
     };
-
-
-
-
-    const handleArticleType = (type) => {
-        setArticleType(type)
-    }
 
     const fieldTranslationMap = {
         content: translate(languageData, "ContentField"),
@@ -143,7 +103,7 @@ const AddArticle = () => {
         } else if (type === "save") {
             setLoading(true)
         }
-        const res = await addArticle(formValues, editor, userData2.id)
+        const res = await addArticle(formValues, content, userData2.id)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
@@ -203,9 +163,6 @@ const AddArticle = () => {
         }
     };
 
-
-
-
     useEffect(() => {
         articleListServices2()
 
@@ -216,16 +173,18 @@ const AddArticle = () => {
     }
 
 
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
     };
 
+    const handleFileChange = (file) => {
+        setSelectedFile(file);
+      }
+
 
     const handleEditorChange = (html) => {
-        setEditor(html)
+        setContent(html)
     }
 
 
@@ -289,7 +248,62 @@ const AddArticle = () => {
         'list', 'bullet',
         'link', 'image'
     ];
+    
 
+    const uploadDocxServices = async () => {
+        setLoading(true);
+        const res = await uploadDocx(selectedFile);
+        if (res.success === true) {
+            toast(translate(languageData, "docxFileUploadSuccessfully"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'success'
+            });
+    
+            if (res.title && res.lead && res.content) {
+                setFormValues({
+                    ...formValues,
+                    title: res.title,
+                    lead: res.lead,
+                    content: res.content
+                });
+            }
+
+            setContent(res?.content)
+           
+        } else if (res.success === false && res.message.file[0] === "The file must be a file of type: csv.") {
+            toast(`${translate(languageData, "pleaseUploadCsvFile")}: ${res?.admin_email}`, {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+        } else {
+            toast(translate(languageData, "somethingwentwrong"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+        }
+    
+        setLoading(false);
+    };
+    
+    
 
 
     return (
@@ -310,10 +324,7 @@ const AddArticle = () => {
                                 <div>
                                     <FileUpload
                                         allowedFileExtensions={allowedDocExtensions}
-                                        getData={(file, name) => {
-                                            handleFiles(file, name);
-                                            handleFileChange({ target: { files: [file] } });
-                                        }}
+                                        getData={handleFileChange}
                                         name="document"
                                     />
                                 </div>
@@ -371,13 +382,13 @@ const AddArticle = () => {
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <ReactQuill
                                     theme="snow"
-                                    onChange={handleEditorChange}
-                                    value={editor}
+                                    value={content}
                                     modules={modules}
                                     formats={formats}
                                     bounds={'.app'}
                                     placeholder="Write content"
                                     style={{ height: "300px" }}
+                                    onChange={handleEditorChange}
                                 />
 
                             </Col>
