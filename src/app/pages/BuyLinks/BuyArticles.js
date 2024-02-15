@@ -3,7 +3,7 @@ import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
 import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor } from 'react-icons/md';
-import usFlag from "../../../assets/images/flags/us.svg"
+import usFlag from "../../../assets/images/flags/us.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
@@ -17,7 +17,7 @@ import { Modal } from "react-bootstrap";
 import { anchorTypes } from "../../../utility/data";
 import { translate, countLinksInEditor } from "../../../utility/helper";
 import { useLanguage } from "../../Context/languageContext";
-import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles, requestArticle } from "../../../services/buyArticleServices/buyArticlesServices";
+import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles } from "../../../services/buyArticleServices/buyArticlesServices";
 import { ToastContainer, toast } from "react-toastify";
 import globalLoader from '../../../assets/images/loader.svg'
 import green from '../../../assets/images/cards/Green.png'
@@ -45,6 +45,7 @@ import { modules, formats } from "../../../utility/helper";
 import moment from "moment";
 const BuyArticles = () => {
 
+    const userData = JSON.parse(localStorage.getItem('userData'));
     const initialValues = {
         project: "",
     };
@@ -111,9 +112,7 @@ const BuyArticles = () => {
     const [cardLang, setCardLang] = useState(lang)
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
-    const [userArticleId, setUserArticleId] = useState()
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
-    const userData = JSON.parse(localStorage.getItem('userData'));
 
     useEffect(() => {
         if (useArticleList) {
@@ -126,8 +125,6 @@ const BuyArticles = () => {
 
         }
     }, [addNewArticleProjectDropdown, useArticleList])
-
-    
 
     useEffect(() => {
         getUserDiscountServices()
@@ -146,7 +143,6 @@ const BuyArticles = () => {
 
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "RequestArticleWriting")) {
-            setUserArticleId('')
             setAddArtiLead('')
 
         }
@@ -308,9 +304,9 @@ const BuyArticles = () => {
         }
     }, [articleType])
 
-    useEffect(()=>{
-        if(lang)
-        setCardLang(lang)
+    useEffect(() => {
+        if (lang)
+            setCardLang(lang)
     }, [lang])
 
 
@@ -957,8 +953,8 @@ const BuyArticles = () => {
             }
         }
         if (articleType === translate(languageData, "UseArticle")) {
-            if (useArticleList?.length == 0) {
-                toast(translate(languageData, "pleaseAddAnArticle&SelctArticle"), {
+            if (!requestArticleTitle) {
+                toast(translate(languageData, "TitleofArticleField"), {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -970,8 +966,23 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (!userArticleId) {
-                toast(translate(languageData, "selectAnArticleThenAddToCart"), {
+            if (linkCount === 0) {
+                toast(translate(languageData, "Minimum1link"), {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
+                return;
+            }
+
+            if (linkCount > 0 && linkCount > selectedMaxLinks) {
+                toast(translate(languageData, "Minimum1link"), {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -983,7 +994,67 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            
+            if (!image) {
+                toast(translate(languageData, "ImageField"), {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+            if (content?.length > selectedSubArticles?.maxArticleLength) {
+                const maxArticleLength = selectedSubArticles?.maxArticleLength;
+                const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+
+                return;
+            }
+            if (content?.length < selectedSubArticles?.minArticleLength) {
+                const minArticleLength = selectedSubArticles?.minArticleLength;
+                const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+
+            if (addArtiLead?.length > selectedSubArticles?.maxLeadLength) {
+                const maxLeadLength = selectedSubArticles?.maxLeadLength;
+                const errorMessage = `${translate(languageData, "maxLeadLength")}: ${maxLeadLength}`;
+                toast(errorMessage, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    type: 'error'
+                });
+                return;
+            }
+
         }
 
         const articlesubjectValue = provideSubjectText && provideSubjectText.trim() !== '' ? provideSubjectText : 'we provide subject';
@@ -997,8 +1068,8 @@ const BuyArticles = () => {
             articleTitle: requestArticleTitle,
             monthGuarantee: monthGuarantee,
             amount: selectedSubArticles?.bestPrice,
-            article_amount: orderPrice?.split(',')[0],
-            article_id: articleType === translate(languageData, "RequestArticleWriting") ? orderId : articleType === translate(languageData, "AddNewArticle") ? addNewArticleProjectDropdown : "",
+            article_amount: articleType === translate(languageData, "RequestArticleWriting") ? orderPrice?.split(',')[0] : "",
+            article_id: articleType === translate(languageData, "RequestArticleWriting") ? orderId : articleType === translate(languageData, "UseArticle") ? addNewArticleProjectDropdown : "",
             project: project,
             content: content,
             image: image,
@@ -1008,7 +1079,7 @@ const BuyArticles = () => {
             suggestion: suggestion,
             articlesubject: articlesubjectValue,
             anchor: anchorValues,
-            artId: userArticleId,
+            artId: articleType === translate(languageData, "UseArticle") ? addNewArticleProjectDropdown : "",
             publisherMsgText: publisherMsgText,
             addArtiLead: addArtiLead,
         }
@@ -1311,78 +1382,6 @@ const BuyArticles = () => {
         const res = await getArticles(userData?.id)
         setUseArticleList(res.data)
     }
-
-    const useArticleColumns = [
-        {
-            name: translate(languageData, "artilstTitle"),
-            selector: row => row.title,
-            sortable: true,
-            center: true,
-        },
-        {
-            name: translate(languageData, "artilisAddingDate"),
-            selector: row => row.date,
-            sortable: true,
-            center: true,
-        },
-        {
-            name: translate(languageData, "ArtilistPublicationCost"),
-            selector: row => row.cost,
-            center: true,
-        },
-        {
-            name: (
-                <div>
-                    <Link className="btn btn-outline" >
-                        <i className="fa fa-columns" style={{ fontSize: "20px" }}></i>
-                    </Link>
-                </div>
-            ),
-            cell: (row) => (
-                <div>
-                    {row?.id === userArticleId ?
-                        <Button variant={"danger"} onClick={() => handleUseArticleClick(row)}>
-                            {translate(languageData, "selected")}
-                        </Button> :
-                        <Button variant={"primary"} onClick={() => handleUseArticleClick(row)}>
-                            {translate(languageData, "Select")}
-                        </Button>}
-                </div>
-            ),
-            selector: (row) => row?.offers,
-            center: true,
-            width: "150px",
-            style: {
-                width: "150px",
-            },
-        },
-    ];
-
-
-    const articleTableData = useArticleList?.filter((item) => item?.cart !== 'Yes' && item?.status !== 'Paid')?.map((item) => {
-        let arr = item?.created_at.split('T');
-        let time = arr[1].split('.');
-        let dateTime = arr[0] + ' ' + time[0];
-
-        return {
-            id: item.id,
-            title: item.title,
-            date: dateTime,
-            cost: '0,00 zł',
-            status: item.status,
-            cart: item.cart,
-        };
-    });
-
-    const handleUseArticleClick = (item) => {
-        if (item.id === userArticleId) {
-            setUserArticleId(null);
-        } else {
-            // If the clicked item is not selected, select it
-            setUserArticleId(item?.id);
-        }
-        console.log(item?.id, "1286");
-    };
 
     return (
         <>
@@ -1779,17 +1778,13 @@ const BuyArticles = () => {
                                                     <Row className='justify-content-center'>
                                                         {articlePackages?.map((item, index) => {
                                                             return (
-
                                                                 <Col xs={12} lg={3} onClick={() => handleOrderPriceCard(item.name, item.price, item.id)} key={index} className='rounded-pill d-flex justify-content-center'>
                                                                     <Card className={`shadow-md ${orderType === item?.name && "border border-primary border-2 shadow-lg"}`} style={{ cursor: "pointer", maxHeight: "200px", maxWidth: "250px" }}>
                                                                         <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
                                                                             <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
-                                                                            <h6>{cardLang=="en" ? item.name : item.polish_name} </h6>
-                                                                            <Link >{cardLang=="en" ? item?.description: item?.polish_description}</Link>
-                                                                            {/* <div className='mt-4'>
-                                                                                <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
-                                                                            </div> */}
+                                                                            <h6>{cardLang == "en" ? item.name : item.polish_name} </h6>
+                                                                            <Link >{cardLang == "en" ? item?.description : item?.polish_description}</Link>
                                                                             <div></div>
                                                                         </Card.Body>
                                                                         <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-94px' }}>
@@ -1895,38 +1890,147 @@ const BuyArticles = () => {
                                                             </div>
                                                         </Col>
                                                     </Row>
-                                                    {/* {specifyDetails === "Specify Now" &&
-                                                        <Row className='align-items-center mt-5'>
-                                                            <Col xs={12} md={4}>
-                                                                <span>Title *</span>
-                                                            </Col>
-                                                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                                    <input className="input100" type="text" name="title" placeholder='Title' style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
-                                                                </div>
-                                                                <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                                                            </Col>
-                                                        </Row>} */}
-
-                                                    {/* <Row className='align-items-center mt-5'>
-                                                    <Col xs={12} md={4}>
-                                                        <span>{translate(languageData , "Theme")} *</span>
-                                                    </Col>
-                                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                        <div className="form-group">
-                                                        <Select options={""} name='language' placeholder="Language" styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }}  />
-
-                                                        </div>
-                                                    
-                                                    </Col>
-                                                </Row> */}
-
-
                                                 </div>
 
                                             }
 
                                             {articleType === translate(languageData, "AddNewArticle") &&
+                                                <div>
+                                                    {/* <Row className='align-items-center '>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "choosearticle")} *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="form-group">
+                                                                <select name="project" className="input100 px-3" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
+                                                                    <option className="input100" label={translate(languageData, "ArticleList")}></option>
+                                                                    {useArticleList?.map((item, index) => {
+                                                                        return (
+                                                                            <option className="input100" value={item.id} key={index}>{item.title}</option>
+                                                                        )
+                                                                    })}
+
+                                                                </select>
+                                                            </div>
+                                                            <div className='text-danger text-center mt-1'>{formErrors.project}</div>
+                                                        </Col>
+                                                    </Row> */}
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "artilstTitle")} *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="text" name="title" placeholder={translate(languageData, "artilstTitle")} style={{ paddingLeft: "15px" }} onChange={(e) => setRequestArticleTitle(e.target.value)} value={requestArticleTitle} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "PublicationDate")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                                                <input className="input100" type="date" name="date" placeholder={translate(languageData, "PublicationDate")} style={{ paddingLeft: "15px" }} onChange={(e) => setDate(e.target.value)} value={date} />
+                                                            </div>
+
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='align-items-start mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "AddArtiLead")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <textarea className="input100 px-4" type="text" name="lead" cols={6} rows={8} placeholder={translate(languageData, "AddArtiLead")} onChange={(e) => setAddArtiLead(e.target.value)} value={addArtiLead} />
+                                                            </div>
+                                                            {addArtiLead?.length > selectedSubArticles?.maxLeadLength && (
+                                                                <Alert variant="danger">
+                                                                    {translate(languageData, "maxLeadLength")}: {selectedSubArticles?.maxLeadLength}
+                                                                </Alert>
+                                                            )}
+                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.maxLeadLength} Character</p>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='mt-4 pb-2'>
+                                                        <Col xs={12} md={4} className='mt-2'>
+                                                            <span>{translate(languageData, "sidebarContent")} *</span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <ReactQuill
+                                                                    theme="snow"
+                                                                    onChange={handleEditorChange}
+                                                                    value={content}
+                                                                    modules={modules}
+                                                                    formats={formats}
+                                                                    bounds={'.app'}
+                                                                    placeholder={translate(languageData, "writeContent")}
+                                                                />
+                                                            </div>
+                                                            {linkCount > 0 && linkCount > selectedMaxLinks && (
+                                                                <Alert variant="danger">
+                                                                    {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
+                                                                </Alert>
+                                                            )}
+                                                            {content?.length > selectedSubArticles?.maxArticleLength && (
+                                                                <Alert variant="danger">
+                                                                    {translate(languageData, "maxArticleLength")}: {selectedSubArticles?.maxArticleLength}
+                                                                </Alert>
+                                                            )}
+                                                            <p className="text-end">{content?.length}/{selectedSubArticles?.maxArticleLength} Character</p>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className='align-items-center'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "MessageforPublisher")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <input
+                                                                    className="input100"
+                                                                    value={publisherMsgText}
+                                                                    type="text"
+                                                                    name="message"
+                                                                    placeholder={`${translate(languageData, "MessageforPublisher")}`}
+                                                                    style={{ paddingLeft: "15px" }}
+                                                                    onChange={(e) => setPublisherMsgText(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+
+                                                    <div>
+                                                        <Row className='align-items-center mt-5'>
+                                                            <Col xs={12} sm={12} md={4} lg={4}>
+                                                                <span>{translate(languageData, "image")} *</span>
+                                                            </Col>
+                                                            <Col xs={12} sm={12} md={1} lg={1}>
+                                                                {imageSource && (
+                                                                    <div>
+                                                                        <img src={imageSource.previewUrl} alt="Selected" />
+                                                                    </div>
+                                                                )}
+                                                            </Col>
+                                                            <Col xs={12} sm={12} md={2} lg={2} className="mt-3 mt-md-0">
+                                                                <div>
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                </div>
+                                                            </Col>
+                                                            <Col md={2} sm={12} lg={2}>{translate(languageData, "orselectviapixabay")}</Col>
+
+                                                            <Col xs={12} sm={12} md={3} lg={3} className='mt-3 mt-md-0'>
+                                                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
+                                                            </Col>
+                                                        </Row>
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                            {articleType === translate(languageData, "UseArticle") &&
                                                 <div>
                                                     <Row className='align-items-center '>
                                                         <Col xs={12} md={4}>
@@ -1991,16 +2095,16 @@ const BuyArticles = () => {
                                                             <span>{translate(languageData, "sidebarContent")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                        <div className="wrap-input100 validate-input mb-0">
-                                                            <ReactQuill
-                                                                theme="snow"
-                                                                onChange={handleEditorChange}
-                                                                value={content}
-                                                                modules={modules}
-                                                                formats={formats}
-                                                                bounds={'.app'}
-                                                                placeholder={translate(languageData, "writeContent")}
-                                                            />
+                                                            <div className="wrap-input100 validate-input mb-0">
+                                                                <ReactQuill
+                                                                    theme="snow"
+                                                                    onChange={handleEditorChange}
+                                                                    value={content}
+                                                                    modules={modules}
+                                                                    formats={formats}
+                                                                    bounds={'.app'}
+                                                                    placeholder={translate(languageData, "writeContent")}
+                                                                />
                                                             </div>
                                                             {linkCount > 0 && linkCount > selectedMaxLinks && (
                                                                 <Alert variant="danger">
@@ -2046,13 +2150,11 @@ const BuyArticles = () => {
                                                                     </div>
                                                                 )}
                                                             </Col>
-
                                                             <Col xs={12} sm={12} md={2} lg={2} className="mt-3 mt-md-0">
                                                                 <div>
                                                                     <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
                                                                 </div>
                                                             </Col>
-
                                                             <Col md={2} sm={12} lg={2}>{translate(languageData, "orselectviapixabay")}</Col>
 
                                                             <Col xs={12} sm={12} md={3} lg={3} className='mt-3 mt-md-0'>
@@ -2060,115 +2162,10 @@ const BuyArticles = () => {
                                                             </Col>
                                                         </Row>
                                                     </div>
-                                                    {/* <Row className='align-items-center mt-5'>
-                                                    <Col xs={12} md={4}>
-                                                        <span>{translate(languageData , "Theme")} *</span>
-                                                    </Col>
-                                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                        <div className="form-group">
-                                                        <Select options={""} name='language' placeholder="Language" styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }}  />
-
-                                                        </div>
-                                                    
-                                                    </Col>
-                                                </Row> */}
-
-
                                                 </div>
-
                                             }
-
-                                            {articleType === translate(languageData, "UseArticle") &&
-                                                <div>
-                                                    <DataTable onRowClicked={handleUseArticleClick} columns={useArticleColumns} data={articleTableData} highlightOnHover pointerOnHover pagination paginationPerPage={6} paginationRowsPerPageOptions={[5, 10, 15, 20, 30]} />
-                                                    <Row className='align-items-center mt-5'>
-                                                        <Col xs={12} md={4}>
-                                                            <span className="text-bold">{translate(languageData, "MessageforPublisher")} </span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
-                                                            <div className="wrap-input100 validate-input mb-0">
-                                                                <input
-                                                                    className="input100"
-                                                                    value={publisherMsgText}
-                                                                    type="text"
-                                                                    name="message"
-                                                                    placeholder={`${translate(languageData, "MessageforPublisher")}`}
-                                                                    style={{ paddingLeft: "15px" }}
-                                                                    onChange={(e) => setPublisherMsgText(e.target.value)}
-                                                                />
-                                                            </div>
-                                                        </Col>
-                                                    </Row>
-                                                </div>
-
-                                            }
-
-
-
                                             <div>
-                                                {/* <p className="fw-semibold mt-5">{translate(languageData, "TrafficGuarantee")}</p>
-                                                <Row className="mt-5 border-bottom pb-5">
-                                                    <Col xs={12} md={4}>
-                                                        <span>I want traffic guarantee *</span>
-                                                    </Col>
-                                                    <Col xs={12} md={8} className="mt-3 mt-md-0 d-flex align-items-center">
-                                                        <Form.Check
-                                                            type="switch"
-                                                            // id="custom-switch"
-                                                            className="custom-switch"
-                                                            onChange={(e) => setConfirmTraffic(e.target.checked)}
-                                                        />
-                                                        <Tool title="Traffice guarantee is provided by Content Stream between 10 days of approval of publication">
-                                                            <span className="ms-5 pt-1">
-                                                                <AiOutlineQuestionCircle size={25} className="text-primary" />
-                                                            </span>
-                                                        </Tool>
-
-                                                    </Col>
-                                                </Row> */}
-                                                {/* {confirmTraffic &&
-                                                    <div className="d-flex flex-wrap justify-content-center">
-                                                        {trafficData.map((item, index) => {
-                                                            return (
-                                                                <div key={index} className={`border border-primary ${traficType.price === item.price && "bg-primary text-white"} text-center p-4 traffic-container`} style={{ cursor: "pointer" }} onClick={() => handleTrafficRow(item.price, item.clicks)}>
-                                                                    <div className="">{item.clicks}</div>
-                                                                    <div>Clicks</div>
-                                                                    -----------------------
-                                                                    <div>{item.price}</div>
-                                                                </div>
-                                                            )
-                                                        })}
-
-                                                    </div>} */}
-                                                {/* <p className="fw-semibold mt-5">{translate(languageData, "36MonthGuarantee")}</p>
-                                                <Row className="mt-5 border-bottom pb-5">
-                                                    <Col xs={12} md={4}>
-                                                        <span>{translate(languageData, "IwantBuy36MonthsGuarantee")}</span>
-                                                    </Col>
-                                                    <Col xs={12} md={8} className="mt-3 mt-md-0 d-flex align-items-center ps-5">
-                                                        <Form.Check
-                                                            type="switch"
-                                                            // id="custom-switch"
-                                                            className="custom-switch"
-                                                            onChange={(e) => setMonthGuarantee(e.target.value)}
-                                                        />
-                                                        <Tool title="Option to purchase 36 month guarantee">
-                                                            <span className="ms-2">
-                                                                <PiShieldCheckFill className="text-primary" size={25} />
-                                                            </span>
-                                                        </Tool>
-                                                        <Tool title="Traffice guarantee is provided by Content Stream between 10 days of approval of publication">
-                                                            <span className="ms-7 pt-1">
-                                                                <AiOutlineQuestionCircle size={25} className="text-primary" />
-                                                            </span>
-                                                        </Tool>
-
-                                                    </Col>
-                                                </Row> */}
                                                 <Row align-items-center className="mt-4">
-                                                    {/* <Col className="bg-light p-1" lg={6}>
-                                                        <div>{translate(languageData, "ByPurchasingWarrantyYouAgreeTerms") + " " + "'" + translate(languageData, "IwantBuy36MonthsGuarantee") + "'"}</div>
-                                                    </Col> */}
                                                     <Col lg={12}>
                                                         <div className="fs-4 text-muted text-end me-2">{translate(languageData, "price")} : {finalPrice} zł</div>
                                                     </Col>

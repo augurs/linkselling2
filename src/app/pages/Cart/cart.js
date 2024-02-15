@@ -4,18 +4,21 @@ import polandFlag from "../../../assets/images/flags/pl.svg"
 import englishFlag from "../../../assets/images/flags/us.svg"
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdClear } from 'react-icons/md';
 import { buyNow, deleteCart, getCart } from '../../../services/invoicesServices/invoicesServices'
 import globalLoader from '../../../assets/images/loader.svg'
 import { useEffect } from 'react'
 import { ColorRing } from 'react-loader-spinner'
 import { ToastContainer, toast } from 'react-toastify'
 import { Button, Modal } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../Context/cartListContext'
 import { walletBalance } from "../../../services/walletServices/walletService"
-
 const Cart = () => {
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const hasError = queryParams.get('error') === 'true';
 
     const { languageData } = useLanguage()
 
@@ -27,11 +30,16 @@ const Cart = () => {
     const [purchasedData, setPurchasedData] = useState([])
     const [rowId, setRowId] = useState('')
     const [balance, setBalance] = useState('');
-
-
+    const [showErrorModal, setShowErrorModal] = useState(hasError);
 
     const userData = JSON.parse(localStorage.getItem('userData'))
     const { cartListServices } = useCart()
+
+    useEffect(() => {
+        if (hasError) {
+            setShowErrorModal(hasError);
+        }
+    }, [hasError]);
 
     useEffect(() => {
         showWalletServices()
@@ -153,7 +161,7 @@ const Cart = () => {
                                             : row?.articleType === 'AddAnArticle'
                                                 ? translate(languageData, 'AddNewArticle')
                                                 : row?.articleType === 'UseArticle'
-                                                ? translate(languageData, 'UseArticle'): ''}
+                                                    ? translate(languageData, 'UseArticle') : ''}
                             </small>
                         </div>
                     </div>
@@ -205,7 +213,7 @@ const Cart = () => {
         // },
         {
             name: translate(languageData, 'ProjectName'),
-            selector: (row) => row?.project_name? row?.project_name : "--",
+            selector: (row) => row?.project_name ? row?.project_name : "--",
             center: true,
             width: "10VW"
         },
@@ -276,6 +284,7 @@ const Cart = () => {
     const handleClose = () => {
         setshowCartModal(false)
     }
+
 
 
 
@@ -358,6 +367,21 @@ const Cart = () => {
                             {translate(languageData, "close")}
                         </Button>
                     </Modal.Footer>
+                </Modal>
+
+                <Modal show={showErrorModal} onHide={() => { setShowErrorModal(false) }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title className='text-danger d-flex justify-content-center align-items-center'>{translate(languageData, "ErrorMsg")}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <h3 className='text-center'>
+                         Your payment is not done
+                          
+                        </h3>
+                        <span className='d-flex justify-content-center'>
+                        <MdClear size={32} className='text-danger'/>
+                        </span>
+                    </Modal.Body>
                 </Modal>
 
             </div>

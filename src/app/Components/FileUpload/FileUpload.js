@@ -3,7 +3,7 @@ import "./fileupload.css"
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { useEffect } from 'react';
-const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, buttonName, classNames }) => {
+const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, buttonName, classNames, errorMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
 
@@ -54,7 +54,7 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
     const handleInputChange = (e) => {
         const files = e?.target?.files[0];
         getData(files, e.target.name)
-        setUploadedFilesName(files.name)
+        setUploadedFilesName(files?.name)
     };
 
 
@@ -83,9 +83,7 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
                 onChange={handleInputChange}
                 name={name}
             />
-            {/* {uploadedFilesName && (
-                <p>Uploaded File: {uploadedFilesName}</p>
-            )} */}
+            <div className="text-danger">{errorMessage}</div>
         </div>
     );
 };
