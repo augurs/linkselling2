@@ -72,7 +72,7 @@ const ArticleList = () => {
         },
         {
             name: translate(languageData, "artilstStatus"),
-            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>{translate(languageData, "readyForPublication")}</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg d-flex justify-content-center align-items-center' style={{ minWidth: "180px" }}>{row?.status}</button>,
             center: true,
         },
 
@@ -101,7 +101,7 @@ const ArticleList = () => {
             title: item.title,
             date: dateTime,
             cost: "0,00 zł",
-            status: item.status
+            status: item?.status == "Ready to Publish" ? translate(languageData, "readyForPublication") : translate(languageData, "SidebarPublishedArticle")
         }
     })
 
@@ -165,11 +165,13 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setSearchTerms({ ...searchTerms, status: e.target.value })}>
                                 <option label={translate(languageData, "artilstStatus")}></option>
-                                {articleList.map((item, index) => {
-                                    return (
-                                        <option value={item.status} key={index}>{item.status}</option>
+                                {[...new Set(articleTableData?.map((item) => item.status))].map(
+                                    (status, index) => (
+                                        <option value={status} key={index}>
+                                            {status}
+                                        </option>
                                     )
-                                })}
+                                )}
                             </select>
                         </div>
                     </Col>

@@ -3,11 +3,9 @@ import { useState } from 'react';
 import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import { FaInfoCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import FileUpload from '../../Components/FileUpload/FileUpload';
 import { orderArticles } from '../../../services/articleServices/articleServices';
 import { projectList } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
-import { countries } from '../../../utility/data';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper';
@@ -17,9 +15,9 @@ import grey from '../../../assets/images/cards/Grey.png';
 import { articleTypeList } from "../../../services/buyArticleServices/buyArticlesServices";
 
 const OrderArticle = () => {
-
-
-
+    const userData = JSON.parse(localStorage.getItem("userData"))
+    const lang = localStorage.getItem("lang");
+    
     const initialValues = {
         articleType: "",
         project: "",
@@ -27,10 +25,9 @@ const OrderArticle = () => {
         suggestion: "",
     };
 
-
+    const { languageData } = useLanguage();
     const [articleType, setArticleType] = useState('paid');
     const [orderType, setOrderType] = useState('Basic article');
-    // const [articlesData, setArticlesData] = useState([]);
     const [articlesData2, setArticlesData2] = useState([]);
     const [formValues, setFormValues] = useState(initialValues)
     const [orderPrice, setOrderPrice] = useState('50,00 zł');
@@ -40,15 +37,15 @@ const OrderArticle = () => {
     const [orderId, setOrderId] = useState(1);
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [provideSubject, setProvideSubject] = useState(false);
+    const [cardLang, setCardLang] = useState(lang)
     const navigate = useNavigate()
 
+    useEffect(() => {
+        if (lang)
+            setCardLang(lang)
+    }, [lang])
 
 
-    const { languageData } = useLanguage()
-
-    const handleFiles = (file, name) => {
-        setFormValues({ ...formValues, [name]: file });
-    }
     useEffect(() => {
         articleTypeListService()
     }, [])
@@ -58,19 +55,8 @@ const OrderArticle = () => {
         setArticlePackages(res?.data?.reverse())
     }
 
-
-    const allowedAttachmentExtension = ['.JPG', '.JPEG', '.PNG', '.PDF', '.docx', '.doc', '.odt', '.html']
-
-
-    const imageActions = [
-        "I will complete myself after writing text",
-        "I want to add now",
-        "I order to buy with linkselling"
-    ]
-
     useEffect(() => {
         articleListServices2()
-
     }, [])
 
 
@@ -113,7 +99,7 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'error'
             });
-    
+
             setOrderLoading(false);
             return;
         }
@@ -165,7 +151,6 @@ const OrderArticle = () => {
 
         setOrderLoading(false);
     };
-
 
     const validate = (values) => {
         let error = {};
@@ -233,19 +218,8 @@ const OrderArticle = () => {
         return isValid;
     }
 
-
-    const TooltipLink = ({ id, children, title }) => (
-        <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-            {children}
-        </OverlayTrigger>
-    );
-
-    const userData2 = JSON.parse(localStorage.getItem("userData"))
-
-
-
     const articleListServices2 = async () => {
-        const res = await projectList(userData2?.id)
+        const res = await projectList(userData?.id)
         setArticlesData2(res?.data.reverse())
     }
 
@@ -255,12 +229,6 @@ const OrderArticle = () => {
         setFormValues({ ...formValues, [name]: value });
     };
 
-
-
-
-
-
-
     return (
         <div>
 
@@ -268,19 +236,6 @@ const OrderArticle = () => {
             <Card className='mt-4'>
                 <Card.Header className='d-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>{translate(languageData, "back")}</Button></Card.Header>
                 <Card.Body>
-                    {/* <Row className='mt-5 border-bottom pb-6'>
-                        <Col lg={12} className='border border-primary p-2 ms-auto py-4'>
-                            <div className='d-flex align-items-center'>
-                                <Col lg={1}>
-                                    <div className='' style={{ width: "100px!important" }}><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                </Col>
-                                <Col lg={11}>
-                                    <div>Order articles written by trusted WhitePress® journalists and copywriters. You will have the right to make comments for the author, and then you will evaluate his work.</div>
-                                </Col>
-                            </div>
-
-                        </Col>
-                    </Row> */}
                     <div className='border-bottom'>
                         <Col lg={10} className='mt-6 pb-6' >
                             <Row className='align-items-center '>
@@ -293,28 +248,26 @@ const OrderArticle = () => {
                             </Row>
                         </Col>
                     </div>
-                    <div className='border-bottom'>
-                        <Col lg={10} className='mt-6' >
-                            <Row className='align-items-center '>
-                                <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "artilstProject")} *</span>
-                                </Col>
-                                <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                    <div className="form-group">
-                                        <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
-                                            <option label={translate(languageData, "artilstProject")}></option>
-                                            {articlesData2.map((item, index) => {
-                                                return (
-                                                    <option value={item.name} key={index}>{item.name}</option>
-                                                )
-                                            })}
+                    <div>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "artilstProject")} *</span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <div className="form-group">
+                                    <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => handleChange(e)} onClick={() => validate(formValues)}>
+                                        <option label={translate(languageData, "artilstProject")}></option>
+                                        {articlesData2.map((item, index) => {
+                                            return (
+                                                <option value={item.name} key={index}>{item.name}</option>
+                                            )
+                                        })}
 
-                                        </select>
-                                    </div>
-                                    <div className='text-danger text-center mt-1'>{formErrors.project}</div>
-                                </Col>
-                            </Row>
-                        </Col>
+                                    </select>
+                                </div>
+                                <div className='text-danger text-center mt-1'>{formErrors.project}</div>
+                            </Col>
+                        </Row>
                     </div>
                     <div className='mt-5 mb-4'><h4>{translate(languageData, "ArticleQuality")}</h4></div>
                     <div className='mt-6 border-bottom pb-7'>
@@ -326,8 +279,8 @@ const OrderArticle = () => {
                                             <Card.Body className='text-center'>
                                                 <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
                                                 <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                <h3 className='mb-3'>{item.name} </h3>
-                                                <Link >{item?.description}</Link>
+                                                <h6>{cardLang == "en" ? item.name : item.polish_name} </h6>
+                                                <Link >{cardLang == "en" ? item?.description : item?.polish_description}</Link>
                                                 <div className='mt-4'>
                                                     <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                 </div>

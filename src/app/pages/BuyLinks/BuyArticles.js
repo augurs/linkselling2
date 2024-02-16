@@ -121,14 +121,18 @@ const BuyArticles = () => {
             setDate(moment(data?.created_at, 'YYYY/MM/DD').format('YYYY-MM-DD'))
             setAddArtiLead(data?.lead)
             setContent(data?.content)
-            setImage(data?.file);
-
+            setImageSource({ previewUrl: data?.file });
+            setImage("");
         }
     }, [addNewArticleProjectDropdown, useArticleList])
 
     useEffect(() => {
         getUserDiscountServices()
     }, [])
+
+    console.log(image, "134");
+    console.log(imageSource, "135");
+
 
     useEffect(() => {
         handleUseArticleList()
@@ -994,8 +998,8 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (!image) {
-                toast(translate(languageData, "ImageField"), {
+            if (!addNewArticleProjectDropdown) {
+                toast(translate(languageData, "selectArticleFromList"), {
                     position: "top-center",
                     autoClose: 3000,
                     hideProgressBar: false,
@@ -1380,7 +1384,7 @@ const BuyArticles = () => {
 
     const handleUseArticleList = async () => {
         const res = await getArticles(userData?.id)
-        setUseArticleList(res.data)
+        setUseArticleList(res?.data)
     }
 
     return (
@@ -2040,7 +2044,7 @@ const BuyArticles = () => {
                                                             <div className="form-group">
                                                                 <select name="project" className="input100 px-3" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
                                                                     <option className="input100" label={translate(languageData, "ArticleList")}></option>
-                                                                    {useArticleList?.map((item, index) => {
+                                                                    {useArticleList?.filter((item) => item?.cart !== 'Yes' && item?.status !== 'Paid')?.map((item, index) => {
                                                                         return (
                                                                             <option className="input100" value={item.id} key={index}>{item.title}</option>
                                                                         )

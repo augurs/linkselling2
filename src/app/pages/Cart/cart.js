@@ -4,7 +4,7 @@ import polandFlag from "../../../assets/images/flags/pl.svg"
 import englishFlag from "../../../assets/images/flags/us.svg"
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
-import { MdDelete, MdClear } from 'react-icons/md';
+import { MdDelete, MdCancel } from 'react-icons/md';
 import { buyNow, deleteCart, getCart } from '../../../services/invoicesServices/invoicesServices'
 import globalLoader from '../../../assets/images/loader.svg'
 import { useEffect } from 'react'
@@ -369,19 +369,24 @@ const Cart = () => {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show={showErrorModal} onHide={() => { setShowErrorModal(false) }}>
-                    <Modal.Header closeButton>
-                        <Modal.Title className='text-danger d-flex justify-content-center align-items-center'>{translate(languageData, "ErrorMsg")}</Modal.Title>
-                    </Modal.Header>
+                <Modal show={showErrorModal} onHide={() => { setShowErrorModal(false) }} className='d-flex justify-content-center align-items-center'>
                     <Modal.Body>
-                        <h3 className='text-center'>
-                         Your payment is not done
-                          
-                        </h3>
-                        <span className='d-flex justify-content-center'>
-                        <MdClear size={32} className='text-danger'/>
+                        <div className='p-5'>
+                    <span className='d-flex justify-content-center'>
+                            <MdCancel size={72} className='text-danger' />
                         </span>
+                        <h2 className='text-center mt-4 text-danger'>{translate(languageData, "OOPS!")}</h2>
+                        
+                        <h3 className='text-center mt-4 text-danger'>
+                            {translate(languageData, "yourPaymentIsNotDone")}
+                        </h3>
+                        </div>
                     </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="outline-secondary" onClick={() => { setShowErrorModal(false) }}>
+                            {translate(languageData, "close")}
+                        </Button>
+                    </Modal.Footer>
                 </Modal>
 
             </div>
