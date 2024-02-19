@@ -110,12 +110,12 @@ export const viewPurchaseDomainlist = (uId, pId) => {
     });
 };
 
-export const uploadDocx = (docx) => {
+export const uploadDocx = (docx, lang) => {
   const formData = new FormData();
   formData.append("file", docx);
 
   return axios
-  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile`, formData)
+  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile?lang=${lang}`, formData)
     .then((res) => {
       return res.data;
     })

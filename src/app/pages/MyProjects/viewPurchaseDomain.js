@@ -5,7 +5,7 @@ import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
 import DataTable from 'react-data-table-component'
-import { Col } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router-dom';
 import { viewPurchaseDomainlist } from '../../../services/ProjectServices/projectServices'
 const ViewPurchaseDomain = () => {
@@ -16,7 +16,7 @@ const ViewPurchaseDomain = () => {
     const [viewPurchaseDomainList, setViewPurchaseDomainList] = useState([])
     const [loading, setLoading] = useState(false)
     const [isDataPresent, setIsDataPresent] = useState(true);
-    const {id}= useParams();
+    const { id } = useParams();
 
     useEffect(() => {
         if (viewPurchaseDomainList) {
@@ -174,6 +174,9 @@ const ViewPurchaseDomain = () => {
             <h3 className='mt-3 mb-3 text-center'>{translate(languageData, "projectRelatedDomainList")}</h3>
 
             <div className='mt-5 w-100'>
+                <Row className='m-1'>
+                    <Col lg={4}><span className="text-bold">{translate(languageData, "ProjectName")}</span>: {viewPurchaseDomainList[0]?.project}</Col>
+                </Row>
                 {loading ?
                     (
                         <div className='d-flex'>

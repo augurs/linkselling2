@@ -13,8 +13,10 @@ import { useLanguage } from '../../Context/languageContext';
 import { projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
+import { base64ToBinary } from '../../../utility/helper';
 const AddArticle = () => {
     const userData2 = JSON.parse(localStorage.getItem("userData"))
+    const lang = localStorage.getItem("lang");
     const initialValues = {
         document: "",
         project: "",
@@ -44,7 +46,7 @@ const AddArticle = () => {
         if (selectedFile) {
             uploadDocxServices()
         }
-      }, [selectedFile])
+    }, [selectedFile])
 
     //pixabay Image selct start//
 
@@ -65,7 +67,7 @@ const AddArticle = () => {
                 console.error('Error fetching image:', error);
             });
     };
-    
+
     //pixabay Image selct end//
 
     const allowedDocExtensions = ['.docx'];
@@ -175,7 +177,7 @@ const AddArticle = () => {
 
     const handleFileChange = (file) => {
         setSelectedFile(file);
-      }
+    }
 
 
     const handleEditorChange = (html) => {
@@ -186,26 +188,10 @@ const AddArticle = () => {
     const validate = (values) => {
         let error = {};
         let isValid = true;
-        if (!values.document) {
-            error.document = "Document is required!";
-            isValid = false;
-        } else {
-            const fileExtension = values?.document?.name?.slice(values?.document?.name?.lastIndexOf('.'));
-            if (!allowedDocExtensions.includes(fileExtension)) {
-                error.document = "Invalid file type. Allowed: .docx";
-                isValid = false;
-            }
-        }
 
         if (!values.image) {
             error.image = "Image is required!"
             return isValid = false;
-        } else {
-            const fileExtension = values?.image?.name?.slice(values?.image?.name?.lastIndexOf('.'));
-            if (!allowedImageExtension.includes(fileExtension)) {
-                error.image = "Invalid file type. Allowed: .JPG, .GIF, .PNG";
-                isValid = false;
-            }
         }
 
 
@@ -244,10 +230,9 @@ const AddArticle = () => {
         'link', 'image'
     ];
     
-
     const uploadDocxServices = async () => {
         setLoading(true);
-        const res = await uploadDocx(selectedFile);
+        const res = await uploadDocx(selectedFile, lang);
         if (res.success === true) {
             toast(translate(languageData, "docxFileUploadSuccessfully"), {
                 position: "top-center",
@@ -259,18 +244,21 @@ const AddArticle = () => {
                 progress: undefined,
                 type: 'success'
             });
-    
-            if (res.title && res.lead && res.content) {
+
+            if (res?.title && res?.lead && res?.content) {
                 setFormValues({
                     ...formValues,
-                    title: res.title,
-                    lead: res.lead,
-                    content: res.content
+                    title: res?.title.trim().replace(/\s+/g, ' '),
+                    lead: res?.lead.trim().replace(/\s+/g, ' '),
+                    content: res?.content.trim().replace(/\s+/g, ' '),
+                    image: base64ToBinary(res?.images[0]),
+
                 });
             }
             setFormErrors("");
             setContent(res?.content)
-           
+            setDisplayedImage(res?.images[0])
+
         } else if (res.success === false && res.message.file[0] === "The file must be a file of type: docx.") {
             toast(`${translate(languageData, "pleaseUploadDocxFile")}`, {
                 position: "top-center",
@@ -283,13 +271,12 @@ const AddArticle = () => {
                 type: 'error'
             });
             setFormValues({
-                ...formValues,
                 title: "",
                 lead: "",
                 content: "",
             });
             setContent("")
-            setFormErrors({...formErrors, document: translate(languageData, "pleaseUploadDocxFile")});
+            setFormErrors({ ...formErrors, document: translate(languageData, "pleaseUploadDocxFile") });
         } else {
             toast(translate(languageData, "somethingwentwrong"), {
                 position: "top-center",
@@ -302,11 +289,9 @@ const AddArticle = () => {
                 type: 'error'
             });
         }
-    
+
         setLoading(false);
     };
-
-
     return (
         <div>
             <ToastContainer />
@@ -403,7 +388,7 @@ const AddArticle = () => {
                                 <div><img src={displayedImage} alt='Displayed' /></div>
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} /></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
@@ -415,8 +400,8 @@ const AddArticle = () => {
                         </Row>
                     </Card.Body>
                     <div className='mt-5 ms-auto px-3'>
-                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")}> {loading ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "Save")}  </Button>
-                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button> 
+                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")}> {translate(languageData, "Save")}  </Button>
+                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button>
                     </div>
                 </Card>
             </div>

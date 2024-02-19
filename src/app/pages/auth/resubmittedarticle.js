@@ -146,7 +146,7 @@ const AddArticle = () => {
         const linkCount = parsedContent.querySelectorAll('a').length;
         return linkCount;
     };
-
+    
     const linkCount = countLinksInEditor(editor);
 
     const updateResubmitArticleServices = async () => {
@@ -192,7 +192,7 @@ const AddArticle = () => {
                 });
                 return;
             }
-            if (editor.length > formValues?.maxArticleLength) {
+            if (editor?.replace(/<[^>]*>/g, '').length > formValues?.maxArticleLength) {
                 const maxArticleLength = formValues?.maxArticleLength;
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
@@ -209,7 +209,7 @@ const AddArticle = () => {
                 return;
             }
 
-            if (editor.length < formValues?.minArticleLength) {
+            if (editor?.replace(/<[^>]*>/g, '').length < formValues?.minArticleLength) {
                 const minArticleLength = formValues?.minArticleLength;
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
@@ -427,7 +427,7 @@ const AddArticle = () => {
                                                 {translate(languageData, "Toomanylinks")} : {formValues?.link}
                                             </Alert>
                                         )}
-                                        <p className="text-end">{editor?.length || 0}/{formValues?.maxArticleLength} Character</p>
+                                        <p className="text-end">{editor?.replace(/<[^>]*>/g, '').length || 0}/{formValues?.minArticleLength ? formValues?.minArticleLength : 0}-{formValues?.maxArticleLength ? formValues?.maxArticleLength : 0} Character</p>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>
@@ -456,7 +456,7 @@ const AddArticle = () => {
                                         <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
                                     </Col>
                                     <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' /></div>
+                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")}/></div>
                                     </Col>
                                     <Col xs={12} md={1} className='mt-3 mt-md-0'>
                                         <div>{translate(languageData, "orselectviapixabay")}</div>

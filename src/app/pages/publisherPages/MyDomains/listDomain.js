@@ -10,7 +10,8 @@ import { Button, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import { FaPlus } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify';
 import { MdCancel } from 'react-icons/md';
-import { listDomain, suspendOffer, uploadCSV } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
+import { BsFiletypeCsv } from "react-icons/bs";
+import { downloadSampledCSV, listDomain, suspendOffer, uploadCSV } from '../../../../services/PublisherServices/MyDomainServices/MyDomainServices'
 import FileUpload from '../../../Components/FileUpload/FileUpload'
 
 const DomainList = () => {
@@ -19,6 +20,7 @@ const DomainList = () => {
   const { languageData } = useLanguage()
   const navigate = useNavigate();
   const [domainList, setDomainList] = useState([])
+  const [downloadSampledCsv, setDownloadSampledCSV] = useState()
   const [loading, setLoading] = useState(false)
   const [isDataPresent, setIsDataPresent] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,6 +35,11 @@ const DomainList = () => {
     }
   }, [selectedFile])
 
+  useEffect(() => {
+    if(downloadSampledCSV){
+    downloadSampledCSVServices()
+    }
+  }, [downloadSampledCSV])
 
 
   const domainListServices = async () => {
@@ -243,6 +250,16 @@ const DomainList = () => {
     setLoading(false);
   };
 
+  const downloadSampledCSVServices = async () => {
+    setLoading(true)
+    const res = await downloadSampledCSV()
+    if (res.success === true) {
+      setDownloadSampledCSV(res?.message)
+      setLoading(false)
+    } else {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className='p-4'>
@@ -251,8 +268,8 @@ const DomainList = () => {
 
       <div className='mt-5 w-100'>
         <div className='my-4'>
-          <Row className='flex justify-content-between'>
-            <Col xs={12} sm={6} md={4} >
+          <Row className='flex justify-content-between align-items-center'>
+            <Col xs={12} sm={6} md={5} >
               <div className="wrap-input100 validate-input mb-0">
                 <input className="input100" type="search" name="search" placeholder={translate(languageData, "artilstSearch")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 <span className="focus-input100"></span>
@@ -261,16 +278,20 @@ const DomainList = () => {
                 </span>
               </div>
             </Col>
-            <Col xs={12} sm={6} md={4}>
+            <Col xs={12} sm={6} md={7}>
               <div className="d-flex justify-content-end gap-2">
                 <Link onClick={() => navigate("/publisher/addDomain")}><Button>{translate(languageData, "addDomain")}</Button></Link>
                 <FileUpload
                   allowedFileExtensions={['.csv']}
                   buttonName={translate(languageData, "uploadCsv")}
-                  classNames='p-1 file-upload'
+                  classNames='file-upload1'
                   getData={handleFileChange}
                   name='document'
                 />
+                <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip id="tooltip">{translate(languageData, "downloadSampleCSV")}</Tooltip>}
+              ><a href={downloadSampledCsv} download><BsFiletypeCsv fontSize={30}/></a></OverlayTrigger>
               </div>
             </Col>
           </Row>

@@ -5,12 +5,13 @@ import { baseURL2 } from "../../utility/data";
 const userData = JSON.parse(localStorage.getItem('userData'))
 
 export const addArticle = (formValues, editor, id) => {
+  const imageBlob = new Blob([formValues.image], { type: 'image/jpeg' });
   const formData = new FormData();
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
   formData.append("lead", formValues.lead);
   formData.append("document", formValues.document);
-  formData.append("image", formValues.image);
+  formData.append("image", imageBlob);
   formData.append("content", editor)
   formData.append("user_id", id)
 

@@ -66,5 +66,18 @@ export const caseInsensitiveSort = (rowA, rowB) => {
  
    return a.localeCompare(b);
  };
+
  
+ export function base64ToBinary(base64Image) {
+   const base64Data = base64Image.split(',')[1];
+   const binaryString = atob(base64Data);
+
+   const bufferLength = binaryString.length;
+   const buffer = new ArrayBuffer(bufferLength);
+   const bytes = new Uint8Array(buffer);
+   for (let i = 0; i < bufferLength; i++) {
+       bytes[i] = binaryString.charCodeAt(i);
+   }
+   return buffer;
+}
  

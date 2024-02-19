@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
-import "./fileupload.css"
 import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { useEffect } from 'react';
+import "./fileupload.css"
+
 const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, buttonName, classNames, errorMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
@@ -68,14 +69,14 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
 
     return (
         <div
-            className={`${classNames ? `file-upload p-1` : "file-upload"}  ${isDragging ? 'dragging' : ''} w-100`}
+            className={`${classNames ? `file-upload1` : "file-upload w-100"}  ${isDragging ? 'dragging' : ''}`}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
             {/* <p></p> */}
-            <button onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
+            <button className='btn text-nowrap py-0' onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
             <input
                 type="file"
                 className="hidden-input"

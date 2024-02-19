@@ -279,8 +279,8 @@ const OrderArticle = () => {
                                             <Card.Body className='text-center'>
                                                 <h3 className={`mt-4 ${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h3>
                                                 <div className='mt-4 mb-3'><FaInfoCircle style={{ color: 'blue' }} size={25} /></div>
-                                                <h6>{cardLang == "en" ? item.name : item.polish_name} </h6>
-                                                <Link >{cardLang == "en" ? item?.description : item?.polish_description}</Link>
+                                                <h5 className='text-bold'>{cardLang == "en" ? item.name : item.polish_name} </h5>
+                                                <Link className='text-dark'>{cardLang == "en" ? item?.description : item?.polish_description}</Link>
                                                 <div className='mt-4'>
                                                     <Button className={`btn  ${orderType === item.name ? "btn-primary" : "btn-outline-primary"}`}>{translate(languageData, "Select")}</Button>
                                                 </div>

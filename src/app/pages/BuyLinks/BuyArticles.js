@@ -853,7 +853,7 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (content?.length > selectedSubArticles?.maxArticleLength) {
+            if (content?.replace(/<[^>]*>/g, '').length > selectedSubArticles?.maxArticleLength) {
                 const maxArticleLength = selectedSubArticles?.maxArticleLength;
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
@@ -869,7 +869,7 @@ const BuyArticles = () => {
 
                 return;
             }
-            if (content?.length < selectedSubArticles?.minArticleLength) {
+            if (content?.replace(/<[^>]*>/g, '').length < selectedSubArticles?.minArticleLength) {
                 const minArticleLength = selectedSubArticles?.minArticleLength;
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
@@ -1011,7 +1011,7 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (content?.length > selectedSubArticles?.maxArticleLength) {
+            if (content?.replace(/<[^>]*>/g, '').length > selectedSubArticles?.maxArticleLength) {
                 const maxArticleLength = selectedSubArticles?.maxArticleLength;
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
@@ -1027,7 +1027,7 @@ const BuyArticles = () => {
 
                 return;
             }
-            if (content?.length < selectedSubArticles?.minArticleLength) {
+            if (content?.replace(/<[^>]*>/g, '').length < selectedSubArticles?.minArticleLength) {
                 const minArticleLength = selectedSubArticles?.minArticleLength;
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
@@ -1787,8 +1787,8 @@ const BuyArticles = () => {
                                                                         <Card.Body className='text-center' style={{ marginTop: "-16px" }}>
                                                                             <h4 className={`${orderType === item.name ? "text-primary" : "text-outline-primary"}`}>{item.price}</h4>
                                                                             <div className=''><FaInfoCircle style={{ color: 'blue' }} size={10} /></div>
-                                                                            <h6>{cardLang == "en" ? item.name : item.polish_name} </h6>
-                                                                            <Link >{cardLang == "en" ? item?.description : item?.polish_description}</Link>
+                                                                            <h6 className="text-bold">{cardLang == "en" ? item.name : item.polish_name} </h6>
+                                                                            <Link className="text-dark">{cardLang == "en" ? item?.description : item?.polish_description}</Link>
                                                                             <div></div>
                                                                         </Card.Body>
                                                                         <div className={`d-flex justify-content-center align-items-center ${orderType === item.name ? "green" : "grey"}`} style={{ marginTop: '-94px' }}>
@@ -1930,7 +1930,6 @@ const BuyArticles = () => {
 
                                                         </Col>
                                                     </Row>
-
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "PublicationDate")} </span>
@@ -1979,12 +1978,12 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
-                                                            {content?.length > selectedSubArticles?.maxArticleLength && (
+                                                            {content?.replace(/<[^>]*>/g, '').length > selectedSubArticles?.maxArticleLength && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "maxArticleLength")}: {selectedSubArticles?.maxArticleLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{content?.length}/{selectedSubArticles?.maxArticleLength} Character</p>
+                                                            <p className="text-end">{content?.replace(/<[^>]*>/g, '').length}/{selectedSubArticles?.minArticleLength}-{selectedSubArticles?.maxArticleLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='align-items-center'>
@@ -2020,7 +2019,7 @@ const BuyArticles = () => {
                                                             </Col>
                                                             <Col xs={12} sm={12} md={2} lg={2} className="mt-3 mt-md-0">
                                                                 <div>
-                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} />
                                                                 </div>
                                                             </Col>
                                                             <Col md={2} sm={12} lg={2}>{translate(languageData, "orselectviapixabay")}</Col>
@@ -2115,12 +2114,12 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "Toomanylinks")}: {selectedMaxLinks}
                                                                 </Alert>
                                                             )}
-                                                            {content?.length > selectedSubArticles?.maxArticleLength && (
+                                                            {content?.replace(/<[^>]*>/g, '').length > selectedSubArticles?.maxArticleLength && (
                                                                 <Alert variant="danger">
                                                                     {translate(languageData, "maxArticleLength")}: {selectedSubArticles?.maxArticleLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{content?.length}/{selectedSubArticles?.maxArticleLength} Character</p>
+                                                            <p className="text-end">{content?.replace(/<[^>]*>/g, '').length}/{selectedSubArticles?.minArticleLength}-{selectedSubArticles?.maxArticleLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='align-items-center'>
@@ -2156,7 +2155,7 @@ const BuyArticles = () => {
                                                             </Col>
                                                             <Col xs={12} sm={12} md={2} lg={2} className="mt-3 mt-md-0">
                                                                 <div>
-                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" />
+                                                                    <FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} />
                                                                 </div>
                                                             </Col>
                                                             <Col md={2} sm={12} lg={2}>{translate(languageData, "orselectviapixabay")}</Col>

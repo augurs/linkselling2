@@ -341,7 +341,7 @@ const Cart = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <p className='mb-1'>
-                            <strong>{translate(languageData, "linkName")}:</strong>
+                            <strong>{translate(languageData, "linkName")} : </strong>
                             <span className="text-break">
                                 {purchasedData?.allProduct?.map((item, index) => (
                                     <span key={index}>
@@ -352,11 +352,13 @@ const Cart = () => {
                             </span>
                         </p>
                         <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
-                        <p className='mb-1'><strong>{translate(languageData, "Walletamount")}:</strong> {balance} PLN</p>
-                        {/* <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>1%</span>  {translate(languageData, "linkFee")}:</strong> {purchasedData?.total + purchasedData?.fee}</p> */}
-                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")}:</strong> {purchasedData?.payable_amount}</p>
+                        <p className='mb-1'><strong>{translate(languageData, "Walletamount")} : </strong> {balance} PLN</p>
+                        {!(parseFloat(purchasedData?.total) <= parseFloat(balance)) ?
+                        <>
+                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")} : </strong> {purchasedData?.payable_amount}</p>
                         <p className='mb-1'><strong>{translate(languageData, "netPayableAmount")} :</strong> {purchasedData?.payable_amount}</p>
-
+                        </>
+                        : ""}
 
                     </Modal.Body>
                     <Modal.Footer>

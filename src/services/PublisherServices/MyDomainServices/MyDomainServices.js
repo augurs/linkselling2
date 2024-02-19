@@ -67,3 +67,15 @@ export const uploadCSV = (csv, id) => {
       return error.response.data;
     });
 };
+
+export const downloadSampledCSV = () => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/download-csv`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
