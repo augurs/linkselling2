@@ -25,6 +25,7 @@ const DomainList = () => {
   const [isDataPresent, setIsDataPresent] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+
   useEffect(() => {
     domainListServices()
   }, [])
@@ -36,8 +37,8 @@ const DomainList = () => {
   }, [selectedFile])
 
   useEffect(() => {
-    if(downloadSampledCSV){
-    downloadSampledCSVServices()
+    if (downloadSampledCSV) {
+      downloadSampledCSVServices()
     }
   }, [downloadSampledCSV])
 
@@ -208,7 +209,7 @@ const DomainList = () => {
   const uploadCSVServices = async () => {
     setLoading(true);
     const res = await uploadCSV(selectedFile, publisherData?.user?.id);
-    if (res.success === true) {
+    if (res?.success === true && res?.message === "CSV updated successfully.") {
       toast(translate(languageData, "csvFileUploadSuccessfully"), {
         position: "top-center",
         autoClose: 2000,
@@ -221,7 +222,21 @@ const DomainList = () => {
       });
       domainListServices()
       setLoading(false);
-    } else if (res.success === false && res.message.file[0] === "The file must be a file of type: csv.") {
+    }
+    if (res?.success === true && res?.message === "Not found any new records.") {
+      toast(translate(languageData, "notFoundAnyNewRecords"), {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        type: 'error'
+      });
+      setLoading(false);
+    }
+    else if (res.success === false && res.message.file[0] === "The file must be a file of type: csv.") {
       toast(`${translate(languageData, "pleaseUploadCsvFile")}: ${res?.admin_email}`, {
         position: "top-center",
         autoClose: 2000,
@@ -289,9 +304,9 @@ const DomainList = () => {
                   name='document'
                 />
                 <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip id="tooltip">{translate(languageData, "downloadSampleCSV")}</Tooltip>}
-              ><a href={downloadSampledCsv} download><BsFiletypeCsv fontSize={30}/></a></OverlayTrigger>
+                  placement="top"
+                  overlay={<Tooltip id="tooltip">{translate(languageData, "downloadSampleCSV")}</Tooltip>}
+                ><a href={downloadSampledCsv} download><BsFiletypeCsv fontSize={30} /></a></OverlayTrigger>
               </div>
             </Col>
           </Row>

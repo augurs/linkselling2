@@ -7,7 +7,7 @@ import { useLanguage } from '../../Context/languageContext'
 import DataTable from 'react-data-table-component'
 import { Col, Row } from 'react-bootstrap'
 import { useParams } from 'react-router-dom';
-import { viewPurchaseDomainlist } from '../../../services/ProjectServices/projectServices'
+import { projectList, viewPurchaseDomainlist } from '../../../services/ProjectServices/projectServices'
 const ViewPurchaseDomain = () => {
 
     const userData = JSON.parse(localStorage.getItem('userData'))
@@ -16,13 +16,35 @@ const ViewPurchaseDomain = () => {
     const [viewPurchaseDomainList, setViewPurchaseDomainList] = useState([])
     const [loading, setLoading] = useState(false)
     const [isDataPresent, setIsDataPresent] = useState(true);
+    const [projectListData, setProjectList] = useState([])
+    const [showProject, setShowProject] = useState("")
     const { id } = useParams();
+
+    useEffect(() => {
+        projectListServices()
+    }, [])
 
     useEffect(() => {
         if (viewPurchaseDomainList) {
             viewPurchaseDomainServices()
         }
     }, [])
+
+    const projectListServices = async () => {
+        setLoading(true)
+        const res = await projectList(userData?.id)
+        setProjectList(res.data)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (projectListData) {
+            const data = projectListData?.find((item) => item?.id == id)
+            setShowProject(data?.name)  
+        }
+    }, [projectListData])
+
+
 
 
     const viewPurchaseDomainServices = async () => {
@@ -175,7 +197,7 @@ const ViewPurchaseDomain = () => {
 
             <div className='mt-5 w-100'>
                 <Row className='m-1'>
-                    <Col lg={4}><span className="text-bold">{translate(languageData, "ProjectName")}</span>: {viewPurchaseDomainList[0]?.project}</Col>
+                    <Col lg={4}><span className="text-bold">{translate(languageData, "ProjectName")}</span>: {showProject ? showProject : ""}</Col>
                 </Row>
                 {loading ?
                     (

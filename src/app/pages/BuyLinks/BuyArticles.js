@@ -130,10 +130,6 @@ const BuyArticles = () => {
         getUserDiscountServices()
     }, [])
 
-    console.log(image, "134");
-    console.log(imageSource, "135");
-
-
     useEffect(() => {
         handleUseArticleList()
     }, [])
@@ -148,7 +144,6 @@ const BuyArticles = () => {
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "RequestArticleWriting")) {
             setAddArtiLead('')
-
         }
     }, [articleType]);
 
@@ -242,8 +237,6 @@ const BuyArticles = () => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
     };
 
-
-
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -266,9 +259,6 @@ const BuyArticles = () => {
     }, [articleType]);
 
 
-
-
-
     const handleInputChange = (e) => {
         const { name, value } = e.target
         setSearch({ ...search, [name]: value })
@@ -283,11 +273,6 @@ const BuyArticles = () => {
     const handlePageChange = (event, value) => {
         setPage(value)
     }
-
-
-
-    // dofollow, promotion, min_dr, max_dr, min_link, max_link, min_href, max_hre
-    // type_of_anchor
 
 
     useEffect(() => {
@@ -327,12 +312,6 @@ const BuyArticles = () => {
     }, [])
 
 
-
-
-
-
-
-
     useEffect(() => {
 
         if (articleType === translate(languageData, "RequestArticleWriting")) {
@@ -354,45 +333,7 @@ const BuyArticles = () => {
     }
 
 
-
-
     const checkAddedToCart = articles?.some((item) => item?.cart === 'Yes')
-
-    // const requestArticleService = async () => {
-    //     const data = {
-    //         id: userData?.id,
-    //         title: requestArticleTitle
-    //     }
-    //     setLoading(true)
-    //     const res = await requestArticle(data)
-    //     if (res.success === true && res.message === "Article Requested successfully.") {
-    //         toast(res.message, {
-    //             position: "top-right",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'success'
-    //         });
-    //         setLoading(false)
-    //     } else if (res.success === false) {
-    //         setLoading(false)
-    //     } else {
-    //         toast("Something went wrong !", {
-    //             position: "top-right",
-    //             autoClose: 5000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: true,
-    //             draggable: true,
-    //             progress: undefined,
-    //             type: 'error'
-    //         })
-    //         setLoading(false)
-    //     }
-    // }
 
     const getArticleListServices = async () => {
         setListLoading(true)
@@ -404,9 +345,6 @@ const BuyArticles = () => {
     useEffect(() => {
         setArticleType(translate(languageData, "RequestArticleWriting"))
     }, [showCartOptions])
-
-
-
 
 
     const Tool = ({ children, title }) => (
@@ -797,6 +735,8 @@ const BuyArticles = () => {
         }
     };
 
+    console.log(addNewArticleProjectDropdown, "738");
+
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
             if (!requestArticleTitle) {
@@ -998,7 +938,7 @@ const BuyArticles = () => {
                 });
                 return;
             }
-            if (!addNewArticleProjectDropdown) {
+            if (!addNewArticleProjectDropdown || !addNewArticleProjectDropdown?.length) {
                 toast(translate(languageData, "selectArticleFromList"), {
                     position: "top-center",
                     autoClose: 3000,
@@ -1391,7 +1331,6 @@ const BuyArticles = () => {
         <>
             <ToastContainer />
             <div className="p-4 w-100">
-
                 <Card>
                     <Card.Header className="justify-content-between align-items-center flex-wrap">
                         <div>
@@ -1638,10 +1577,6 @@ const BuyArticles = () => {
                                 </div>
                             ) : ''}
                         </ul>
-
-                        {/* <Button variant="primary" className="mx-auto d-flex mt-4">
-                            {translate(languageData, "artilstSearch")}
-                        </Button> */}
                     </Card.Body>
                 </Card>
                 <Card>
@@ -1710,19 +1645,6 @@ const BuyArticles = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <div className="d-flex jusify-content-between w-100 flex-wrap">
-                            {/* <div>
-                                <span>{translate(languageData, "TrackingCode")} :</span>
-                                <span className="ms-1 ">
-                                    <IoIosCheckmarkCircle size={20} className="text-primary" />
-                                </span>
-                            </div> */}
-                            {/* <div className="ms-6">
-                                <span>{translate(languageData, "TrackingCode")} :</span>
-                                <span className="ms-1 ">
-                                    <IoIosCheckmarkCircle size={20} className="text-primary me-1" />
-                                    {translate(languageData, "StatisticsFromPublisher")}: (25,00 zł net)
-                                </span>
-                            </div> */}
                         </div>
                         <div className="px-4">
                             <DataTable columns={modalColumns} data={modalTableData} />
@@ -2180,11 +2102,6 @@ const BuyArticles = () => {
                             </div>}
                     </Modal.Body>
                     <Modal.Footer>
-                        {/* {articleType === translate(languageData, "RequestArticleWriting") &&
-                            <Button variant="primary" onClick={() => requestArticleService()}>
-                                {loading ? "Wait..." : "Request Article"}
-                            </Button>} */}
-
                         {showCartOptions ?
                             <Button variant="primary" onClick={() => addToCartArticleServices()}>
                                 {cartLoading ? "Wait..." : translate(languageData, "addToCart")}
@@ -2195,6 +2112,7 @@ const BuyArticles = () => {
                         </Button>
                     </Modal.Footer>
                 </Modal>
+
                 <Modal show={confirmModal}
                     size="md"
                     className="w-100">

@@ -274,8 +274,10 @@ const AddArticle = () => {
                 title: "",
                 lead: "",
                 content: "",
+                image: ""
             });
             setContent("")
+            setDisplayedImage('')
             setFormErrors({ ...formErrors, document: translate(languageData, "pleaseUploadDocxFile") });
         } else {
             toast(translate(languageData, "somethingwentwrong"), {
