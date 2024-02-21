@@ -15,6 +15,7 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: '',
+    specialCode: '',
     terms: false,
     marketing: false,
     privacy: false,
@@ -23,8 +24,6 @@ const SignUp = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const refId = queryParams.get('ref');
-
-  const { t, i18n } = useTranslation()
 
   const { languageData } = useLanguage();
 
@@ -304,11 +303,13 @@ console.log(refId, "119");
                       </span>
                     </div>
                     <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.confirmPassword}</div>
-                    {/* <div className="text-end pt-1">
-                      <p className="mb-0">
-                        <a href="forgot-password.html" className="text-primary ms-1">Forgot Password?</a>
-                      </p>
-                    </div> */}
+                    <div className="wrap-input100 validate-input mb-0 mt-2">
+                      <input className="input100" type="text" name="specialCode" placeholder={languageData && languageData?.filter((item) => item.title === 'specialCode')[0]?.value || 'Special Code'} onChange={(e) => handleChange(e)} value={formValues.specialCode} />
+                      <span className="focus-input100"></span>
+                      <span className="symbol-input100">
+                      <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
+                      </span>
+                    </div>
                     <label className="custom-control custom-checkbox mt-4">
                       <input type="checkbox" className="custom-control-input" name='terms' onChange={handleCheckbox} checked={formValues.terms} />
                       <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition2')[0]?.value || 'singUpTermsAndCondition2'}</a></span>

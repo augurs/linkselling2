@@ -76,13 +76,14 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
             onDrop={handleDrop}
         >
             {/* <p></p> */}
-            <button className='btn text-nowrap py-0' onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
+            <button className="text-break p-1" onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
             <input
                 type="file"
                 className="hidden-input"
                 ref={fileInputRef}
                 onChange={handleInputChange}
                 name={name}
+                accept={allowedFileExtensions}
             />
             <div className="text-danger">{errorMessage}</div>
         </div>
