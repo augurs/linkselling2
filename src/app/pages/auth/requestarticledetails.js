@@ -27,7 +27,6 @@ function Portalarticledetails() {
     const [modalType, setModalType] = useState("");
     const [chatData, setChatData] = useState([]);
     const { languageData, setLanguage } = useLanguage();
-    const [buttonsVisible, setButtonsVisible] = useState(true);
 
     const { id } = useParams();
 
@@ -150,10 +149,8 @@ function Portalarticledetails() {
                     progress: undefined,
                     type: 'success'
                 });
-
                 ordersListServices();
                 setShowModal(false);
-                setButtonsVisible(false);
             } else {
                 throw new Error('API call failed');
             }
@@ -349,7 +346,7 @@ function Portalarticledetails() {
                                 </div>
                             </Card.Body>
                             <Card.Footer className='d-flex gap-2'>
-                            {buttonsVisible && (<>
+                            {portalArticleDetail[0]?.status === "Accept" &&  (<>
                                 <Link to={`/requestarticledetails/requestarticle/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
                                 <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button></>)}
                                 <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sendMessage")}</Button>
