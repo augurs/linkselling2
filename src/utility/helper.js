@@ -61,23 +61,24 @@ export const formats = [
 export const caseInsensitiveSort = (rowA, rowB) => {
    const a = rowA.title ? String(rowA.title).toLowerCase() : '';
    const b = rowB.title ? String(rowB.title).toLowerCase() : '';
- 
+
    console.log('Comparing:', a, b);
- 
+
    return a.localeCompare(b);
- };
+};
 
- 
- export function base64ToBinary(base64Image) {
-   const base64Data = base64Image.split(',')[1];
-   const binaryString = atob(base64Data);
 
-   const bufferLength = binaryString.length;
-   const buffer = new ArrayBuffer(bufferLength);
-   const bytes = new Uint8Array(buffer);
-   for (let i = 0; i < bufferLength; i++) {
-       bytes[i] = binaryString.charCodeAt(i);
+export function base64ToFile(base64String, filename) {
+   const parts = base64String.split(';base64,');
+   const contentType = parts[0].split(':')[1];
+   const rawBase64 = parts[1];
+
+   const rawBinary = atob(rawBase64);
+   const binaryArray = new Uint8Array(new ArrayBuffer(rawBinary.length));
+   for (let i = 0; i < rawBinary.length; i++) {
+      binaryArray[i] = rawBinary.charCodeAt(i);
    }
-   return buffer;
+
+   const blob = new Blob([binaryArray], { type: contentType });
+   return new File([blob], filename, { type: contentType });
 }
- 

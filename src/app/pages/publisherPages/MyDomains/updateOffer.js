@@ -574,7 +574,7 @@ const Updateoffer = () => {
                                     <Col lg={6} className='ms-2'>
                                     </Col>
                                     <Col lg={5} className='mt-5 mb-2'>
-                                        <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.maxLinks || !formValues.price || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone}>{translate(languageData, "clickNext")}</Button>
+                                        <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.maxLinks || !formValues.price || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone || !formValues?.category.length}>{translate(languageData, "clickNext")}</Button>
                                     </Col>
                                 </Row>
                             </>

@@ -72,7 +72,7 @@ const AddArticle = () => {
             setFormValues({
                 ...formValues,
                 id: res.data[0].id,
-                title: res.data[0].title,
+                title: res.data[0].article_title,
                 link: res.data[0].max_links,
                 url: res.data[0].url,
                 image: dynamicImageUrl,
@@ -129,6 +129,8 @@ const AddArticle = () => {
         }
     }
 
+    console.log(formValues, "132");
+
     return (
         <div className=''>
             <ToastContainer />
@@ -146,7 +148,7 @@ const AddArticle = () => {
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.article_title}
+                                    {formValues?.title}
                                 </div>
                             </Col>
                         </Row>

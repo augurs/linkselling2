@@ -31,7 +31,7 @@ const DomainList = () => {
   }, [])
 
   useEffect(() => {
-    if (selectedFile !== null) {
+    if (selectedFile !== null && selectedFile ) {
       uploadCSVServices()
     }
   }, [selectedFile])

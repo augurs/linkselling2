@@ -251,7 +251,7 @@ const AddArticle = () => {
                     title: res?.title.trim().replace(/\s+/g, ' '),
                     lead: res?.lead.trim().replace(/\s+/g, ' '),
                     content: res?.content.trim().replace(/\s+/g, ' '),
-                    image: base64ToBinary(res?.images[0]),
+                    image: (res?.images[0]),
 
                 });
             }

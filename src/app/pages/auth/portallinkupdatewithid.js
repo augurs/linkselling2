@@ -116,7 +116,7 @@ function Portallinkupdatewithid() {
                 </div>
               </Card.Body>
               <Card.Footer className='d-flex justify-content-end'>
-                <Button onClick={() => submitlinkportal()}>{translate(languageData, "submit")}</Button>
+                <Button onClick={() => submitlinkportal()} disabled={!link}>{translate(languageData, "submit")}</Button>
               </Card.Footer>
             </Card>
           </Col>

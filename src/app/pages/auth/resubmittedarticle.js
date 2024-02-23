@@ -146,7 +146,7 @@ const AddArticle = () => {
         const linkCount = parsedContent.querySelectorAll('a').length;
         return linkCount;
     };
-    
+
     const linkCount = countLinksInEditor(editor);
 
     const updateResubmitArticleServices = async () => {
@@ -308,13 +308,9 @@ const AddArticle = () => {
                                         <span>{translate(languageData, "link")}</span>
                                     </Col>
                                     <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            {formValues.url}
+                                        <a href={formValues?.url} className='wrap-input100 validate-input mb-0'>
+                                            {formValues?.url}
                                         </a>
-                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            {formValues.url}
-                                        </a>
-                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>
@@ -456,7 +452,7 @@ const AddArticle = () => {
                                         <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
                                     </Col>
                                     <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")}/></div>
+                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")} /></div>
                                     </Col>
                                     <Col xs={12} md={1} className='mt-3 mt-md-0'>
                                         <div>{translate(languageData, "orselectviapixabay")}</div>
