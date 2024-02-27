@@ -31,7 +31,7 @@ const DomainList = () => {
   }, [])
 
   useEffect(() => {
-    if (selectedFile !== null && selectedFile ) {
+    if (selectedFile !== null && selectedFile) {
       uploadCSVServices()
     }
   }, [selectedFile])
@@ -177,14 +177,14 @@ const DomainList = () => {
                 overlay={<Tooltip id="tooltip">{translate(languageData, "addOffer")}</Tooltip>}
               >
                 <Link to={`/publisher/myOffer/${row.id}`}>
-                  <FaPlus className='icon-link' />
+                  <FaPlus className='icon-link' fontSize={16} />
                 </Link></OverlayTrigger>
               <OverlayTrigger
                 placement="top"
                 overlay={<Tooltip id="tooltip">{translate(languageData, "suspendOffer")}</Tooltip>}
               >
                 <Link className='d-flex gap-1 align-items-center' onClick={() => suspendOfferServices(row?.url)}>
-                  <MdCancel className='icon-link' />
+                  <MdCancel className='icon-link' fontSize={18} />
                 </Link></OverlayTrigger></>
             :
             <OverlayTrigger
@@ -193,7 +193,7 @@ const DomainList = () => {
               disabled
             >
               <Button disabled className='bg-transparent'>
-                <FaPlus className='icon-link' />
+                <FaPlus className='icon-link' fontSize={16} />
               </Button></OverlayTrigger>}
         </div>
       ),

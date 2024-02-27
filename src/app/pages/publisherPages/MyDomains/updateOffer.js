@@ -107,6 +107,8 @@ const Updateoffer = () => {
         } = event;
         setFormValues({ ...formValues, category: value });
     };
+
+    console.log(formValues.category, "111");
     
 
     const handleNumberOfDaysChange = (e) => {
@@ -135,8 +137,7 @@ const Updateoffer = () => {
         setLoading(true)
         const res = await viewUpdateoffer(domainId)
         if (res.success === true) {
-            const categoryArray = res?.data[0]?.category || [];
-        const formattedCategory = Array.isArray(categoryArray) ? categoryArray.map(item => item.toString()) : [];
+            const categoryArray = res?.data[0]?.category.split(",").map(item => parseInt(item)) || [];
             setFormValues({
                 ...formValues,
                 id: res?.data[0]?.id,
@@ -150,7 +151,7 @@ const Updateoffer = () => {
                 articleMinLength: res?.data[0]?.article_min_length,
                 articleMaxLength: res?.data[0]?.article_max_length,
                 leadLength: res?.data[0]?.lead_length,
-                category: formattedCategory,
+                category: categoryArray,
                 acceptsLoan: res?.data[0]?.loan,
                 acceptsMedic: res?.data[0]?.medic,
                 acceptsGambling: res?.data[0]?.gambling,

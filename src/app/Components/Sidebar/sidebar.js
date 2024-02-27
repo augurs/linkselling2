@@ -14,7 +14,8 @@ import UserProfileModal from './userProfileModal';
 import { ToastContainer } from 'react-toastify';
 import { walletBalance } from "../../../services/walletServices/walletService"
 import Referral from '../Referral/Referral'
-import { FaUserFriends } from 'react-icons/fa';
+import RedeemModal from '../RedeemModal/reedeem'
+
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -203,7 +204,9 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         <li className="slide" style={{ cursor: "pointer" }} >
                             < Referral />
                         </li>
-
+                        <li className="slide" style={{ cursor: "pointer" }} >
+                            < RedeemModal />
+                        </li>
 
 
                         {/* Other menu items */}

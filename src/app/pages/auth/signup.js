@@ -56,7 +56,7 @@ const SignUp = () => {
     setFormValues({ ...formValues, [name]: checked });
     validate({ ...formValues, [name]: checked });
   }
-  
+
 
 
 
@@ -94,7 +94,7 @@ const SignUp = () => {
       error.marketing = languageData && languageData?.filter((item) => item.title === 'marketing')[0]?.value || 'marketing';
       isValid = false;
     }
-  
+
     if (!values.privacy) {
       error.privacy = languageData && languageData?.filter((item) => item.title === 'privacy')[0]?.value || 'privacy';
       isValid = false;
@@ -111,9 +111,8 @@ const SignUp = () => {
   const loginFailureMessage2 = languageData && languageData?.filter((item) => item.title === 'loginFailureMessage2')[0]?.value || 'loginFailureMessage2';
   const passwordDoNotMatch = languageData && languageData?.filter((item) => item.title === 'passwordDoNotMatch')[0]?.value || 'passwordDoNotMatch';
   const userNameAlredyTaken = languageData && languageData?.filter((item) => item.title === 'userNameAlredyTaken')[0]?.value || 'userNameAlredyTaken';
+  const wrongSpecialCode = languageData && languageData?.filter((item) => item.title === 'wrongSpecialCode')[0]?.value || 'wrongSpecialCode';
 
-
-console.log(refId, "119");
 
   const signUpServices = async () => {
     setSignUpLoading(true);
@@ -181,7 +180,7 @@ console.log(refId, "119");
       ...formValues,
       language: currLang
     }
-    const res = await signup(values, currLang, refId ? refId: '');
+    const res = await signup(values, currLang, refId ? refId : '');
     if (res.success === true) {
       toast(signUpSuccessMessage, {
         position: "top-center",
@@ -212,7 +211,7 @@ console.log(refId, "119");
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: '' })
     }
     else if (res.message[0] === "The username has already been taken.") {
       toast(userNameAlredyTaken, {
@@ -227,7 +226,21 @@ console.log(refId, "119");
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
+    } else if (res.success === false && res.message[0] === "The Special code does not exist.") {
+      toast(wrongSpecialCode, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: 'error'
+      });
+      setSignUpLoading(false)
+      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
     }
     else {
       toast(loginFailureMessage2, {
@@ -307,7 +320,7 @@ console.log(refId, "119");
                       <input className="input100" type="text" name="specialCode" placeholder={languageData && languageData?.filter((item) => item.title === 'specialCode')[0]?.value || 'Special Code'} onChange={(e) => handleChange(e)} value={formValues.specialCode} />
                       <span className="focus-input100"></span>
                       <span className="symbol-input100">
-                      <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
+                        <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
                       </span>
                     </div>
                     <label className="custom-control custom-checkbox mt-4">

@@ -79,3 +79,18 @@ export const withdrawalReferral = (formValues, id) => {
       return error.response.data;
     });
 };
+
+
+
+
+export const redeemCode = (formValues) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/getRedeem/${formValues?.redeemCode}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
