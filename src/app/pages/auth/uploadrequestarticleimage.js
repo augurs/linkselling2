@@ -11,6 +11,7 @@ import { uploadimagereqarticle, updaterimagrequestedarticle } from '../../../ser
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import Select from 'react-select'
+import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
 
     const initialValues = {
@@ -68,7 +69,7 @@ const AddArticle = () => {
     const resubmitImg = async () => {
         const res = await uploadimagereqarticle(userData2?.id, id)
         if (res.success === true) {
-            const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
+            const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
                 ...formValues,
                 id: res.data[0].id,
@@ -140,7 +141,6 @@ const AddArticle = () => {
                         <h3>  {translate(languageData, "resubmitArticle")}</h3>
                     </Card.Header>
                     <Card.Body className='border-bottom pb-5'>
-
                         <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
                         <Row className='align-items-center'>
                             <Col xs={12} md={4}>

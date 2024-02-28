@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FaCopy, FaHandHoldingUsd, FaTimes } from 'react-icons/fa';
+import { FaHandHoldingUsd, FaTimes } from 'react-icons/fa';
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap';
-import { redeemCode } from "../../../services/walletServices/walletService"
+import { redeemCode } from "../../../services/walletServices/walletService";
 import { translate } from '../../../utility/helper';
 import { useLanguage } from "../../Context/languageContext";
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+
 const Referral = () => {
     const initialValues = {
         redeemCode: ""
@@ -14,22 +15,30 @@ const Referral = () => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     const [showRedeemModal, setShowRedeemModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [wrongRes, setWrongRes] = useState('');
-
-
-
-
+    const [res, setRes] = useState(null);
     const { languageData } = useLanguage();
 
+    useEffect(() => {
+        if (res?.success === false && res.message === "Wrong code") {
+            toast(translate(languageData, "wrongCode"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+        }
+    }, [res, languageData]);
 
     const handleCloseModal = () => {
         setShowRedeemModal(false);
     };
 
-
-
     const redeemCodeServices = async () => {
-        setLoading(true)
+        setLoading(true);
         if (!formValues.redeemCode) {
             toast(translate(languageData, "pleaseEnterRedeemCode"), {
                 position: "top-center",
@@ -41,11 +50,13 @@ const Referral = () => {
                 progress: undefined,
                 type: 'error'
             });
-            setLoading(false)
+            setLoading(false);
             return;
         }
-        const res = await redeemCode(formValues)
-        if (res.success === true) {
+        const response = await redeemCode(formValues);
+        setRes(response);
+        setLoading(false);
+        if (response.success === true) {
             toast(translate(languageData, "redeemSuccessfully"), {
                 position: "top-center",
                 autoClose: 2000,
@@ -56,27 +67,14 @@ const Referral = () => {
                 progress: undefined,
                 type: 'success'
             });
-            setFormValues(initialValues);
-            setLoading(false)
-        } else if (res.success === false && res.message == "Wrong code") {
-            setWrongRes(res.message)
-            setLoading(false)
-        } else {
-            toast(translate(languageData, "loginFailureMessage2"), {
-                position: "top-center",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                type: 'error'
-            });
-            setLoading(false)
+            // setFormValues(initialValues);
         }
-    }
+    };
 
-
+    const handleInputChange = (e) => {
+        setRes(null);
+        setFormValues({ ...formValues, redeemCode: e.target.value });
+    };
 
     return (
         <div>
@@ -88,36 +86,35 @@ const Referral = () => {
             </div>
             <Modal show={showRedeemModal} onHide={() => setShowRedeemModal(false)}>
                 <Modal.Header className='d-flex align-items-center justify-content-between'>
-                    <Modal.Title >
+                    <Modal.Title>
                         <div>
                             {translate(languageData, "redeemCode")}
                         </div>
                     </Modal.Title>
                     <FaTimes style={{ cursor: 'pointer' }} fontSize={20} onClick={handleCloseModal} />
-
                 </Modal.Header>
                 <Modal.Body className='d-flex flex-column gap-3'>
                     <Form.Group as={Row} controlId="enterCode">
                         <Col><Form.Label>{translate(languageData, "enterCode")}: </Form.Label></Col>
                         <Col sm="8">
-                            <Form.Control placeholder="Enter code" type="text" name="redeemCode" onChange={(e) => setFormValues({ ...formValues, redeemCode: e.target.value })} />
-                            {/* {formValues.redeemCode ?
-                                <span className='text-primary'>You have successfully Redeem Code</span>
-                                :
-                                <span className='text-danger'>Wrong Code! Please enter valid Code</span>} */}
+                            <Form.Control placeholder="Enter code" type="text" name="redeemCode" value={formValues.redeemCode} onChange={handleInputChange} />
+                            {res?.success === false && res.message === "Wrong code" && (
+                                <span className='text-danger'>{translate(languageData, "wrongCode")}</span>
+                            )}
+                            {res?.success === true  && (
+                                <span className='text-primary'>{res?.data}</span>
+                            )}
                         </Col>
-
                     </Form.Group>
                     <div className='d-flex justify-content-end gap-1'>
-                        <Button onClick={redeemCodeServices} disabled={!formValues.redeemCode}>
-                            {translate(languageData, "Redeem")}
+                        <Button onClick={redeemCodeServices} >
+                            {loading ? 'Loading...' : translate(languageData, "redeem")}
                         </Button>
                     </div>
                 </Modal.Body>
-
             </Modal>
         </div>
     );
-}
+};
 
 export default Referral;

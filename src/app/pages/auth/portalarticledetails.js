@@ -11,8 +11,9 @@ import { portalArticleDetails, portalArticleDetailsMessage, portalArticleDetails
 import { FaCopy } from 'react-icons/fa';
 import { updateLanguages } from '../../../services/CommonServices/commonService';
 import { chatSectionService, sentToPublisherMessage } from '../../../services/OrdersServices/ordersServices';
-import custImg from "../../../assets/images/users/customer.jpg"
-import publisherImg from "../../../assets/images/users/publisher.jpg"
+import custImg from "../../../assets/images/users/user.png"
+import publisherImg from "../../../assets/images/users/publisher1.png"
+import { baseURL2 } from '../../../utility/data';
 function Portalarticledetails() {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -248,10 +249,10 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "image")}</span>
                                         </Col>
-                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                        <Col xs={12} md={8} className="mt-3 mt-md-0"> 
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                                <a href={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} download>
-                                                    <img src={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} alt="Article Image" className='w-25' />
+                                                <a href={`${baseURL2}/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} download>
+                                                    <img src={`${baseURL2}/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} alt="Article Image" className='w-25' />
                                                 </a>
                                             </div>
                                         </Col>
@@ -300,7 +301,10 @@ function Portalarticledetails() {
                                                     <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
                                                         <Col xs={4} className="text-left">
                                                             {message.sender === 'user' && (
-                                                                <div className="border-top border-primary p-2 square bg-lightgray rounded-1 mb-4">{message.message}</div>
+                                                                <div className="border-top border-primary p-1 square bg-lightgray rounded-1">
+                                                                <div>{message.message}</div>
+                                                                <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+                                                              </div>
                                                             )}
                                                         </Col>
                                                         <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
@@ -314,7 +318,11 @@ function Portalarticledetails() {
                                                         </Col>
                                                         <Col xs={4} className="text-right">
                                                             {message.sender === 'publisher' && (
-                                                                <div className='border p-2 square bg-lightgray rounded-1 mb-4'>{message.message}</div>
+                                                                <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
+                                                                <div>{message.message}</div>
+                                                                <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+                              
+                                                              </div>
                                                             )}
                                                         </Col>
                                                     </Row>

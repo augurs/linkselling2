@@ -41,7 +41,7 @@ import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoTicketOutline } from 'react-icons/io5';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import { walletBalance } from "../../../services/walletServices/walletService"
-import { modules, formats } from "../../../utility/helper";
+import { modules, formats, base64ToFile } from "../../../utility/helper";
 import moment from "moment";
 const BuyArticles = () => {
 
@@ -114,6 +114,8 @@ const BuyArticles = () => {
     const [useArticleList, setUseArticleList] = useState([])
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
 
+    const allowedImageExtension = ['.jpg', '.gif', '.png']
+
     useEffect(() => {
         if (useArticleList) {
             const data = useArticleList?.find((item) => item?.id == addNewArticleProjectDropdown)
@@ -122,7 +124,7 @@ const BuyArticles = () => {
             setAddArtiLead(data?.lead)
             setContent(data?.content)
             setImageSource({ previewUrl: data?.file });
-            setImage("");
+            setImage(data?.file);
         }
     }, [addNewArticleProjectDropdown, useArticleList])
 
@@ -511,7 +513,7 @@ const BuyArticles = () => {
         },
     ];
 
-    const modalTableData = publisherArticleDetails?.map((item, index) => {
+    const modalTableData = publisherArticleDetails?.map((item) => {
         const discount = userDiscount?.discount || 0;
         const discountedPrice = item?.client_price * (1 - discount / 100);
         return {
@@ -529,6 +531,8 @@ const BuyArticles = () => {
             maxArticleLength: item?.max_article_length,
             minArticleLength: item?.min_article_length,
             maxLeadLength: item?.max_lead,
+            minLeadLength: item?.min_lead ? item?.min_lead : 0,
+
 
         }
     })
@@ -734,8 +738,6 @@ const BuyArticles = () => {
             return false;
         }
     };
-
-    console.log(addNewArticleProjectDropdown, "738");
 
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
@@ -1089,7 +1091,6 @@ const BuyArticles = () => {
         }
     }, [linkCount]);
 
-    const allowedImageExtension = ['.jpg', '.gif', '.png']
 
     const handleFiles = (file) => {
         const previewUrl = URL.createObjectURL(file);
@@ -1822,25 +1823,6 @@ const BuyArticles = () => {
 
                                             {articleType === translate(languageData, "AddNewArticle") &&
                                                 <div>
-                                                    {/* <Row className='align-items-center '>
-                                                        <Col xs={12} md={4}>
-                                                            <span>{translate(languageData, "choosearticle")} *</span>
-                                                        </Col>
-                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                                            <div className="form-group">
-                                                                <select name="project" className="input100 px-3" id="default-dropdown" onChange={(e) => setAddNewArticleProjectDropdown(e.target.value)} onClick={() => validate(formValues)}>
-                                                                    <option className="input100" label={translate(languageData, "ArticleList")}></option>
-                                                                    {useArticleList?.map((item, index) => {
-                                                                        return (
-                                                                            <option className="input100" value={item.id} key={index}>{item.title}</option>
-                                                                        )
-                                                                    })}
-
-                                                                </select>
-                                                            </div>
-                                                            <div className='text-danger text-center mt-1'>{formErrors.project}</div>
-                                                        </Col>
-                                                    </Row> */}
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "artilstTitle")} *</span>
@@ -1876,7 +1858,7 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "maxLeadLength")}: {selectedSubArticles?.maxLeadLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.maxLeadLength} Character</p>
+                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.minLeadLength}-{selectedSubArticles?.maxLeadLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='mt-4 pb-2'>
@@ -2012,7 +1994,7 @@ const BuyArticles = () => {
                                                                     {translate(languageData, "maxLeadLength")}: {selectedSubArticles?.maxLeadLength}
                                                                 </Alert>
                                                             )}
-                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.maxLeadLength} Character</p>
+                                                            <p className="text-end">{addArtiLead?.length}/{selectedSubArticles?.minLeadLength}-{selectedSubArticles?.maxLeadLength} Character</p>
                                                         </Col>
                                                     </Row>
                                                     <Row className='mt-4 pb-2'>

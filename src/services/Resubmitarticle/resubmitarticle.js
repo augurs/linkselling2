@@ -30,7 +30,7 @@ export const uploadimagereqarticle = (id, imgid) => {
 };
 
 
-export const updaterResubmitarticle = (data, id) => {
+export const updaterResubmitarticle = (data, id, rejectComment) => {
 
   const formData = new FormData();
   formData.append("title", data.title);
@@ -41,6 +41,8 @@ export const updaterResubmitarticle = (data, id) => {
   formData.append("publication_date", data.date);
   if (data.userStatus) {
     formData.append("user_status", data.userStatus);
+    formData.append("reject_comment", rejectComment);
+
 }
   formData.append("comment", data.comment);
   formData.append("publisher_msg", data.publisherMsgText);
