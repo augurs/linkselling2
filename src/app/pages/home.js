@@ -208,7 +208,6 @@ const Home = () => {
   ];
   //*api 3rd section end
 
-
   //api 4th section start
   useEffect(() => {
     ordersListServices()
@@ -328,7 +327,7 @@ const Home = () => {
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "ReadyToPublish")}</small>;
             break;
-            case "RejectedByPortal":
+          case "RejectedByPortal":
             buttonClass = "btn btn-outline-primary btn-pill";
             buttonText = <small>{translate(languageData, "RejectedByPortal")}</small>;
             break;
@@ -364,7 +363,6 @@ const Home = () => {
     }
 
   ]
-  //*api 4th section end
 
   const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
 
@@ -379,30 +377,30 @@ const Home = () => {
             </Card.Header>
             <Card.Body >
               <div className="px-1" style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px' }}>
-              {toDoList && toDoList.length > 0 ? (
-                <Row className='mt-1'>
-                  {toDoList?.map((data, index) => (
-                    <Col xs={12} sm={12} key={index}>
-                      <Card className='shadow-md mb-1'>
-                        <div className='d-flex align-items-center justify-content-between p-1'>
-                          <div>
-                            <h6 className='mb-0'>{data?.title}</h6>
-                            <small className='d-flex'><div className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
+                {toDoList && toDoList.length > 0 ? (
+                  <Row className='mt-1'>
+                    {toDoList?.map((data, index) => (
+                      <Col xs={12} sm={12} key={index}>
+                        <Card className='shadow-md mb-1'>
+                          <div className='d-flex align-items-center justify-content-between p-1'>
+                            <div>
+                              <h6 className='mb-0'>{data?.title}</h6>
+                              <small className='d-flex'><div className='text-bold'>{translate(languageData, "Action")}</div>: {getActionText(data?.status)} (<span className='text-primary'>{data?.portal}</span>)</small>
+                            </div>
+                            <div>
+                              <Link to={handleRedirect(data)}>
+                                <Button className="btn btn-primary mt-1">
+                                  <small>{getButtonText(data?.status)}</small>
+                                </Button></Link>
+                            </div>
                           </div>
-                          <div>
-                            <Link to={handleRedirect(data)}>
-                              <Button className="btn btn-primary mt-1">
-                                <small>{getButtonText(data?.status)}</small>
-                              </Button></Link>
-                          </div>
-                        </div>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row> 
-              ) : (
-                <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>
-              )}
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                ) : (
+                  <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>
+                )}
 
 
 
@@ -437,7 +435,6 @@ const Home = () => {
           </Card>
         </Col>
       </Row>
-
       <Row>
         <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
@@ -450,7 +447,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-10' alt='loader1' />
                   </div> :
-                    <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px'  }}>
+                    <div style={{ height: '200px', overflowY: 'scroll', overflowX: 'hidden', maxHeight: '200px' }}>
                       <DataTable
                         columns={columns2}
                         data={tableData2}
@@ -490,7 +487,7 @@ const Home = () => {
         </Col>
       </Row>
 
-    </div >
+    </div>
 
   )
 }

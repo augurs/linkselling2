@@ -20,7 +20,6 @@ function CustomLanguageContext({ children }) {
     }, [language])
 
 
-
     const languageService = async () => {
         const res =  await getLanguages(language)
         setLanguageData(res.data)

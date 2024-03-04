@@ -22,8 +22,6 @@ const Layout = () => {
     }
   }, [])
 
-
-
   const handleLogout = () => {
     localStorage.removeItem('userData')
     navigate('/login')

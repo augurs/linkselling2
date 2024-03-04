@@ -20,7 +20,7 @@ const Cart = () => {
     const queryParams = new URLSearchParams(location.search);
     const hasError = queryParams.get('error') === 'true';
 
-    const { languageData } = useLanguage()
+    const { languageData, language } = useLanguage()
 
     const [cartProducts, setCartProducts] = useState([])
     const [loading, setLoading] = useState({ listLoading: false, deleteLoading: false, buyNowLoading: false })
@@ -31,6 +31,7 @@ const Cart = () => {
     const [rowId, setRowId] = useState('')
     const [balance, setBalance] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(hasError);
+    const [proceedCheck, setProceedCheck] = useState(true)
 
     const userData = JSON.parse(localStorage.getItem('userData'))
     const { cartListServices } = useCart()
@@ -44,6 +45,7 @@ const Cart = () => {
     useEffect(() => {
         showWalletServices()
     }, [])
+
 
     const showWalletServices = async () => {
         setLoading(true);
@@ -112,7 +114,6 @@ const Cart = () => {
             cartListServices()
         }
     }
-
 
     const buyNowServices = async (domainId, serviceType, articleType, id) => {
         setBuyNowId(domainId)
@@ -354,17 +355,47 @@ const Cart = () => {
                         <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
                         <p className='mb-1'><strong>{translate(languageData, "Walletamount")} : </strong> {balance} PLN</p>
                         {!(parseFloat(purchasedData?.total) <= parseFloat(balance)) ?
-                        <>
-                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")} : </strong> {purchasedData?.payable_amount}</p>
-                        <p className='mb-1'><strong>{translate(languageData, "netPayableAmount")} :</strong> {purchasedData?.payable_amount}</p>
-                        </>
-                        : ""}
+                            <>
+                                <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")} : </strong> {purchasedData?.payable_amount}</p>
+                                <p className='mb-1'><strong>{translate(languageData, "netPayableAmount")} :</strong> {purchasedData?.payable_amount}</p>
+                            </>
+                            : ""}
+
+
+                        {language == 'pl' &&
+                            <>
+                                <hr></hr>
+
+                                <div>
+                                    <label className="custom-control custom-checkbox mt-4">
+                                        <input type="checkbox" className="custom-control-input" name='proceed' onChange={(e) => setProceedCheck(e.target.checked)} checked={proceedCheck} />
+                                        <span className="custom-control-label mt-2 fw-bold">Chcę, by usługi zostały zrealizowane przed upływem terminu odstąpienia od umowy</span>
+                                    </label>
+                                    <p>
+                                        Oświadczenie dotyczy wyłącznie konsumentów lub podmiotów,
+                                        którym przysługują analogiczne uprawnienia.
+                                        Zaznaczenie tego pola jest niezbędne,
+                                        by Wydawca przystąpił do realizacji usługi
+                                        przed upływem 14 dni od dnia zamówienia
+                                        (tj. przed upływem okresu na odstąpienie od umowy).
+                                        W związku z tym, na Twoje żądanie Wydawca zrealizuje usługę przed upływem ww. terminu, tj.
+                                        przed upływem 14 dni na odstąpienie. Jeżeli zamówisz realizację usługi,
+                                        a Wydawca te żądanie wykona w pełni, tracisz prawo do odstąpienia od umowy.
+                                    </p>
+                                </div>
+                            </>
+                        }
 
                     </Modal.Body>
                     <Modal.Footer>
+                        {language === 'pl' &&
+                            <a href={purchasedData?.redirect_url_all} className={`btn btn-primary ${!proceedCheck && "disabled"}`}>{translate(languageData, 'buyNow')}</a>
+                        }
 
-                        <a href={purchasedData?.redirect_url_all} className='btn btn-primary'>{translate(languageData, 'buyNow')}</a>
+                        {(language !== 'pl') &&
+                            <a href={purchasedData?.redirect_url_all} className='btn btn-primary'>{translate(languageData, 'buyNow')}</a>
 
+                        }
                         <Button variant="outline-primary" onClick={handleClose}>
                             {translate(languageData, "close")}
                         </Button>
@@ -374,14 +405,14 @@ const Cart = () => {
                 <Modal show={showErrorModal} onHide={() => { setShowErrorModal(false) }} className='d-flex justify-content-center align-items-center'>
                     <Modal.Body>
                         <div className='p-5'>
-                    <span className='d-flex justify-content-center'>
-                            <MdCancel size={72} className='text-danger' />
-                        </span>
-                        <h2 className='text-center mt-4 text-danger'>{translate(languageData, "OOPS!")}</h2>
-                        
-                        <h3 className='text-center mt-4 text-danger'>
-                            {translate(languageData, "yourPaymentIsNotDone")}
-                        </h3>
+                            <span className='d-flex justify-content-center'>
+                                <MdCancel size={72} className='text-danger' />
+                            </span>
+                            <h2 className='text-center mt-4 text-danger'>{translate(languageData, "OOPS!")}</h2>
+
+                            <h3 className='text-center mt-4 text-danger'>
+                                {translate(languageData, "yourPaymentIsNotDone")}
+                            </h3>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
