@@ -11,6 +11,7 @@ import { uploadimagereqarticle, updaterimagrequestedarticle } from '../../../ser
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import Select from 'react-select'
+import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
 
     const initialValues = {
@@ -24,8 +25,8 @@ const AddArticle = () => {
     const [showDropdown, setShowDropdown] = useState(true);
 
     const { languageData } = useLanguage();
-
-
+    const { id } = useParams();
+    const allowedImageExtension = ['.jpg', '.gif', '.png']
     const userData2 = JSON.parse(localStorage.getItem("userData"))
 
 
@@ -47,9 +48,6 @@ const AddArticle = () => {
             });
     };
 
-
-    const { id } = useParams();
-
     const languagesOpts = [
         {
             value: "AcceptPublication",
@@ -66,17 +64,16 @@ const AddArticle = () => {
     }
 
     useEffect(() => {
-        resubmitimg()
-
+        resubmitImg()
     }, [])
-    const resubmitimg = async () => {
+    const resubmitImg = async () => {
         const res = await uploadimagereqarticle(userData2?.id, id)
         if (res.success === true) {
-            const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
+            const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
                 ...formValues,
                 id: res.data[0].id,
-                title: res.data[0].title,
+                title: res.data[0].article_title,
                 link: res.data[0].max_links,
                 url: res.data[0].url,
                 image: dynamicImageUrl,
@@ -102,15 +99,12 @@ const AddArticle = () => {
     };
 
 
-    const allowedImageExtension = ['.jpg', '.gif', '.png']
-
-
 
     const updateResubmitArticleServices = async () => {
         setLoading(true)
         const res = await updaterimagrequestedarticle(formValues, formValues?.id)
         if (res.success === true) {
-            toast(translate(languageData, "articleAddedSuccessfully"), {
+            toast(translate(languageData, "responseUpdateSuccessfully"), {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -136,6 +130,8 @@ const AddArticle = () => {
         }
     }
 
+    console.log(formValues, "132");
+
     return (
         <div className=''>
             <ToastContainer />
@@ -145,7 +141,6 @@ const AddArticle = () => {
                         <h3>  {translate(languageData, "resubmitArticle")}</h3>
                     </Card.Header>
                     <Card.Body className='border-bottom pb-5'>
-
                         <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
                         <Row className='align-items-center'>
                             <Col xs={12} md={4}>
@@ -219,6 +214,8 @@ const AddArticle = () => {
 
                             </Col>
                         </Row>
+                        {!showDropdown && (
+                        <>
                         <h2 className='mt-5'>{translate(languageData, "UpdateImage")} *</h2>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
@@ -237,13 +234,14 @@ const AddArticle = () => {
                                 <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                             </Col>
                         </Row>
+                        </>)}
                         {showDropdown && (
                             <Row className='align-items-center mt-5'>
                                 <Col xs={12} md={4}>
                                     <span>{translate(languageData, "Status")}</span>
                                 </Col>
                                 <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={formValues?.value}/>
                                 </Col>
 
                             </Row>)}

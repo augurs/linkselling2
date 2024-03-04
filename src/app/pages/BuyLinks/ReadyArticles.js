@@ -79,19 +79,9 @@ const ReadyArticles = () => {
             selector: row => row.portal,
             cell: (row) => (
                 <div className='mt-2 mb-2'>
-                    <Link to={`http://${row.title}`} target="_blank" style={{ textDecoration: "underline" }}>
-                        {row.title}
-                    </Link>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.project}</div>
-                    <div className='text-muted' style={{ fontSize: "14px" }}>{row.portal}</div>
-                    {/* <div className='d-flex mt-1'>
-                        <Link to={"https://twitter.com"} target="_blank">
-                            <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAMAAAAOusbgAAAAZlBMVEX////u7u5BZ7Lt7e329vb39/f+/v7v7+9EarTq6ur3+Pvq6+0+ZbHn5+dffbw2YK9UdbicrNMrWa3Cy+MjVat0jMPx8/k+Y6vIz9+EmMaKnsvW3OzH0OVJbrYwXK3e4++pttZng7/z+NIUAAAGOklEQVRoge2bb3ejKhDGJSBIKkm2bWLbbLK93/9LXv4rOAjiTW/P2c6+yJki8xNj5gGGbZA23DbGrEuMR8NWykCXgK1RqAaHbvMD/gE/DIyN+auNS0LXkSKXBRdHrXEoHLpNa4xYg912sbWqr+MTe0Ohi9zdWZf6ViQwZhRsbcO+81CIjyDZbL6C0GX+auN6MBNcoBEctFp3vEvj+lCMC+7dtWDZl1eCke5bCdb3XAnmQmCUA4/PJwiN9D3XgbHpWwVukR5wFZjavhNw/Faj+VttQlNKBBrdqNWAw5/A+FbT1vZFNr+gMN0g9zOLUpUaF+cCm5hx5kLBxXFkeTtMCOFuL5EyWzCWIsn3qjplqncyk6uTYPlu4Fow5xxXg+Vd14uEfNAb1AlvUCf8V8siAa11Uha48EUJa+GrnOv5K2URSCCRLC6HyshiIlcTMEeWymLg/p1gmYOrwTKfpcBtDow55kkwYtoc2Lq+Vc6iOItmDTkw1aZiqRFbX8UyY1JOQ8mTNrw3djHuk3VVq+Cjiwljtq+OPIYaI89kkQWuzFyMvL2fulV2+rg2qUTmQbmUydj59divsl1/fD3TjUsYxnbHXYUdd3QbmJyruJJ8btgGcPP2Wsfd7V6vm8DvlQOWQ/4gy+BIFgPxovtTnwrcZcD9qWy1CBlhT10K3N0y5OFm14fhhzfHB+bVci4qUuDulgEPQ7cPIhfLolrT4eSIu1tmvEM/guGUmQDL8XKeetRyuGa8PmfE2GqwWtPJtA+DVVpUn8fn/qTtNuOqq+pGLNTaCgZbbn//uBpVoC/PEXlXC24XwJ15sfrd1fVtIvBQBDZqRZ3EakfOBOVUThqeg93v6P6ngcGDu3DfTCMjC3LS3pgP1Nq/qz/L9SAx3n4Otu/V/bNZBvfdk4lsQ1EWulDKlAsz64Jg/fHaJMBuwAq8OlfjBbDJlf05BXZWBfbNEFjb8dcU/Pt/AF/1ZAe46tHgf45qrgNckQUvyWICLHPk3YEPRyBlWjAqkUV45/MCPsTT4XD6tN3PB2mQavcdASMXbaIiMGU+/24ig97qXa0sKg/O1RAYEGcHbjleIxIReBgWwXdAnx2YcUOuA+9y4PmQ/xvwhLv2UZNNjzr3Hc+vKpZFNpFFKV7GA2RRCtPL/nKxUZuLtP3LHQbPBddHdrLI2kC8mBGvRAK5ycnOpwWfb/OpjzYni3BkWBZzKVOmKp8yD9Bkz4EfmasPqRn/D/j7gCtksRS8LIsJ1bLeFvAFElrilo2eXy6LFkyXwUuymK0tptfHx1+0zYBvqZQp16GiKleXgbsUGHGRLWougZe/YznzTIGF4NnaYgo8DBmwxHYJdeIltcVasF7HwmDKXG0RWi16t/JRW/A0lNtEbRlPrxb9mi6RQOQEbAksH7Nc2fUdDpeHdh3qZHK50gaB9bxvAdyZHQMoZar9nLISHwA2800JNtsQM3BnJ5wAmKut+GqRMOC+M9su8zWE3xACR1xaW0yKRGqjSTbYeRCoTsW1xTQ4aw+SxSJw2Wox2j91sljLlW9ZvG1auomqLb1tnB3xATqcUFpbJB/1G+XvYah1JT52rS8NvG0CN7YYAqwGMwM+k9LaIlM6OSvxUV3+6daCjx2LS41JsD6EM68tUlXw2sH702ORa5D/nKsLXmrzsmzEyCygw2Z919eP021Vie/w/kbYWMZF9luzkZEF28/WCrN1iXVVcZIRRGy90hYzI/diXWxbVRnU9J2GiiKvOo7hxTt0x3pg0BqG+j7HI3/AXwaOZDEoCNKodc2RG1p45CY6IKM+1P7MwqmaNrg4OlQj+0atcSTPn8miXuNYd/WRm0nf1bKoa23+at1afABFn72sO/miaqkczKAFYNO3ChydF10HFqZv3YjDNd0qMOGmbw24ZUIAYLQIRu60pu1bKosTn7byapUOWNjKKOi2U1f1ZWzeOu4IWHc+r0aqtmi8ecZAwSnFWQKZ9J0nEP1IF1OmEOlzmYAbpEzf96tzta9LfluR+PvAS7L4JSdRw73OeOcTrkDCrWUXe/5MFgEtS8giCVuz/0EjI4va3NWmaFV3LpMHp/XXHQi1nevAYn2JbwIWG8CiHrztUa+vLcaS8sBDvwh2H3Do918J/5H+8tZ8vwAAAABJRU5ErkJggg==' width="25" />
-                        </Link>
-                        <Link to="https://facebook.com" target="_blank">
-                            <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHwAAAB8CAMAAACcwCSMAAAAYFBMVEX///9VrO+gze5Vre5MqO6ezu5Mqe3///3n8veUxurC3vNRq/Dw9/plsedPq+3i8fen0vBDouiKwurz/f7S6fdstup8u+thr+mby/Ha7PV/vOi02O+LyO+v1vTL5PNYrOmzqLdFAAADPUlEQVRoge2aa5ebIBCGVQigeCMardlu/P//ssAmbSKooUxOtj3z7n7KOfAw3OYiSYJCoVAoFAqFQv3r4vpPFG0WpUPWFsJ2FcbmvMxrRillUaK0zssklJ40FU2NyN/Ltk9p1YRaXl7ZAJJVGWh4DsbWtudhbHGbNACRlIggeMEkGFymtAha9RZw1vW8t0H7PWOg8EPQtB9gLQ+DZwxuw1l42LQjHOEIR/i3gRP7/xa4VEZ/fLDrjAHg0jseyY5F04m+PSkp7VBOr4B7IytZTTrStW36gUpWn6cDXbaNhsvR52dl1XEj0znnRfWjSaYa3nJ5Nl5++Ws93YJya74ZxCidRY+G00z//KEef9bx0VK5Ov0En3b6aYy7sAe7Zics5SLphmVjCLhRc7pbeHnmy045F9WLpt30ntXsdqVcB/Ro+fiCcy6H256azvRqveqdTvnsCfjjz3nd2c5NAjsdFaV68VXjNCyVywaAs/ZugfklGypSu/lnozyJFsANp7o7+Ne15uy3pFeeSzgePpNFqmsvtWWnH747OBrOCtE/zrJrtmn4Erg5al7c/XASfvZltwCOxbiPPXo5+hwvwG7v99B6bI3vpAHA5fBEB5/e7BbgqNHLbjM+eAsa8XAiZ7FTz+PCDSSALNd7btpptlJNAYlepco360qdx6OBWT4I0a234fp6ex08ZVvTrq/a2R9dA037aasPvlo/g8lYaL6y342TEd4LBg6e0qP3krUhRrXGBsvV2Nj7+tH043rpDgauoxTJTm3nms51MrWaWwLAie1d0rFwyAnfLJFDWF6brx5D4ew548Y3y6XxkYxS1Tm7lL/jtztNI92sz0fDD537ncYMgidlvnKxwcHrsRWefcZFNu9WqCH8ORmKR7/Cy8uR0J2CDAxcHzPKqmN7mUTXdU1fZANRcpcMA7eSkqqr2N5Sg8O/piC1n+yeLlj9v0VAhCMc4QgPhsOhCTHwAHrm1Jdj4QGWt7DwsI/3BSBcr/ky3t2WgGSnddiDjbc+VeFl9VSAtCtingiFPtJJmgrotNEx+HlSYh5mUQDVeelWaJ9Q9JO0zD5JC38U9g1kk/4ovXPsKBQKhUKhUKgX6BesaDYk30hDNAAAAABJRU5ErkJggg==' width="25" />
-                        </Link>
-                    </div> */}
+                    {row.title}
+                    <div className='text-muted'><small>{row.project}</small></div>
+                    <div className='text-muted'><small><Link to={`http://${row.portal}`} target="_blank" style={{ textDecoration: "underline" }}>{row.portal}</Link></small></div>
                 </div>
             ),
             sortable: true,
@@ -448,7 +438,7 @@ const ReadyArticles = () => {
                         }}
                     />
                 ) : (
-                    <Col lg={12}  className="text-center mt-5">
+                    <Col lg={12} className="text-center mt-5">
                         <div className="input100">
                             <p className='m-3'>{translate(languageData, "thereAreNoRecordsToDisplay")}</p>
                         </div>

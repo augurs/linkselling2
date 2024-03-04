@@ -11,6 +11,7 @@ import { resubmitarticle, updaterResubmitarticle } from '../../../services/Resub
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import { modules, formats } from '../../../utility/helper';
 import Select from 'react-select'
+import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
     const [formValues, setFormValues] = useState({
         date: "",
@@ -25,6 +26,7 @@ const AddArticle = () => {
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [editor, setEditor] = useState();
+    const [rejectComment, setRejectComment] = useState();
     const [displayedImage, setDisplayedImage] = useState(null);
     const [showDropdown, setShowDropdown] = useState(true);
     const { languageData } = useLanguage();
@@ -85,7 +87,7 @@ const AddArticle = () => {
     const resubmitArticleServices = async () => {
         const res = await resubmitarticle(id);
         if (res.success === true) {
-            const dynamicImageUrl = `https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${res.data[0].image}`;
+            const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
                 ...formValues,
                 id: res?.data[0]?.id,
@@ -100,7 +102,8 @@ const AddArticle = () => {
                 date: formatDate(res?.data[0]?.created_at),
                 minArticleLength: res?.data[0]?.min_article_length,
                 maxArticleLength: res?.data[0]?.max_article_length,
-                maxLeadLength: res?.data[0]?.lead_length
+                maxLeadLength: res?.data[0]?.lead_length,
+                minLeadLength: res?.data[0]?.min_lead_length ? res?.data[0]?.min_lead_length : 0
             });
             setDisplayedImage(dynamicImageUrl);
             setShowDropdown(res.data[0].status === 'Published');
@@ -192,7 +195,7 @@ const AddArticle = () => {
                 });
                 return;
             }
-            if (editor.length > formValues?.maxArticleLength) {
+            if (editor?.replace(/<[^>]*>/g, '').length > formValues?.maxArticleLength) {
                 const maxArticleLength = formValues?.maxArticleLength;
                 const errorMessage = `${translate(languageData, "maxArticleLength")}: ${maxArticleLength}`;
                 toast(errorMessage, {
@@ -209,7 +212,7 @@ const AddArticle = () => {
                 return;
             }
 
-            if (editor.length < formValues?.minArticleLength) {
+            if (editor?.replace(/<[^>]*>/g, '').length < formValues?.minArticleLength) {
                 const minArticleLength = formValues?.minArticleLength;
                 const errorMessage = `${translate(languageData, "minArticleLength")}: ${minArticleLength}`;
                 toast(errorMessage, {
@@ -244,7 +247,7 @@ const AddArticle = () => {
             }
 
 
-            const res = await updaterResubmitarticle(formValues, formValues?.id);
+            const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment);
             if (res.success === true) {
                 toast(translate(languageData, "articleAddedSuccessfully"), {
                     position: "top-center",
@@ -308,13 +311,9 @@ const AddArticle = () => {
                                         <span>{translate(languageData, "link")}</span>
                                     </Col>
                                     <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            {formValues.url}
+                                        <a href={formValues?.url} className='wrap-input100 validate-input mb-0'>
+                                            {formValues?.url}
                                         </a>
-                                        <a href={formValues.url} className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            {formValues.url}
-                                        </a>
-                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>
@@ -327,6 +326,16 @@ const AddArticle = () => {
                                     </Col>
 
                                 </Row>
+                                {formValues?.userStatus == "RejectPublication" ?
+                                    <Row className='align-items-center mt-5'>
+                                        <Col xs={12} md={4}>
+                                            <span>{translate(languageData, "Status")}</span>
+                                        </Col>
+                                        <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                            <textarea className="input100" type="text" name="RejectComment" cols={3} rows={3} style={{ paddingLeft: "5px" }} onChange={(e) => setRejectComment(e.target.value)} />
+                                        </Col>
+
+                                    </Row> : ""}
                             </>
                         ) : (
                             <>
@@ -404,7 +413,7 @@ const AddArticle = () => {
                                                 cols={6}
                                             />
                                         </div>
-                                        <p className="text-end">{formValues?.lead?.length || 0}/{formValues?.maxLeadLength} Character</p>
+                                        <p className="text-end">{formValues?.lead?.length || 0}/{formValues?.minLeadLength}-{formValues?.maxLeadLength} Character</p>
                                         <div className='text-danger text-center mt-1'>{formErrors?.lead}</div>
                                     </Col>
                                 </Row>
@@ -427,7 +436,7 @@ const AddArticle = () => {
                                                 {translate(languageData, "Toomanylinks")} : {formValues?.link}
                                             </Alert>
                                         )}
-                                        <p className="text-end">{editor?.length || 0}/{formValues?.maxArticleLength} Character</p>
+                                        <p className="text-end">{editor?.replace(/<[^>]*>/g, '').length || 0}/{formValues?.minArticleLength ? formValues?.minArticleLength : 0}-{formValues?.maxArticleLength ? formValues?.maxArticleLength : 0} Character</p>
                                     </Col>
                                 </Row>
                                 <Row className='align-items-center mt-5'>
@@ -456,7 +465,7 @@ const AddArticle = () => {
                                         <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
                                     </Col>
                                     <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' /></div>
+                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")} /></div>
                                     </Col>
                                     <Col xs={12} md={1} className='mt-3 mt-md-0'>
                                         <div>{translate(languageData, "orselectviapixabay")}</div>
@@ -466,17 +475,6 @@ const AddArticle = () => {
                                         <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
                                     </Col>
                                 </Row>
-                                {/* <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "link")}</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            {formValues.url}
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                                    </Col>
-                                </Row> */}
                             </>)}
                     </Card.Body>
                     <div className='d-flex justify-content-end'>

@@ -13,6 +13,9 @@ import { MenuProps } from '../../../../utility/data';
 
 const Myoffer = () => {
   const publisherData = JSON.parse(localStorage.getItem("publisherData"))
+  const lang = localStorage.getItem("lang");
+
+
   const initialValues = {
     enterDomain: '',
     price: "",
@@ -49,10 +52,16 @@ const Myoffer = () => {
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false)
   const [touched, setTouched] = useState(false);
+  const [cardLang, setCardLang] = useState(lang)
   const navigate = useNavigate()
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
+
+  useEffect(() => {
+    if (lang)
+      setCardLang(lang)
+  }, [lang])
 
   const handlePrevious = () => {
     setActiveStep(activeStep - 1);
@@ -93,7 +102,6 @@ const Myoffer = () => {
       setLoading(false);
     }
   }
-
 
   const addPublisherOfferServices = async () => {
     setOrderLoading(true);
@@ -280,37 +288,43 @@ const Myoffer = () => {
   const validate = (values) => {
     let errors = {};
     let isValid = true;
-    const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+    const urlRegex = /^[^ "]+\.[^ "]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d{9,12}$/;
+    const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
+
 
     if (!values.enterDomain) {
-        errors.enterDomain = translate(languageData, 'enterDomainUrl');
-        isValid = false;
+      errors.enterDomain = translate(languageData, 'enterDomainUrl');
+      isValid = false;
     } else if (!urlRegex.test(values.enterDomain)) {
-        errors.enterDomain = translate(languageData, 'InvalidLink');
-        isValid = false;
+      errors.enterDomain = translate(languageData, 'InvalidDomainFormat');
+      isValid = false;
     }
 
     if (!values.contactMail) {
-        errors.contactMail = translate(languageData, 'PleaseEnterEmail');
-        isValid = false;
+      errors.contactMail = translate(languageData, 'PleaseEnterEmail');
+      isValid = false;
     } else if (!emailRegex.test(values.contactMail)) {
-        errors.contactMail = translate(languageData, 'signUpEmailError2');
-        isValid = false;
+      errors.contactMail = translate(languageData, 'signUpEmailError2');
+      isValid = false;
     }
 
     if (!values.contactPhone) {
-        errors.contactPhone = translate(languageData, 'PleaseEnterPhoneNumber');
-        isValid = false;
+      errors.contactPhone = translate(languageData, 'PleaseEnterPhoneNumber');
+      isValid = false;
     } else if (!phoneRegex.test(values.contactPhone)) {
-        errors.contactPhone = translate(languageData, 'InvalidPhoneFormat');
-        isValid = false;
+      errors.contactPhone = translate(languageData, 'InvalidPhoneFormat');
+      isValid = false;
+    }
+
+    if (!values?.maxLinks) {
+      errors.maxLinks = translate(languageData, 'enterMaxLinks');
+      isValid = false;
     }
 
     setFormErrors(errors);
     return isValid;
-};
+  };
 
 
   const handleBlur = () => {
@@ -320,17 +334,32 @@ const Myoffer = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    const parsedValue = parseInt(value);
+    if ((name === 'price' || name === "maxLinks") && (parsedValue < 1)) {
+      setFormValues({ ...formValues, [name]: 1 });
+    } else {
+      setFormValues({ ...formValues, [name]: value });
+    }
+  };
+
+  const handleRadioChange = (e) => {
+    const { name, value } = e.target;
+    const parsedValue = parseInt(value);
+    if ((name === 'price' || name === "maxLinks") && (parsedValue < 1)) {
+      setFormValues({ ...formValues, [name]: 1 });
+    } else {
+      setFormValues({ ...formValues, [name]: value });
+    }
   };
 
   const handleNumberOfDaysChange = (e) => {
     const { name, value } = e.target;
     if (name === 'numberOfDays' && parseInt(value) < 1) {
       setFormValues({ ...formValues, [name]: 1 });
-    } else if (name === 'numberOfDays' && parseInt(value) > 30) {
-      setFormValues({ ...formValues, [name]: 30 });
+    } else if (name === 'numberOfDays' && parseInt(value) > 29) {
+      setFormValues({ ...formValues, [name]: 29 });
     } else {
-      setFormValues({ ...formValues, [name]: value });
+      setFormValues({ ...formValues, [name]: parseInt(value) });
     }
   };
 
@@ -361,7 +390,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} onBlur={handleBlur}/>
+                      <input className="input100" type="text" name="enterDomain" placeholder={translate(languageData, "enterDomain")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.enterDomain} onBlur={handleBlur} />
                     </div>
                     {touched && formErrors.enterDomain && <div className="text-danger">{formErrors.enterDomain}</div>}
                   </Col>
@@ -394,8 +423,8 @@ const Myoffer = () => {
                           MenuProps={MenuProps}
                         >
                           {categoryList?.map((item, index) => (
-                            <MenuItem key={index} value={item.id}>
-                              {item.name}
+                            <MenuItem key={index} value={item?.id}>
+                              {cardLang == "en" ? item?.category_translation[0]?.trans_name : item?.category_translation[1]?.trans_name}
                             </MenuItem>
                           ))}
                         </Select>
@@ -417,7 +446,7 @@ const Myoffer = () => {
                         name='language'
                         value="pl"
                         checked={formValues.language === 'pl'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -426,7 +455,7 @@ const Myoffer = () => {
                         value="en"
                         name='language'
                         checked={formValues.language === 'en'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -444,7 +473,7 @@ const Myoffer = () => {
                         name='typeofAnchors'
                         value="ema"
                         checked={formValues.typeofAnchors === 'ema'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -453,7 +482,7 @@ const Myoffer = () => {
                         value="brand"
                         name='typeofAnchors'
                         checked={formValues.typeofAnchors === 'brand'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -471,7 +500,7 @@ const Myoffer = () => {
                         name='Nofollow'
                         value="0"
                         checked={formValues.Nofollow === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -480,7 +509,7 @@ const Myoffer = () => {
                         value="1"
                         name='Nofollow'
                         checked={formValues.Nofollow === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -493,6 +522,7 @@ const Myoffer = () => {
                     <div className="wrap-input100 validate-input mb-0">
                       <input className="input100" type="number" name="maxLinks" value={formValues?.maxLinks} placeholder={translate(languageData, "maxLinks")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
                     </div>
+                    {touched && formErrors.maxLinks && <div className="text-danger">{formErrors.maxLinks}</div>}
                   </Col>
                 </Row>
                 <Row className='align-items-center mt-5'>
@@ -501,7 +531,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="number" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur}/>
+                      <input className="input100" type="text" name="contactPhone" placeholder={translate(languageData, "contactPhone")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues?.contactPhone} onBlur={handleBlur} />
                     </div>
                     {touched && formErrors.contactPhone && <div className="text-danger">{formErrors.contactPhone}</div>}
                   </Col>
@@ -512,7 +542,7 @@ const Myoffer = () => {
                   </Col>
                   <Col xs={12} md={8} className="mt-3 mt-md-0">
                     <div className="wrap-input100 validate-input mb-0">
-                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={handleBlur}/>
+                      <input className="input100" type="text" name="contactMail" placeholder={translate(languageData, "contactMail")} value={formValues?.contactMail} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} onBlur={handleBlur} />
                     </div>
                     {touched && formErrors.contactMail && <div className="text-danger">{formErrors.contactMail}</div>}
                   </Col>
@@ -521,7 +551,7 @@ const Myoffer = () => {
                   <Col lg={6} className='ms-2'>
                   </Col>
                   <Col lg={5} className='mt-5 mb-2'>
-                    <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.price || !formValues.maxLinks || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-auto' onClick={handleNext} disabled={!formValues.price || !formValues.maxLinks || formErrors.enterDomain || formErrors.contactMail || formErrors.contactPhone || !formValues?.category.length}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>
@@ -572,7 +602,7 @@ const Myoffer = () => {
                         name='ArticleGoesToHomepage'
                         value="0"
                         checked={formValues.ArticleGoesToHomepage === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -581,7 +611,7 @@ const Myoffer = () => {
                         value="1"
                         name='ArticleGoesToHomepage'
                         checked={formValues.ArticleGoesToHomepage === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -604,7 +634,7 @@ const Myoffer = () => {
                   </Col>
                   <Col lg={5} className='mt-5 mb-2 d-flex'>
                     <Button className='d-flex ms-auto' onClick={handlePrevious}>{translate(languageData, "clickPrevious")}</Button>
-                    <Button className='d-flex ms-2' onClick={handleNext} disabled={parseFloat(formValues.articleMinLength) > parseFloat(formValues.articleMaxLength)|| !formValues.articleMinLength || !formValues.articleMaxLength || !formValues.leadLength}>{translate(languageData, "clickNext")}</Button>
+                    <Button className='d-flex ms-2' onClick={handleNext} disabled={parseFloat(formValues.articleMinLength) > parseFloat(formValues.articleMaxLength) || !formValues.articleMinLength || !formValues.articleMaxLength || !formValues.leadLength}>{translate(languageData, "clickNext")}</Button>
                   </Col>
                 </Row>
               </>
@@ -624,7 +654,7 @@ const Myoffer = () => {
                         name='acceptsCasino'
                         value="0"
                         checked={formValues.acceptsCasino === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -633,7 +663,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsCasino'
                         checked={formValues.acceptsCasino === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -651,7 +681,7 @@ const Myoffer = () => {
                         name='acceptsGambling'
                         value="0"
                         checked={formValues.acceptsGambling === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -660,7 +690,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsGambling'
                         checked={formValues.acceptsGambling === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -678,7 +708,7 @@ const Myoffer = () => {
                         name='acceptsErotic'
                         value="0"
                         checked={formValues.acceptsErotic === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -687,7 +717,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsErotic'
                         checked={formValues.acceptsErotic === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -705,7 +735,7 @@ const Myoffer = () => {
                         name='acceptsLoan'
                         value="0"
                         checked={formValues.acceptsLoan === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -714,7 +744,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsLoan'
                         checked={formValues.acceptsLoan === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -732,7 +762,7 @@ const Myoffer = () => {
                         name='acceptsDating'
                         value="0"
                         checked={formValues.acceptsDating === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -741,7 +771,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsDating'
                         checked={formValues.acceptsDating === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -759,7 +789,7 @@ const Myoffer = () => {
                         name='acceptsCBD'
                         value="0"
                         checked={formValues.acceptsCBD === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -768,7 +798,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsCBD'
                         checked={formValues.acceptsCBD === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -786,7 +816,7 @@ const Myoffer = () => {
                         name='acceptsCrypto'
                         value="0"
                         checked={formValues.acceptsCrypto === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -795,7 +825,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsCrypto'
                         checked={formValues.acceptsCrypto === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>
@@ -813,7 +843,7 @@ const Myoffer = () => {
                         name='acceptsMedic'
                         value="0"
                         checked={formValues.acceptsMedic === '0'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                       <Form.Check
                         type="radio"
@@ -822,7 +852,7 @@ const Myoffer = () => {
                         value="1"
                         name='acceptsMedic'
                         checked={formValues.acceptsMedic === '1'}
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleRadioChange(e)}
                       />
                     </div>
                   </Col>

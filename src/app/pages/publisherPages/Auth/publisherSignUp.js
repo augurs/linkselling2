@@ -56,6 +56,7 @@ const SignUp = () => {
     let error = {};
     let isValid = true;
     const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
     if (!values.username) {
       error.username = languageData && languageData?.filter((item) => item.title === 'signUpUserError')[0]?.value || 'signUpUserError'
       isValid = false
@@ -74,7 +75,10 @@ const SignUp = () => {
     if (!values.phoneNumber) {
       error.phoneNumber = languageData && languageData?.filter((item) => item.title === 'PleaseEnterPhoneNumber')[0]?.value || 'PleaseEnterPhoneNumber';
       isValid = false;
-    }
+    } else if (!phoneRegex.test(values.phoneNumber)) {
+      error.phoneNumber = languageData && languageData?.filter((item) => item.title === 'InvalidPhoneFormat')[0]?.value || 'InvalidPhoneFormat';;
+      isValid = false;
+  }
     if (!values.confirmPassword) {
       error.confirmPassword = languageData && languageData?.filter((item) => item.title === 'confirmPasswordError')[0]?.value || 'confirmPasswordError';
       isValid = false;
@@ -99,7 +103,7 @@ const SignUp = () => {
     return isValid;
   }
 
-
+  const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
 
 
   const signUpSuccessMessage = languageData && languageData?.filter((item) => item.title === 'signUpSuccessMessage')[0]?.value || 'signUpSuccessMessage';
@@ -128,6 +132,21 @@ const SignUp = () => {
     }
     if (!formValues.phoneNumber) {
       toast(languageData && languageData?.filter((item) => item.title === 'PleaseEnterPhoneNumber')[0]?.value || 'Please Enter Phone Number', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: "error",
+      });
+      setSignUpLoading(false);
+      return;
+    }
+    if (!phoneRegex.test(formValues.phoneNumber)) {
+      toast(languageData && languageData?.filter((item) => item.title === 'InvalidPhoneFormat')[0]?.value || 'Invalid Phone Format', {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,

@@ -8,6 +8,7 @@ import DataTable from 'react-data-table-component'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Col, InputGroup, Row } from 'react-bootstrap'
 import { listoffer } from '../../../../services/PublisherServices/MyOfferServices/MyofferServices'
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaEye, FaEdit } from 'react-icons/fa'
 const OfferList = () => {
 
@@ -138,10 +139,23 @@ const OfferList = () => {
             name: translate(languageData, 'writingAction'),
             cell: (row) => (
                 <div className='d-flex gap-2'>
-                    <Link to={`/publisher/updateOffer/${row.id}`}>
-                        <FaEdit className='icon-link' />
-                    </Link>
-                </div>
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id="tooltip">{translate(languageData, "editOffer")}</Tooltip>}
+                    >
+                        <Link to={`/publisher/updateOffer/${row.id}`}>
+                            <FaEdit className='icon-link' />
+                        </Link>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id="tooltip">{translate(languageData, "viewAllOffer")}</Tooltip>}
+                    >
+                        <Link to={`/publisher/viewOffer?domain=${row.url}`}>
+                            <FaEye className='icon-link' />
+                        </Link>
+                    </OverlayTrigger>
+                </div >
             ),
         },
 

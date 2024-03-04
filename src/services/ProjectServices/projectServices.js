@@ -97,3 +97,30 @@ export const addProjects = (values, id) => {
 //   webAddress: "",
 //   publicationLang: "",
 //   publicationCountry: ""
+
+export const viewPurchaseDomainlist = (uId, pId) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/project-show-links/${uId}/${pId}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+export const uploadDocx = (docx, lang) => {
+  const formData = new FormData();
+  formData.append("file", docx);
+
+  return axios
+  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile?lang=${lang}`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

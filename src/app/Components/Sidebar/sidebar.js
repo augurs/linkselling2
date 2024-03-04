@@ -14,7 +14,8 @@ import UserProfileModal from './userProfileModal';
 import { ToastContainer } from 'react-toastify';
 import { walletBalance } from "../../../services/walletServices/walletService"
 import Referral from '../Referral/Referral'
-import { FaUserFriends } from 'react-icons/fa';
+import RedeemModal from '../RedeemModal/reedeem'
+
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -25,7 +26,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
     const [loading, setLoading] = useState(false)
     const [userDetails, setUserDetails] = useState('');
     const { languageData } = useLanguage()
-
+    const [isDesktopScreen, setIsDesktopScreen] = useState(window.innerWidth >= 991);
 
 
     const handleSidbarToggle = (type) => {
@@ -46,8 +47,13 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         setModalOpen(true);
     };
     useEffect(() => {
-        showWalletServices()
-    }, [])
+        showWalletServices();
+        const handleResize = () => {
+            setIsDesktopScreen(window.innerWidth >= 991);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const showWalletServices = async () => {
         setLoading(true);
@@ -138,7 +144,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </svg>
                     </div>
                     <ul className="side-menu mt-3">
-                        <OverlayTrigger trigger="click" show={menuType === "articles" ? "is-expanded active" : ""} placement="right" overlay={sidebarActive ? popoverContent : <div />} rootClose>
+                        <OverlayTrigger trigger="click" show={menuType === "articles" ? "is-expanded active" : ""} placement="right" overlay={sidebarActive && isDesktopScreen ? popoverContent : <div />} rootClose>
                             <li className={`slide ${menuType === "articles" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("articles")}>
                                 <a className={`side-menu__item has-link ${menuType === "articles" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiArticleLight size={20} style={{ color: "gray!important" }} /></span>
@@ -152,7 +158,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                                     <li><Link to="/requestedArticles" className="slide-item" onClick={() => handleLinkPath("/requestedArticles")}>{translate(languageData, "viewRequestedArticle")}</Link></li>
                                 </ul>
                             </li></OverlayTrigger>
-                        <OverlayTrigger trigger="click" show={menuType === "buylinks" ? "is-expanded" : ""} placement="right" overlay={sidebarActive ? popoverBuylinks : <div />} rootClose>
+                        <OverlayTrigger trigger="click" show={menuType === "buylinks" ? "is-expanded" : ""} placement="right" overlay={sidebarActive && isDesktopScreen ? popoverBuylinks : <div />} rootClose>
                             <li className={`slide ${menuType === "buylinks" ? "is-expanded" : ""}`} style={{ cursor: "pointer" }} onClick={() => handleSidbarToggle("buylinks")}>
                                 <a className={`side-menu__item has-link ${menuType === "buylinks" ? "is-expanded active" : ""}`} data-bs-toggle="slide">
                                     <span className="side-menu__icon"><PiLinkSimpleThin size={20} style={{ color: "gray!important" }} /></span>
@@ -198,7 +204,9 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         <li className="slide" style={{ cursor: "pointer" }} >
                             < Referral />
                         </li>
-
+                        <li className="slide" style={{ cursor: "pointer" }} >
+                            < RedeemModal />
+                        </li>
 
 
                         {/* Other menu items */}

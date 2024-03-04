@@ -4,18 +4,21 @@ import polandFlag from "../../../assets/images/flags/pl.svg"
 import englishFlag from "../../../assets/images/flags/us.svg"
 import { translate } from '../../../utility/helper'
 import { useLanguage } from '../../Context/languageContext'
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdCancel } from 'react-icons/md';
 import { buyNow, deleteCart, getCart } from '../../../services/invoicesServices/invoicesServices'
 import globalLoader from '../../../assets/images/loader.svg'
 import { useEffect } from 'react'
 import { ColorRing } from 'react-loader-spinner'
 import { ToastContainer, toast } from 'react-toastify'
 import { Button, Modal } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../Context/cartListContext'
 import { walletBalance } from "../../../services/walletServices/walletService"
-
 const Cart = () => {
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const hasError = queryParams.get('error') === 'true';
 
     const { languageData } = useLanguage()
 
@@ -27,11 +30,16 @@ const Cart = () => {
     const [purchasedData, setPurchasedData] = useState([])
     const [rowId, setRowId] = useState('')
     const [balance, setBalance] = useState('');
-
-
+    const [showErrorModal, setShowErrorModal] = useState(hasError);
 
     const userData = JSON.parse(localStorage.getItem('userData'))
     const { cartListServices } = useCart()
+
+    useEffect(() => {
+        if (hasError) {
+            setShowErrorModal(hasError);
+        }
+    }, [hasError]);
 
     useEffect(() => {
         showWalletServices()
@@ -153,7 +161,7 @@ const Cart = () => {
                                             : row?.articleType === 'AddAnArticle'
                                                 ? translate(languageData, 'AddNewArticle')
                                                 : row?.articleType === 'UseArticle'
-                                                ? translate(languageData, 'UseArticle'): ''}
+                                                    ? translate(languageData, 'UseArticle') : ''}
                             </small>
                         </div>
                     </div>
@@ -205,13 +213,8 @@ const Cart = () => {
         // },
         {
             name: translate(languageData, 'ProjectName'),
-            selector: (row) => row.project_name,
+            selector: (row) => row?.project_name ? row?.project_name : "--",
             center: true,
-            cell: (row) => (
-                <div>
-                    <div>{row.project_name}</div>
-                </div>
-            ),
             width: "10VW"
         },
         {
@@ -226,20 +229,20 @@ const Cart = () => {
                 </div>
             ),
         },
-        {
-            name: translate(languageData, "Action"),
-            cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
-                visible={true}
-                height="30"
-                width="30"
-                ariaLabel="blocks-loading"
-                wrapperStyle={{}}
-                wrapperClass="blocks-wrapper"
-                colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
-            /> : translate(languageData, 'buyNow')} </button>,
-            center: true,
-            //  width: '180px'
-        },
+        // {
+        //     name: translate(languageData, "Action"),
+        //     cell: row => <button className='btn btn-primary d-flex justify-content-center' onClick={() => buyNowServices(row?.domainId, row?.serviceType, row?.articleType, row?.rowId)}> {loading.buyNowLoading && rowId === row?.rowId ? <ColorRing
+        //         visible={true}
+        //         height="30"
+        //         width="30"
+        //         ariaLabel="blocks-loading"
+        //         wrapperStyle={{}}
+        //         wrapperClass="blocks-wrapper"
+        //         colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+        //     /> : translate(languageData, 'buyNow')} </button>,
+        //     center: true,
+        //     //  width: '180px'
+        // },
         {
             name: translate(languageData, "cartRemove"),
             cell: row => <div style={{ cursor: "pointer" }}> {loading.deleteLoading && deleteId === row?.id ? <ColorRing
@@ -281,6 +284,7 @@ const Cart = () => {
     const handleClose = () => {
         setshowCartModal(false)
     }
+
 
 
 
@@ -337,7 +341,7 @@ const Cart = () => {
                     </Modal.Header>
                     <Modal.Body>
                         <p className='mb-1'>
-                            <strong>{translate(languageData, "linkName")}:</strong>
+                            <strong>{translate(languageData, "linkName")} : </strong>
                             <span className="text-break">
                                 {purchasedData?.allProduct?.map((item, index) => (
                                     <span key={index}>
@@ -348,11 +352,13 @@ const Cart = () => {
                             </span>
                         </p>
                         <p className='mb-1'><strong>{translate(languageData, "linkTotalAmount")} : </strong> <span className=''>{purchasedData?.total} PLN</span></p>
-                        <p className='mb-1'><strong>{translate(languageData, "Walletamount")}:</strong> {balance} PLN</p>
-                        {/* <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>1%</span>  {translate(languageData, "linkFee")}:</strong> {purchasedData?.total + purchasedData?.fee}</p> */}
-                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")}:</strong> {purchasedData?.payable_amount}</p>
+                        <p className='mb-1'><strong>{translate(languageData, "Walletamount")} : </strong> {balance} PLN</p>
+                        {!(parseFloat(purchasedData?.total) <= parseFloat(balance)) ?
+                        <>
+                        <p className='mb-1'><strong>{translate(languageData, "amountWith")} <span className='text-primary mx-1'>23%</span>  {translate(languageData, "linkTax")} : </strong> {purchasedData?.payable_amount}</p>
                         <p className='mb-1'><strong>{translate(languageData, "netPayableAmount")} :</strong> {purchasedData?.payable_amount}</p>
-
+                        </>
+                        : ""}
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -360,6 +366,26 @@ const Cart = () => {
                         <a href={purchasedData?.redirect_url_all} className='btn btn-primary'>{translate(languageData, 'buyNow')}</a>
 
                         <Button variant="outline-primary" onClick={handleClose}>
+                            {translate(languageData, "close")}
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showErrorModal} onHide={() => { setShowErrorModal(false) }} className='d-flex justify-content-center align-items-center'>
+                    <Modal.Body>
+                        <div className='p-5'>
+                    <span className='d-flex justify-content-center'>
+                            <MdCancel size={72} className='text-danger' />
+                        </span>
+                        <h2 className='text-center mt-4 text-danger'>{translate(languageData, "OOPS!")}</h2>
+                        
+                        <h3 className='text-center mt-4 text-danger'>
+                            {translate(languageData, "yourPaymentIsNotDone")}
+                        </h3>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="outline-secondary" onClick={() => { setShowErrorModal(false) }}>
                             {translate(languageData, "close")}
                         </Button>
                     </Modal.Footer>

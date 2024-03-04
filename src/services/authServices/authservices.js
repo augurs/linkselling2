@@ -27,7 +27,8 @@ export const signup = (formValues, language, refId) => {
       email: formValues.email,
       password: formValues.password,
       language: language,
-      referralCode: refId
+      referralCode: refId,
+      specialCode: formValues.specialCode
     })
     .then((res) => {
       return res.data;

@@ -30,19 +30,16 @@ const ArticleList = () => {
         handleArticleList()
     }, [])
 
-
-    const userData2 = JSON.parse(localStorage.getItem("userData"));
-
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchArticles(searchTerms, userData2?.id)
+        const res = await searchArticles(searchTerms, userData?.id)
         setArticleSearchData(res?.data)
         setLoading(false)
     }
 
     const handleArticleList = async () => {
         const res = await getArticles(userData?.id)
-        setArticleList(res.data)
+        setArticleList(res?.data)
     }
 
     const { languageData } = useLanguage();
@@ -75,7 +72,7 @@ const ArticleList = () => {
         },
         {
             name: translate(languageData, "artilstStatus"),
-            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg' style={{ minWidth: "180px" }}>{translate(languageData, "readyForPublication")}</button>,
+            cell: row => <button className='btn btn-pill btn-outline-primary btn-w-lg d-flex justify-content-center align-items-center' style={{ minWidth: "180px" }}>{row?.status}</button>,
             center: true,
         },
 
@@ -94,7 +91,7 @@ const ArticleList = () => {
     ];
 
 
-    const articleTableData = articleSearchData.map((item) => {
+    const articleTableData = articleSearchData?.map((item) => {
         let arr = item?.created_at.split('T');
         let time = arr[1].split('.')
         let dateTime = arr[0] + " " + time[0]
@@ -104,96 +101,23 @@ const ArticleList = () => {
             title: item.title,
             date: dateTime,
             cost: "0,00 zł",
-            status: item.status
+            status: item?.status == "Ready to Publish" ? translate(languageData, "readyForPublication") : translate(languageData, "SidebarPublishedArticle")
         }
     })
-
-    const data = articleTableData
 
     const handleOrders = (orders) => {
         setOrder(orders)
     }
 
 
-    const statusDropDownOptions = [
-        {
-            label: "New", value: "new",
-        },
-        {
-            label: "Linkselling Write", value: "nLinksellingwrites",
-        },
-        {
-            label: "Linkselling Complaint", value: "linksellingcomplaint",
-        },
-        {
-            label: "Wait for pictures", value: "waitforpictures",
-        },
-        {
-            label: "Resignation Submitted", value: "resignationsubmitted",
-        },
-        {
-            label: "Completed", value: "completed",
-        },
-        {
-            label: "In Verification", value: "inverification",
-        },
-        {
-            label: "To be improved", value: "tobeimproved",
-        },
-        {
-            label: "Rejected", value: "rejected",
-        },
-        {
-            label: "Waiting for payment", value: "waitingforpayment",
-        },
-        {
-            label: "Ready for publication", value: "readyforpublication",
-        },
-    ]
-
-
     const sourecDropOptions = [
         {
-            label: "Own Content", value: "owncontent"
+            label: translate(languageData, "artilistOwnContent"), value: "owncontent"
         },
         {
-            label: "Content from Linkselling", value: "contentfromlinkselling"
+            label: translate(languageData, "artilisContentFromLinkselling"), value: "contentfromlinkselling"
         }
     ]
-
-
-    const articleTypeDropOption = [
-        {
-            label: "Article for personal use", value: "articleforpersonaluse"
-        },
-        {
-            label: "Paid Article", value: "paidarticle"
-        },
-        {
-            label: "Guest Article", value: "guestarticle"
-        },
-        {
-            label: "Infographic", value: "infographic"
-        },
-        {
-            label: "Text", value: "text"
-        }
-    ]
-
-
-
-
-
-
-
-
-    const checkboxHeader = (
-        <input
-            type="checkbox"
-        //   checked={selectAllRows}
-        //   onChange={handleSelectAllRows}
-        />
-    );
 
     const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
 
@@ -208,7 +132,7 @@ const ArticleList = () => {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => handleOrders("Order an Article")}>Order an Article</Dropdown.Item>
+                        <Dropdown.Item onClick={() => handleOrders("Order an Article")}>{translate(languageData, "artilistOrderArticle")}</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
@@ -241,11 +165,13 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setSearchTerms({ ...searchTerms, status: e.target.value })}>
                                 <option label={translate(languageData, "artilstStatus")}></option>
-                                {articleList.map((item, index) => {
-                                    return (
-                                        <option value={item.status} key={index}>{item.status}</option>
+                                {[...new Set(articleTableData?.map((item) => item.status))].map(
+                                    (status, index) => (
+                                        <option value={status} key={index}>
+                                            {status}
+                                        </option>
                                     )
-                                })}
+                                )}
                             </select>
                         </div>
                     </Col>
@@ -280,7 +206,7 @@ const ArticleList = () => {
                     </div> :
                     <DataTable
                         columns={columns}
-                        data={data}
+                        data={articleTableData.reverse()}
                         noDataComponent={noDataComponent}
                     />}
             </div>

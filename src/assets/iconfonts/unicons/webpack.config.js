@@ -2,7 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    mode: 'production',
+    resolve: {
+        fallback: {
+            path: require.resolve('path-browserify')
+        }
+    },
+    mode: 'development',
     entry: [
       'regenerator-runtime/runtime',
       './scripts/monochrome/script.js'

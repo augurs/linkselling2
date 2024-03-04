@@ -88,8 +88,10 @@ const Nip = () => {
             setTimeout(() => {
                 navigate('/nipDetails')
             }, 1000);
-            let nipData = JSON.stringify(res.response)
+            let nipData = JSON.stringify(res?.response)
             localStorage.setItem('nipData', nipData)
+            let userData = JSON.stringify(res?.user)
+            localStorage.setItem('userData', userData)
 
         } else if (res?.success === false && res?.message === "This nip number already registered") {
             toast("Ten numer NIP już jest zarejestrowany", {

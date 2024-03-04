@@ -1,3 +1,9 @@
+.file-upload1 {
+  border: 2px dashed #8fbd56;
+  text-align: center;
+  cursor: pointer;
+}
+
 .file-upload {
     border: 2px dashed #8fbd56;
     padding: 20px;

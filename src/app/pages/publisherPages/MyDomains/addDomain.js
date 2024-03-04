@@ -78,13 +78,13 @@ const AddDomain = () => {
     const validate = (values) => {
         let errors = {};
         let isValid = true;
-        const urlRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+        const urlRegex = /^[^ "]+\.[^ "]+$/;
 
         if (!values.enterUrl) {
-            errors.enterUrl = translate(languageData, "PleaseEnterArticleTitle");
+            errors.enterUrl = translate(languageData, "enterDomain");
             isValid = false;
         } else if (!urlRegex.test(values.enterUrl)) {
-            errors.enterUrl = translate(languageData, "InvalidUrlFormat");
+            errors.enterUrl = translate(languageData, "InvalidDomainFormat");
             isValid = false;
         }
 

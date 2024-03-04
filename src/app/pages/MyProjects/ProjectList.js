@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Col, Form, Row } from 'react-bootstrap'
+import { Button, Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import DataTable from 'react-data-table-component';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import Select from 'react-select'
 import { projectChangeStatus, projectList, searchProject } from '../../../services/ProjectServices/projectServices';
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
-import { MdCheckCircle, MdCancel } from 'react-icons/md';
+import { MdCheckCircle, MdCancel, MdMoveUp, MdEdit, MdLink } from 'react-icons/md';
 
 
 const ProjectList = () => {
@@ -37,7 +37,7 @@ const ProjectList = () => {
 
     useEffect(() => {
         handleSearchService()
-    }, [searchTerms, activeFilter, projectChangedId])
+    }, [searchTerms, activeFilter])
 
     useEffect(() => {
         projectListServices()
@@ -73,6 +73,9 @@ const ProjectList = () => {
         setLoading(true)
         const res = await projectChangeStatus(id)
         setProjectChangeStatus(res?.data)
+        if (res.success === true) {
+            handleSearchService()
+        }
         setLoading(false)
     }
 
@@ -109,14 +112,34 @@ const ProjectList = () => {
         {
             name: translate(languageData, "Action"),
             cell: row => (
-                <div className='d-flex gap-2'>
-                    < button className='btn btn-primary' onClick={() => navigate(`/editProject/${row.id}`)}> {translate(languageData, "Edit")}</button >
-                    {activeFilter==="Active" ?
-                    < button className='btn btn-outline-primary' onClick={() => StatusServices(row.id)}> {translate(languageData, "moveToNotActive")}</button >
-                    :
-                    < button className='btn btn-outline-primary' onClick={() => StatusServices(row.id)}> {translate(languageData, "moveToActive")}</button >
-
-                }
+                <div className='d-flex'>
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id="tooltip">{translate(languageData, "Edit")}</Tooltip>}
+                    >
+                        < button className='bg-transparent' onClick={() => navigate(`/editProject/${row.id}`)}><MdEdit fontSize={16} /> </button >
+                    </OverlayTrigger>
+                    {activeFilter === "Active" ?
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip id="tooltip">{translate(languageData, "moveToNotActive")}</Tooltip>}
+                        >
+                            < button className='bg-transparent' onClick={() => StatusServices(row.id)}> <MdMoveUp fontSize={16} /></button >
+                        </OverlayTrigger>
+                        :
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip id="tooltip">{translate(languageData, "moveToActive")}</Tooltip>}
+                        >
+                            < button className='bg-transparent' onClick={() => StatusServices(row.id)}><MdMoveUp /> </button >
+                        </OverlayTrigger>
+                    }
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip id="tooltip">{translate(languageData, "showRelatedPurchaseDomain")}</Tooltip>}
+                    >
+                        < button className='bg-transparent' onClick={() => navigate(`/viewRelatedPurchaseDomain/${row.id}`)}><MdLink fontSize={16} /> </button >
+                    </OverlayTrigger>
                 </div>
             ),
             left: true,

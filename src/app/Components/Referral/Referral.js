@@ -190,9 +190,6 @@ const Referral = () => {
         }
     }
 
-    console.log(balance, "193");
-    console.log(formValues.amount, "194");
-
     return (
         <div>
             <div onClick={() => setShowReferralModal(true)}>

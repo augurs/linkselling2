@@ -17,7 +17,9 @@ function WalletProvider({ children }) {
     const [balance, setBalance] = useState('');
 
     useEffect(() => {
+        if(userData?.id){
         showWalletBalance();
+        }
     }, []);
 
     const showWalletBalance = async () => {

@@ -120,3 +120,19 @@ export const updatePublisherOffer = (formValues, id, domainId) => {
       return error.response.data;
     });
 };
+
+
+export const viewOffer = (DomainUrl, id) => {
+  const formData = new FormData();
+    formData.append("url", DomainUrl);
+    formData.append("publisher_id", id);
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/view-all-offer`, formData)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

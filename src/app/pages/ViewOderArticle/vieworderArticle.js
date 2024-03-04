@@ -5,10 +5,11 @@ import globalLoader from '../../../assets/images/loader.svg';
 import { useLanguage } from '../../Context/languageContext';
 import "./viewOrder.css";
 import { translate } from '../../../utility/helper';
-import custImg from "../../../assets/images/users/customer.jpg"
-import publisherImg from "../../../assets/images/users/publisher.jpg"
+import custImg from "../../../assets/images/users/user.png"
+import publisherImg from "../../../assets/images/users/publisher1.png"
 import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
 import { ToastContainer, toast } from 'react-toastify';
+import { baseURL2 } from '../../../utility/data';
 function VieworderArticle() {
   const userData = localStorage.getItem('userData');
   const [loading, setLoading] = useState(false);
@@ -141,7 +142,7 @@ function VieworderArticle() {
 
         buttonText = status;
     }
-    return <span className={`${buttonClass} d-flex justify-content-center align-items-center w-25`}>
+    return <span className={`${buttonClass} d-flex justify-content-center align-items-center`}>
       {buttonText}
     </span>
   };
@@ -172,8 +173,6 @@ function VieworderArticle() {
     setShowChatModal(true);
   };
 
-  console.log(articleid, "179");
-
   const handleSendMsgPublisher = async () => {
     setShowChatModal(false);
     setLoading(true);
@@ -186,7 +185,7 @@ function VieworderArticle() {
         res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
       }
       if (res.success === true) {
-        const successMessage = translate(languageData, "dataaddedsuccessfully");
+        const successMessage = modalType === "reject" ? translate(languageData, "CommentrejectAddedSuccessfully") : translate(languageData, "msgSentSuccessfully");
         toast(successMessage, {
           position: "top-center",
           autoClose: 3000,
@@ -252,7 +251,7 @@ function VieworderArticle() {
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input mb-0">
-                        {portalArticleDetail[0]?.lead ?? ''}
+                        {portalArticleDetail[0]?.lead ? portalArticleDetail[0]?.lead : '--'}
                       </div>
                     </Col>
                   </Row>
@@ -262,7 +261,9 @@ function VieworderArticle() {
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input d-flex">
-                        <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content ?? '' }} />
+                        {portalArticleDetail[0]?.content ?
+                          <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content ?? '' }} />
+                          : "--"}
                       </div>
                     </Col>
                   </Row>
@@ -272,9 +273,10 @@ function VieworderArticle() {
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                       <div className="wrap-input100 validate-input mb-0">
-                        <a href={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image ?? ''}`} download>
-                          <img src={`https://linkselling.augurslive.com/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image ?? ''}`} alt="Article Image" className="w-25" />
-                        </a>
+                        {portalArticleDetail[0]?.image ?
+                          <a href={`${portalArticleDetail[0]?.image ?? ''}`} download>
+                            <img src={`${portalArticleDetail[0]?.image ?? ''}`} alt="Article Image" className="w-25" />
+                          </a> : translate(languageData, "noImageFound")}
                       </div>
                     </Col>
                   </Row>
@@ -290,10 +292,10 @@ function VieworderArticle() {
                   </Row>
                   <Row className="mt-5">
                     <Col xs={12} md={4}>
-                      <span>Status</span>
+                      <span>{translate(languageData, "artilstStatus")}</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
-                      <div className="wrap-input100 validate-input mb-0">
+                      <div className="wrap-input100 validate-input mb-0 w-25">
                         {getStatusMessage(portalArticleDetail[0]?.status) ?? ''}
                       </div>
                     </Col>
@@ -308,13 +310,18 @@ function VieworderArticle() {
                           <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
                             <Col xs={4} className="text-left">
                               {message.sender === 'user' && (
-                                <div className="border-top border-primary p-2 square bg-lightgray rounded-1 mb-4">{message.message}</div>
+                                <div className="border-top border-primary p-1 square bg-lightgray rounded-1">
+                                  <div>{message.message}</div>
+                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+                                </div>
                               )}
                             </Col>
                             <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
                               {message.sender === 'user' ? (
-                                <div className="chat-image mb-4">
-                                  <Image src={custImg} roundedCircle /></div>
+                                <>
+                                  <div className="chat-image mb-4">
+                                    <Image src={custImg} roundedCircle /></div>
+                                </>
                               ) : (
                                 <div className="chat-image mb-4">
                                   <Image src={publisherImg} roundedCircle /></div>
@@ -322,7 +329,11 @@ function VieworderArticle() {
                             </Col>
                             <Col xs={4} className="text-right">
                               {message.sender === 'publisher' && (
-                                <div className='border p-2 square bg-lightgray rounded-1 mb-4'>{message.message}</div>
+                                <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
+                                  <div>{message.message}</div>
+                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+
+                                </div>
                               )}
                             </Col>
                           </Row>
