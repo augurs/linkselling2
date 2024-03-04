@@ -102,8 +102,8 @@ const AddArticle = () => {
                 date: formatDate(res?.data[0]?.created_at),
                 minArticleLength: res?.data[0]?.min_article_length,
                 maxArticleLength: res?.data[0]?.max_article_length,
-                maxLeadLength: res?.data[0]?.lead_length,
-                minLeadLength: res?.data[0]?.min_lead_length ? res?.data[0]?.min_lead_length : 0
+                maxLeadLength: res?.data[0]?.lead_length_max,
+                minLeadLength: res?.data[0]?.lead_length_min ? res?.data[0]?.lead_length_min : 0
             });
             setDisplayedImage(dynamicImageUrl);
             setShowDropdown(res.data[0].status === 'Published');
