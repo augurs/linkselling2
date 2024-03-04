@@ -9,7 +9,8 @@ import custImg from "../../../assets/images/users/user.png"
 import publisherImg from "../../../assets/images/users/publisher1.png"
 import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
 import { ToastContainer, toast } from 'react-toastify';
-import { baseURL2 } from '../../../utility/data';
+import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
+import moment from "moment";
 function VieworderArticle() {
   const userData = localStorage.getItem('userData');
   const [loading, setLoading] = useState(false);
@@ -312,7 +313,10 @@ function VieworderArticle() {
                               {message.sender === 'user' && (
                                 <div className="border-top border-primary p-1 square bg-lightgray rounded-1">
                                   <div>{message.message}</div>
-                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end gap-1 align-items-center'>
+                                    <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
+                                    <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} />: <IoCheckmarkDoneOutline fontSize={14} color='green'/>}</div>
+                                    </div>
                                 </div>
                               )}
                             </Col>
@@ -331,7 +335,7 @@ function VieworderArticle() {
                               {message.sender === 'publisher' && (
                                 <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
                                   <div>{message.message}</div>
-                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
+                                  <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
 
                                 </div>
                               )}

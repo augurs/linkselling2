@@ -14,6 +14,8 @@ import { chatSectionService, sentToPublisherMessage } from '../../../services/Or
 import custImg from "../../../assets/images/users/user.png"
 import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
+import moment from 'moment';
+import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
 function Portalarticledetails() {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -249,7 +251,7 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "image")}</span>
                                         </Col>
-                                        <Col xs={12} md={8} className="mt-3 mt-md-0"> 
+                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
                                                 <a href={`${baseURL2}/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} download>
                                                     <img src={`${baseURL2}/LinkSellingSystem/public/articles/${portalArticleDetail[0]?.image}`} alt="Article Image" className='w-25' />
@@ -302,9 +304,11 @@ function Portalarticledetails() {
                                                         <Col xs={4} className="text-left">
                                                             {message.sender === 'user' && (
                                                                 <div className="border-top border-primary p-1 square bg-lightgray rounded-1">
-                                                                <div>{message.message}</div>
-                                                                <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
-                                                              </div>
+                                                                    <div>{message.message}</div>
+                                                                    <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>
+                                                                        <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         </Col>
                                                         <Col xs={1} className="d-flex flex-column align-items-center justify-content-center">
@@ -319,10 +323,12 @@ function Portalarticledetails() {
                                                         <Col xs={4} className="text-right">
                                                             {message.sender === 'publisher' && (
                                                                 <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
-                                                                <div>{message.message}</div>
-                                                                <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end'>02:30AM  (08-02-24)</div>
-                              
-                                                              </div>
+                                                                    <div>{message.message}</div>
+                                                                    <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end align-items-center gap-1'>
+                                                                    <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
+                                                                    <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} /> : <IoCheckmarkDoneOutline fontSize={14} color='green' />}</div>
+                                                                    </div>
+                                                                </div>
                                                             )}
                                                         </Col>
                                                     </Row>
@@ -338,9 +344,9 @@ function Portalarticledetails() {
                                 </div>
                             </Card.Body>
                             <Card.Footer className='d-flex gap-2'>
-                            {portalArticleDetail[0]?.status === "Accept" && (<>
-                                <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
-                                <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button></>)}
+                                {portalArticleDetail[0]?.status === "Accept" && (<>
+                                    <Link to={`/portalarticledetails/${id}`}><Button>{translate(languageData, "iHavePublishedTheArticle")}</Button></Link>
+                                    <Button className='btn-danger' onClick={handleRejectClick}>{translate(languageData, "IhaveRejected")}</Button></>)}
                                 <Button className='btn-info' onClick={handleSendMsgClick}>{translate(languageData, "sendMessage")}</Button>
                             </Card.Footer>
                         </Card>
