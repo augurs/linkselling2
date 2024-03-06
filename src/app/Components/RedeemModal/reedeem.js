@@ -6,7 +6,7 @@ import { translate } from '../../../utility/helper';
 import { useLanguage } from "../../Context/languageContext";
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-
+import { BsPatchCheckFill } from "react-icons/bs";
 const Referral = () => {
     const initialValues = {
         redeemCode: ""
@@ -17,6 +17,7 @@ const Referral = () => {
     const [loading, setLoading] = useState(false);
     const [res, setRes] = useState(null);
     const { languageData } = useLanguage();
+
 
     useEffect(() => {
         if (res?.success === false && res.message === "Wrong code") {
@@ -35,6 +36,8 @@ const Referral = () => {
 
     const handleCloseModal = () => {
         setShowRedeemModal(false);
+        setFormValues(initialValues);
+        setRes(null);
     };
 
     const redeemCodeServices = async () => {
@@ -53,10 +56,10 @@ const Referral = () => {
             setLoading(false);
             return;
         }
-        const response = await redeemCode(formValues);
+        const response = await redeemCode(formValues, userData?.id);
         setRes(response);
         setLoading(false);
-        if (response.success === true) {
+        if (response.success === true && response.message == '') {
             toast(translate(languageData, "redeemSuccessfully"), {
                 position: "top-center",
                 autoClose: 2000,
@@ -67,8 +70,22 @@ const Referral = () => {
                 progress: undefined,
                 type: 'success'
             });
-            // setFormValues(initialValues);
+            
         }
+        if (response.success === true && response.message == "This is already active") {
+            toast(translate(languageData, "thisCodeAlreadyUsed"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'info'
+            });
+            
+        }
+
     };
 
     const handleInputChange = (e) => {
@@ -84,7 +101,7 @@ const Referral = () => {
                     <span className="side-menu__label">{translate(languageData, "redeemCode")}</span>
                 </Link>
             </div>
-            <Modal show={showRedeemModal} onHide={() => setShowRedeemModal(false)}>
+            <Modal show={showRedeemModal} onHide={handleCloseModal} centered>
                 <Modal.Header className='d-flex align-items-center justify-content-between'>
                     <Modal.Title>
                         <div>
@@ -99,15 +116,15 @@ const Referral = () => {
                         <Col sm="8">
                             <Form.Control placeholder="Enter code" type="text" name="redeemCode" value={formValues.redeemCode} onChange={handleInputChange} />
                             {res?.success === false && res.message === "Wrong code" && (
-                                <span className='text-danger'>{translate(languageData, "wrongCode")}</span>
+                                <span className='text-danger mt-2'>{translate(languageData, "wrongCode")}</span>
                             )}
-                            {res?.success === true  && (
-                                <span className='text-primary'>{res?.data}</span>
+                            {res?.success === true && (
+                                <span className='text-primary mt-2'><BsPatchCheckFill className="text-primary" fontSize={16} /> {res?.data} </span>
                             )}
                         </Col>
                     </Form.Group>
-                    <div className='d-flex justify-content-end gap-1'>
-                        <Button onClick={redeemCodeServices} >
+                    <div className='d-flex justify-content-end gap-1 border-top'>
+                        <Button onClick={redeemCodeServices} className='mt-2'>
                             {loading ? 'Loading...' : translate(languageData, "redeem")}
                         </Button>
                     </div>

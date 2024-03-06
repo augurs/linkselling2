@@ -83,9 +83,9 @@ export const withdrawalReferral = (formValues, id) => {
 
 
 
-export const redeemCode = (formValues) => {
+export const redeemCode = (formValues, id) => {
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/getRedeem/${formValues?.redeemCode}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/getRedeem/${formValues?.redeemCode}/${id}`)
     .then((res) => {
       return res?.data;
     })

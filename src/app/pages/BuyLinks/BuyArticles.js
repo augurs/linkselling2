@@ -124,7 +124,7 @@ const BuyArticles = () => {
             setAddArtiLead(data?.lead)
             setContent(data?.content)
             setImageSource({ previewUrl: data?.file });
-            setImage(data?.file);
+            setImage('');
         }
     }, [addNewArticleProjectDropdown, useArticleList])
 
