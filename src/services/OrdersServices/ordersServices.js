@@ -16,9 +16,14 @@ import { baseURL2 } from "../../utility/data";
   };
 
 
-export const ordersListArticle = (id) => {
+export const ordersListArticle = (id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/addnewarticle/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/addnewarticle/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })
@@ -29,9 +34,14 @@ export const ordersListArticle = (id) => {
   };
 
 
-  export const ordersListArticle1 = (id) => {
+  export const ordersListArticle1 = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/requestarticle/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/requestarticle/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })

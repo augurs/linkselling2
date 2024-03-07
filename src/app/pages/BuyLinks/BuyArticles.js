@@ -124,7 +124,7 @@ const BuyArticles = () => {
             setAddArtiLead(data?.lead)
             setContent(data?.content)
             setImageSource({ previewUrl: data?.file });
-            setImage('');
+            setImage(data?.file);
         }
     }, [addNewArticleProjectDropdown, useArticleList])
 
@@ -1028,6 +1028,7 @@ const BuyArticles = () => {
             artId: articleType === translate(languageData, "UseArticle") ? addNewArticleProjectDropdown : "",
             publisherMsgText: publisherMsgText,
             addArtiLead: addArtiLead,
+            imageUrl: /^https?:\/\/\S+\.\S+$/.test(image) ? true : '' 
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))

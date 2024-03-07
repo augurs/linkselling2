@@ -5,15 +5,18 @@ import { base64ToFile } from "../../utility/helper";
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addArticle = (formValues, editor, id) => {
-
-  const imageFile = base64ToFile(formValues.image, "image.jpg");
+export const addArticle = (formValues, editor, id, selectedFile) => {
   const formData = new FormData();
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
   formData.append("lead", formValues.lead);
   formData.append("document", formValues.document);
-  formData.append("image", imageFile);
+  // if (selectedFile) {
+  //   formData.append("image", base64ToFile(formValues.image, "image.jpg"));
+  // }
+  
+    formData.append("image", formValues.image);
+  
   formData.append("content", editor)
   formData.append("user_id", id)
 

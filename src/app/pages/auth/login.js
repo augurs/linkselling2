@@ -85,12 +85,20 @@ function Login() {
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language
     );
-    if (res.status === "1") {
+    if (res?.user?.status === "1") {
       setLoading(false)
-      localStorage.setItem('userData', JSON.stringify(res))
+      localStorage.setItem('userData', JSON.stringify(res.user))
+      localStorage.setItem('accessToken', res?.access_token)
+
       if (!language) {
         localStorage.setItem('lang', "pl")
       }
+    // if (res.status === "1") {
+    //   setLoading(false)
+    //   localStorage.setItem('userData', JSON.stringify(res))
+    //   if (!language) {
+    //     localStorage.setItem('lang', "pl")
+    //   }
       toast(loginSuccessMessage, {
         position: "top-center",
         autoClose: 3000,

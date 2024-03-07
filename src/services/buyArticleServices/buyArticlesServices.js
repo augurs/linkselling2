@@ -85,6 +85,7 @@ export const addToCartArticles = (data, isAddNew) => {
   formData.append("art_id", data.artId);
   formData.append("publisher_msg", data.publisherMsgText);
   formData.append("lead", data.addArtiLead);
+  formData.append("imageUrl", data.imageUrl);
 
 
 

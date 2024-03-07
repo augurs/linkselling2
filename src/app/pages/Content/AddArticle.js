@@ -8,12 +8,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import globalLoader from '../../../assets/images/loader.svg'
 import ReactQuill from 'react-quill';
-import { translate } from '../../../utility/helper';
+import { base64ToFile, translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import { projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
-import { base64ToBinary } from '../../../utility/helper';
 const AddArticle = () => {
     const userData2 = JSON.parse(localStorage.getItem("userData"))
     const lang = localStorage.getItem("lang");
@@ -47,6 +46,13 @@ const AddArticle = () => {
             uploadDocxServices()
         }
     }, [selectedFile])
+
+
+
+    useEffect(() => {
+        articleListServices2()
+
+    }, [])
 
     //pixabay Image selct start//
 
@@ -98,7 +104,7 @@ const AddArticle = () => {
         } else if (type === "save") {
             setLoading(true)
         }
-        const res = await addArticle(formValues, content, userData2.id)
+        const res = await addArticle(formValues, content, userData2.id, selectedFile)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
@@ -158,10 +164,7 @@ const AddArticle = () => {
         }
     };
 
-    useEffect(() => {
-        articleListServices2()
-
-    }, [])
+    
     const articleListServices2 = async () => {
         const res = await projectList(userData2?.id)
         setArticlesData2(res?.data.reverse())
@@ -178,7 +181,6 @@ const AddArticle = () => {
     const handleFileChange = (file) => {
         setSelectedFile(file);
     }
-
 
     const handleEditorChange = (html) => {
         setContent(html)
@@ -251,7 +253,7 @@ const AddArticle = () => {
                     title: res?.title.trim().replace(/\s+/g, ' '),
                     lead: res?.lead.trim().replace(/\s+/g, ' '),
                     content: res?.content.trim().replace(/\s+/g, ' '),
-                    image: (res?.images[0]),
+                    image: base64ToFile(res?.images[0]),
 
                 });
             }
@@ -306,7 +308,7 @@ const AddArticle = () => {
 
                         <Row className='align-items-center border-bottom pb-4'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "AddArtiImportDoc")} *</span>
+                                <span>{translate(languageData, "AddArtiImportDoc")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div>

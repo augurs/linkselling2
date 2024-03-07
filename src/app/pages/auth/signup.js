@@ -211,7 +211,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: '' })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: '' })
     }
     else if (res.message[0] === "The username has already been taken.") {
       toast(userNameAlredyTaken, {
@@ -226,7 +226,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
     } else if (res.success === false && res.message[0] === "The Special code does not exist.") {
       toast(wrongSpecialCode, {
         position: "top-center",
@@ -240,7 +240,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
     }
     else {
       toast(loginFailureMessage2, {
@@ -255,7 +255,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
+      // setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
     }
   }
 

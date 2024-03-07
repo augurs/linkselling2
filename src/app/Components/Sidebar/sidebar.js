@@ -227,7 +227,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                             <li className="slide" style={{ cursor: "pointer" }} onClick={handleEditClick}>
                                 <div className="side-menu__item has-link d-flex justify-content-center align-items-center gap-3" data-bs-toggle="slide">
                                     <span className="side-menu__icon"><BiUserCircle size={30} style={{ color: "gray!important" }} /></span>
-                                    <span className="side-menu__label">{translate(languageData, "welcome")} {userData?.first_name} </span>
+                                    <span className="side-menu__label text-wrap">{translate(languageData, "welcome")} {userData?.first_name} </span>
                                 </div>
                             </li>
                         </OverlayTrigger>
