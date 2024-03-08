@@ -195,7 +195,7 @@ const ArticleInProgress = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date1,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date1}</button>
+                <div>{row.date1}</div>
             ),
             sortable: true,
             center: true,

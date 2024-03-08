@@ -194,3 +194,16 @@ export const sendingUserLoggedin = (logged_in, id) => {
       return error.response.data;
     });
 };
+
+
+export const readSpecialCode = (code) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/getSpecialCodeDetails/${code}`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

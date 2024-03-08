@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { FaInfoCircle } from 'react-icons/fa';
+
+import { FaInfoCircle, FaPlusCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { orderArticles } from '../../../services/articleServices/articleServices';
 import { projectList } from '../../../services/ProjectServices/projectServices';
@@ -17,7 +18,7 @@ import { articleTypeList } from "../../../services/buyArticleServices/buyArticle
 const OrderArticle = () => {
     const userData = JSON.parse(localStorage.getItem("userData"))
     const lang = localStorage.getItem("lang");
-    
+
     const initialValues = {
         articleType: "",
         project: "",
@@ -38,12 +39,27 @@ const OrderArticle = () => {
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [provideSubject, setProvideSubject] = useState(false);
     const [cardLang, setCardLang] = useState(lang)
+    const [linkAnchorPairs, setLinkAnchorPairs] = useState([{ link: '', requestAnchor: '' }]);
+    const MAX_LINK_ANCHOR_PAIRS = 10;
     const navigate = useNavigate()
 
     useEffect(() => {
         if (lang)
             setCardLang(lang)
     }, [lang])
+
+
+    const addLinkAnchorPair = () => {
+        if (linkAnchorPairs.length < MAX_LINK_ANCHOR_PAIRS) {
+            setLinkAnchorPairs([...linkAnchorPairs, { link: '', requestAnchor: '' }]);
+        }
+    };
+
+    const handleChangeLinkAnchor = (index, type, value) => {
+        const updatedLinkAnchorPairs = [...linkAnchorPairs];
+        updatedLinkAnchorPairs[index][type] = value;
+        setLinkAnchorPairs(updatedLinkAnchorPairs);
+    };
 
 
     useEffect(() => {
@@ -369,6 +385,62 @@ const OrderArticle = () => {
 
                             </Col>
                         </Row>
+                        {/* <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "link")} </span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="writeSubject" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                    ><button className='bg-transparent'><FaPlusCircle /></button>
+                                    </OverlayTrigger>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row className='align-items-center mt-5'>
+                            <Col xs={12} md={4}>
+                                <span>{translate(languageData, "requestanchor")} </span>
+                            </Col>
+                            <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                    <input className="input100" type="text" name="requestanchor" placeholder={translate(languageData, "requestanchor")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                    
+                                </div>
+                            </Col>
+                        </Row> */}
+                        {linkAnchorPairs.map((pair, index) => (
+                            <div key={index}>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "link")} </span>
+                                    </Col>
+                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                        <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
+                                            <input className="input100" type="text" name="link" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} value={pair.link} onChange={(e) => handleChangeLinkAnchor(index, 'link', e.target.value)} />
+                                            <OverlayTrigger
+                                                placement="top"
+                                                overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                            ><button className='bg-transparent' onClick={addLinkAnchorPair}><FaPlusCircle /></button>
+                                            </OverlayTrigger>
+                                        </div>
+
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "requestanchor")} </span>
+                                    </Col>
+                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                            <input className="input100" type="text" name="requestAnchor" placeholder={translate(languageData, "requestanchor")} style={{ paddingLeft: "15px" }} value={pair.requestAnchor} onChange={(e) => handleChangeLinkAnchor(index, 'requestAnchor', e.target.value)} />
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </div>
+                        ))}
                     </div>
 
 

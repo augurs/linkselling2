@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Container, Form, Modal } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
-import { signup } from '../../../services/authServices/authservices';
+import { readSpecialCode, signup } from '../../../services/authServices/authservices';
 import { ToastContainer, toast } from 'react-toastify';
 import globalLoader from '../../../assets/images/loader.svg'
 import LanguageSelect from '../../Components/Language/languageSelect';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../Context/languageContext';
 import { useLocation } from 'react-router-dom';
+import { translate } from '../../../utility/helper';
 const SignUp = () => {
 
   const initialValues = {
@@ -30,6 +31,7 @@ const SignUp = () => {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [signUpLoading, setSignUpLoading] = useState(false);
+  const [specialCodeData, setSpecialCodeData] = useState('')
 
   const currLang = localStorage.getItem('lang');
 
@@ -57,7 +59,11 @@ const SignUp = () => {
     validate({ ...formValues, [name]: checked });
   }
 
-
+  useEffect(() => {
+    if (formValues?.specialCode) {
+      chatSectionShow()
+    }
+  }, [formValues?.specialCode])
 
 
   const validate = (values) => {
@@ -259,6 +265,19 @@ const SignUp = () => {
     }
   }
 
+  const chatSectionShow = async () => {
+    setSignUpLoading(true);
+    const res = await readSpecialCode(formValues.specialCode);
+
+    if (res) {
+      setSpecialCodeData(res);
+    } else {
+      console.error('API request failed:', res?.msg);
+    }
+
+    setSignUpLoading(false);
+  };
+
   return (
     <div className='ltr login-img'>
       <ToastContainer />
@@ -323,6 +342,10 @@ const SignUp = () => {
                         <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
                       </span>
                     </div>
+                    {formValues?.specialCode.length > 0 ? (
+                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div>)
+                      : ("")}
+
                     <label className="custom-control custom-checkbox mt-4">
                       <input type="checkbox" className="custom-control-input" name='terms' onChange={handleCheckbox} checked={formValues.terms} />
                       <span className="custom-control-label mt-2">{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition')[0]?.value || 'singUpTermsAndCondition'} <a>{languageData && languageData?.filter((item) => item.title === 'singUpTermsAndCondition2')[0]?.value || 'singUpTermsAndCondition2'}</a></span>

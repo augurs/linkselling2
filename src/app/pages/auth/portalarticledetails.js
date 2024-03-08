@@ -219,7 +219,11 @@ function Portalarticledetails() {
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0 " data-bs-validate="Password is required">
                                                 {portalArticleDetail[0]?.lead || "--"}
+                                                <button className="copy-button" onClick={() => handleCopyClick(portalArticleDetail[0]?.lead)}>
+                                                    <FaCopy />
+                                                </button>
                                             </div>
+
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
@@ -325,8 +329,8 @@ function Portalarticledetails() {
                                                                 <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
                                                                     <div>{message.message}</div>
                                                                     <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end align-items-center gap-1'>
-                                                                    <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
-                                                                    <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} /> : <IoCheckmarkDoneOutline fontSize={14} color='green' />}</div>
+                                                                        <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
+                                                                        <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} /> : <IoCheckmarkDoneOutline fontSize={14} color='green' />}</div>
                                                                     </div>
                                                                 </div>
                                                             )}
