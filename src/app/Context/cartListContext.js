@@ -14,10 +14,10 @@ function CustomCartContext({ children }) {
     const userData = JSON.parse(localStorage.getItem('userData'));
 
     useEffect(() => {
-        if(userData?.id){
-        cartListServices()
-        }
-    }, [])
+        if (userData?.id) {
+            cartListServices();
+        } 
+    }, []);
 
     const [cartContextData, setCartContextData] = useState([])
 
@@ -31,7 +31,7 @@ function CustomCartContext({ children }) {
 
 
     return (
-        <cartContext.Provider value={{ cartListServices, cartContextData }}>
+        <cartContext.Provider value={{ cartListServices, cartContextData , setCartContextData}}>
             {children}
         </cartContext.Provider>
     )

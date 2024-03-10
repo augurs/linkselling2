@@ -81,6 +81,8 @@ function Login() {
   const loginService = async () => {
     setLoading(true)
     localStorage.removeItem('publisherData');
+    localStorage.removeItem('userData');
+
     const res = await login(
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language
@@ -93,12 +95,12 @@ function Login() {
       if (!language) {
         localStorage.setItem('lang', "pl")
       }
-    // if (res.status === "1") {
-    //   setLoading(false)
-    //   localStorage.setItem('userData', JSON.stringify(res))
-    //   if (!language) {
-    //     localStorage.setItem('lang', "pl")
-    //   }
+      // if (res.status === "1") {
+      //   setLoading(false)
+      //   localStorage.setItem('userData', JSON.stringify(res))
+      //   if (!language) {
+      //     localStorage.setItem('lang', "pl")
+      //   }
       toast(loginSuccessMessage, {
         position: "top-center",
         autoClose: 3000,
@@ -110,9 +112,9 @@ function Login() {
         theme: "colored",
         type: 'success'
       });
-      showWalletBalance()
       setTimeout(() => {
         navigate('/')
+        showWalletBalance()
         localStorage.removeItem('nipData')
       }, 1000);
 

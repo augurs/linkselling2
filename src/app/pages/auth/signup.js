@@ -32,7 +32,7 @@ const SignUp = () => {
   const [formErrors, setFormErrors] = useState({});
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [specialCodeData, setSpecialCodeData] = useState('')
-
+  const [typingTimeout, setTypingTimeout] = useState(null);
   const currLang = localStorage.getItem('lang');
 
   // const currentLanguage = i18n.language;
@@ -50,8 +50,16 @@ const SignUp = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
   };
+
+  useEffect(() => {
+    if (formValues.specialCode) {
+      clearTimeout(typingTimeout);
+      const timeout = setTimeout(chatSectionShow, 1000);
+      setTypingTimeout(timeout);
+    }
+  }, [formValues.specialCode]);
 
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
@@ -59,11 +67,11 @@ const SignUp = () => {
     validate({ ...formValues, [name]: checked });
   }
 
-  useEffect(() => {
-    if (formValues?.specialCode) {
-      chatSectionShow()
-    }
-  }, [formValues?.specialCode])
+  // useEffect(() => {
+  //   if (formValues?.specialCode) {
+  //     chatSectionShow()
+  //   }
+  // }, [formValues?.specialCode])
 
 
   const validate = (values) => {
@@ -247,6 +255,20 @@ const SignUp = () => {
       });
       setSignUpLoading(false)
       // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
+    } else if (res.success === false && res.message[0] === "The Special code is expired.") {
+      toast("The Special code is expired.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        type: 'error'
+      });
+      setSignUpLoading(false)
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
     }
     else {
       toast(loginFailureMessage2, {
@@ -342,8 +364,8 @@ const SignUp = () => {
                         <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
                       </span>
                     </div>
-                    {formValues?.specialCode.length > 0 ? (
-                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div>)
+                    {formValues?.specialCode?.length > 0 ? (
+                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.message ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : "")
                       : ("")}
 
                     <label className="custom-control custom-checkbox mt-4">

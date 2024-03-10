@@ -51,7 +51,7 @@ const AddArticle = () => {
         validate(formValues1)
     }
 
-    
+
 
     const handleChange1 = (e) => {
         const { name, value } = e.target;
@@ -167,12 +167,17 @@ const AddArticle = () => {
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
     const handleFiles = (file, name) => {
-        setFormValues({ ...formValues, [name]: file });
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setDisplayedImage(reader.result);
-        };
-        reader.readAsDataURL(file);
+        if (file instanceof Blob) {
+            setFormValues({ ...formValues, [name]: file });
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setDisplayedImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.error('Invalid file or no file selected.');
+        }
     };
 
     const fieldTranslationMap = {
@@ -391,9 +396,6 @@ const AddArticle = () => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-
-
-    console.log(formValues1, "396");
 
     return (
         <div>

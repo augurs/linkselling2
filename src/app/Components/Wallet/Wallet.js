@@ -17,6 +17,7 @@ const WalletBalance = () => {
     const { showWalletBalance, balance } = useWallet();
 
     useEffect(() => {
+        if(userData?.id)
         showWalletBalance();
     }, []);
 

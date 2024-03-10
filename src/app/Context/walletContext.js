@@ -17,10 +17,10 @@ function WalletProvider({ children }) {
     const [balance, setBalance] = useState('');
 
     useEffect(() => {
-        if(userData?.id){
+        if(userData?.id && balance){
         showWalletBalance();
         }
-    }, []);
+    }, [balance]);
 
     const showWalletBalance = async () => {
         setLoading(true);
