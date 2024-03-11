@@ -387,9 +387,9 @@ const SignUp = () => {
                     <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.privacy}</div>
                     <div className="container-login100-form-btn text-primary">
                       {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> :
-                        <a onClick={() => signUpServices()} className="login100-form-btn btn-primary" style={{ cursor: "pointer" }}>
+                        <Button onClick={() => signUpServices()} className="login100-form-btn btn-primary" disabled={formErrors.privacy || formErrors.marketing || formErrors.terms || formErrors.confirmPassword || formErrors.password || formErrors.email || formErrors.username}>
                           {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
-                        </a>}
+                        </Button>}
                     </div>
                     <div className="text-center pt-3">
                       <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount')[0]?.value || 'alreadyHaveAnAccount'}<a onClick={() => navigate('/Login')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount2')[0]?.value || 'alreadyHaveAnAccount2'}</a></p>

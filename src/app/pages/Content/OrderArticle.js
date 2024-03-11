@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 
-import { FaInfoCircle, FaPlusCircle } from 'react-icons/fa';
+import { FaInfoCircle, FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { orderArticles } from '../../../services/articleServices/articleServices';
 import { projectList } from '../../../services/ProjectServices/projectServices';
@@ -40,6 +40,7 @@ const OrderArticle = () => {
     const [provideSubject, setProvideSubject] = useState(false);
     const [cardLang, setCardLang] = useState(lang)
     const [linkAnchorPairs, setLinkAnchorPairs] = useState([{ link: '', requestAnchor: '' }]);
+    const [lastAddedLinkIndex, setLastAddedLinkIndex] = useState(0);
     const MAX_LINK_ANCHOR_PAIRS = 10;
     const navigate = useNavigate()
 
@@ -52,6 +53,7 @@ const OrderArticle = () => {
     const addLinkAnchorPair = () => {
         if (linkAnchorPairs.length < MAX_LINK_ANCHOR_PAIRS) {
             setLinkAnchorPairs([...linkAnchorPairs, { link: '', requestAnchor: '' }]);
+            setLastAddedLinkIndex(linkAnchorPairs.length);
         }
     };
 
@@ -60,6 +62,12 @@ const OrderArticle = () => {
         updatedLinkAnchorPairs[index][type] = value;
         setLinkAnchorPairs(updatedLinkAnchorPairs);
     };
+
+    console.log(linkAnchorPairs.map((item=>item.link)),"67")
+    console.log(linkAnchorPairs.map((item=>item.requestAnchor)), "68")
+
+  
+
 
 
     useEffect(() => {
@@ -119,8 +127,7 @@ const OrderArticle = () => {
             setOrderLoading(false);
             return;
         }
-        const res = await orderArticles(formValues, orderPrice, articleType);
-
+        const res = await orderArticles(formValues, orderPrice.split(",")[0], articleType, linkAnchorPairs);
         if (res.success === true) {
             toast(translate(languageData, "OrderAddedSuccessfully"), {
                 position: "top-center",
@@ -132,6 +139,8 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'success'
             });
+
+            window.location.href = res?.redirect_url_all;
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
                 if (res.response.hasOwnProperty(field)) {
@@ -244,6 +253,16 @@ const OrderArticle = () => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
     };
+
+    const removeLinkAnchorPair = (index) => {
+        const updatedPairs = linkAnchorPairs.filter((pair, i) => i !== index);
+        setLinkAnchorPairs(updatedPairs);
+        
+        if (index <= lastAddedLinkIndex) {
+            setLastAddedLinkIndex(lastAddedLinkIndex - 1);
+        }
+    };
+    
 
     return (
         <div>
@@ -385,32 +404,7 @@ const OrderArticle = () => {
 
                             </Col>
                         </Row>
-                        {/* <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "link")} </span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
-                                    <input className="input100" type="text" name="writeSubject" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
-                                    ><button className='bg-transparent'><FaPlusCircle /></button>
-                                    </OverlayTrigger>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "requestanchor")} </span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    <input className="input100" type="text" name="requestanchor" placeholder={translate(languageData, "requestanchor")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
-                                    
-                                </div>
-                            </Col>
-                        </Row> */}
+
                         {linkAnchorPairs.map((pair, index) => (
                             <div key={index}>
                                 <Row className='align-items-center mt-5'>
@@ -420,11 +414,16 @@ const OrderArticle = () => {
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
                                             <input className="input100" type="text" name="link" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} value={pair.link} onChange={(e) => handleChangeLinkAnchor(index, 'link', e.target.value)} />
-                                            <OverlayTrigger
-                                                placement="top"
-                                                overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
-                                            ><button className='bg-transparent' onClick={addLinkAnchorPair}><FaPlusCircle /></button>
-                                            </OverlayTrigger>
+                                            {(index === lastAddedLinkIndex || (index === linkAnchorPairs.length - 1 && lastAddedLinkIndex === linkAnchorPairs.length - 1)) && (
+                                                <OverlayTrigger
+                                                    placement="top"
+                                                    overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                                ><button className='bg-transparent' onClick={addLinkAnchorPair}><FaPlusCircle /></button>
+                                                </OverlayTrigger>
+                                            )}
+                                            {index > 0 && (
+                                                <button className='bg-transparent' onClick={() => removeLinkAnchorPair(index)}><FaMinusCircle /></button>
+                                            )}
                                         </div>
 
                                     </Col>

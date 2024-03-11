@@ -45,9 +45,14 @@ export const addProjects = (values, id) => {
       });
   };
 
-  export const getProject = (id) => {
+  export const getProject = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })

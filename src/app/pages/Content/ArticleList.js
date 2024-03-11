@@ -142,12 +142,9 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setSearchTerms({ ...searchTerms, project: e.target.value })}>
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {articleList.map((item, index) => {
-                                    return (
-                                        <option value={item.project} key={index}>{item.project}</option>
-
-                                    )
-                                })}
+                                {[...new Set(articleList.map(item => item.project))].map((project, index) => (
+                                    <option value={project} key={index}>{project}</option>
+                                ))}
                             </select>
                         </div>
 

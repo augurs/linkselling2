@@ -21,7 +21,7 @@ const AddProjects = () => {
         webAddress: "",
         publicationLang: "",
     }
-    
+
 
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({})
@@ -33,13 +33,14 @@ const AddProjects = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value })
-    }
+        setFormValues({ ...formValues, [name]: value });
+        validate({ ...formValues, [name]: value });
+    };
 
     const handleSelectChange = (selectedOption) => {
-        setFormValues({ ...formValues, publicationLang: selectedOption?.value })
-        validate(formValues)
-    }
+        setFormValues({ ...formValues, publicationLang: selectedOption?.value });
+        validate({ ...formValues, publicationLang: selectedOption?.value });
+    };
 
     const fieldTranslationMap = {
         name: translate(languageData, "ProjectNameField"),
@@ -48,7 +49,7 @@ const AddProjects = () => {
 
     };
     const addProjectService = async () => {
-
+        if (!validate(formValues)) return;
         setLoading(true)
         const res = await addProjects(formValues, userData?.id);
 
@@ -69,7 +70,7 @@ const AddProjects = () => {
             }, 1000);
 
             setLoading(false)
-        }else if (res.success === false && res.response) {
+        } else if (res.success === false && res.response) {
             for (const field in res.response) {
                 if (res.response.hasOwnProperty(field)) {
                     const errorMessages = res.response[field].map(message => {
@@ -111,31 +112,23 @@ const AddProjects = () => {
         let isValid = true;
 
         if (!values.projectName) {
-            errors.projectName = translate(languageData , "ProjectNameRequired");
-            isValid = false
+            errors.projectName = translate(languageData, "ProjectNameRequired");
+            isValid = false;
         }
 
-        else if (!isValidUrl(values.webAddress)) {
+        if (!values.webAddress || !isValidUrl(values.webAddress)) {
             errors.webAddress = translate(languageData, 'InvalidWebAddress');
             isValid = false;
-          }
+        }
 
         if (!values.publicationLang) {
-            errors.publicationLang = translate(languageData , "PublicationLanguageRequired")
+            errors.publicationLang = translate(languageData, "PublicationLanguageRequired");
             isValid = false;
         }
 
         setFormErrors(errors);
         return isValid;
-    }
-
-
-    const languageOption = languages.map((item) => {
-        return {
-            value: item.name,
-            label: item.name
-        }
-    })
+    };
 
     const languagesOpts = [
         {
@@ -161,29 +154,29 @@ const AddProjects = () => {
                 <Card.Body>
                     <Row className='align-items-center'>
                         <Col lg={3} xs={12}>
-                           {translate(languageData , "NameOfTheProject")} *
+                            {translate(languageData, "NameOfTheProject")} *
                         </Col>
                         <Col lg={8} xs={12}>
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={handleChange} />
                             </div>
                             <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
                         </Col>
                     </Row>
                     <Row className='align-items-center mt-3'>
                         <Col lg={3} xs={12}>
-                        {translate(languageData , "WebAddress")} *
+                            {translate(languageData, "WebAddress")} *
                         </Col>
                         <Col lg={8} xs={12}>
                             <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} />
+                                <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={handleChange} />
                             </div>
                             <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
                         </Col>
                     </Row>
                     <Row className='align-items-center mt-3'>
                         <Col lg={3} xs={12}>
-                        {translate(languageData , "publicationLanguage")} *
+                            {translate(languageData, "publicationLanguage")} *
                         </Col>
                         <Col lg={8} xs={12}>
                             <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
@@ -210,7 +203,7 @@ const AddProjects = () => {
                     </Row> */}
                 </Card.Body>
                 <div className='d-flex mb-5'>
-                    <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData , "Save")} </Button>
+                    <Button disabled={formErrors.webAddress || formErrors.projectName || formErrors.publicationLang  } className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
                 </div>
             </Card>
 
