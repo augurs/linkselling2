@@ -28,6 +28,7 @@ const Referral = () => {
     const [referralListData, setReferralListData] = useState([])
     const [showWithdrawalFields, setShowWithdrawalFields] = useState(false);
     const { showWalletBalance, balance } = useWallet();
+    const accessToken = localStorage.getItem("accessToken")
     useEffect(() => {
         if (showReferralModal) {
             showReferralLinkServices();
@@ -41,7 +42,7 @@ const Referral = () => {
     const showReferralLinkServices = async () => {
         setLoading(true);
         try {
-            const res = await showReferralLink(userData?.id);
+            const res = await showReferralLink(accessToken);
             if (res.success === true) {
                 setReferralLink(res);
                 setLoading(false);
@@ -68,7 +69,7 @@ const Referral = () => {
 
     const referralListServices = async () => {
         setLoading(true)
-        const res = await referralList(userData?.id)
+        const res = await referralList(accessToken)
         if (res.success === true) {
             setReferralListData(res?.code)
             setIsDataPresent(res?.code.length > 0);
@@ -146,7 +147,7 @@ const Referral = () => {
             setLoading(false)
             return;
         }
-        const res = await withdrawalReferral(formValues, userData?.id)
+        const res = await withdrawalReferral(formValues, accessToken)
         if (res.success === true) {
             toast(translate(languageData, "withdrawalSuccessfully"), {
                 position: "top-center",
@@ -160,7 +161,7 @@ const Referral = () => {
             });
             setShowWithdrawalFields(false)
             setFormValues(initialValues);
-            showWalletBalance()
+            showWalletBalance(accessToken)
             setLoading(false)
         } else if (res.success === false && res.message == "Please enter less than amount of your Balance") {
             toast(translate(languageData, "PleaseenterlessthanamountofyourBalance"), {

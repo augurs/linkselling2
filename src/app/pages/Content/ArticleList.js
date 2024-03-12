@@ -19,6 +19,7 @@ const ArticleList = () => {
     const [loading, setLoading] = useState(false)
 
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const accessToken = localStorage.getItem('accessToken')
     const navigate = useNavigate();
 
 
@@ -32,13 +33,13 @@ const ArticleList = () => {
 
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchArticles(searchTerms, userData?.id)
+        const res = await searchArticles(searchTerms, accessToken)
         setArticleSearchData(res?.data)
         setLoading(false)
     }
 
     const handleArticleList = async () => {
-        const res = await getArticles(userData?.id)
+        const res = await getArticles(accessToken)
         setArticleList(res?.data)
     }
 
@@ -142,7 +143,7 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setSearchTerms({ ...searchTerms, project: e.target.value })}>
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {[...new Set(articleList.map(item => item.project))].map((project, index) => (
+                                {[...new Set(articleList?.map(item => item.project))]?.map((project, index) => (
                                     <option value={project} key={index}>{project}</option>
                                 ))}
                             </select>
@@ -162,7 +163,7 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setSearchTerms({ ...searchTerms, status: e.target.value })}>
                                 <option label={translate(languageData, "artilstStatus")}></option>
-                                {[...new Set(articleTableData?.map((item) => item.status))].map(
+                                {[...new Set(articleTableData?.map((item) => item.status))]?.map(
                                     (status, index) => (
                                         <option value={status} key={index}>
                                             {status}
@@ -178,7 +179,7 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="source" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Source" >
                                 <option label={translate(languageData, "ArticleListSource")}></option>
-                                {sourecDropOptions.map((item, index) => {
+                                {sourecDropOptions?.map((item, index) => {
                                     return (
                                         <option value={item.value} key={index}>{item.label}</option>
                                     )
@@ -203,7 +204,7 @@ const ArticleList = () => {
                     </div> :
                     <DataTable
                         columns={columns}
-                        data={articleTableData.reverse()}
+                        data={articleTableData?.reverse()}
                         noDataComponent={noDataComponent}
                     />}
             </div>

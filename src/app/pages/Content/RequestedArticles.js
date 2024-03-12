@@ -14,6 +14,8 @@ import { useLanguage } from '../../Context/languageContext';
 const RequestedArticles = () => {
 
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const accessToken = localStorage.getItem('accessToken')
+
     const [requestedArticles, setRequestedArticles] = useState([])
     const [loading, setLoading] = useState({ listLoading: false, viewLoading: false, updateLoading: false, loadingStatus: '' })
     const [showModal, setShowModal] = useState(false)
@@ -54,7 +56,7 @@ const RequestedArticles = () => {
 
     const getRequestedArticleService = async () => {
         setLoading({ ...loading, listLoading: true })
-        const res = await getRequestedArticles(userData?.id)
+        const res = await getRequestedArticles(accessToken)
         setRequestedArticles(res?.data)
         setLoading({ ...loading, listLoading: false })
     }
@@ -62,7 +64,7 @@ const RequestedArticles = () => {
     const viewRequestedArticleService = async (articleId) => {
         setShowModal(true)
         setLoading({ ...loading, viewLoading: true })
-        const res = await viewRequestedArticles(userData?.id, articleId)
+        const res = await viewRequestedArticles(articleId, accessToken)
         setViewArticle(res?.data[0])
         setLoading({ ...loading, viewLoading: false })
     }

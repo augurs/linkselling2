@@ -17,6 +17,7 @@ import { articleTypeList } from "../../../services/buyArticleServices/buyArticle
 
 const OrderArticle = () => {
     const userData = JSON.parse(localStorage.getItem("userData"))
+    const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
 
     const initialValues = {
@@ -244,7 +245,7 @@ const OrderArticle = () => {
     }
 
     const articleListServices2 = async () => {
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setArticlesData2(res?.data.reverse())
     }
 

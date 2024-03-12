@@ -14,8 +14,8 @@ import { MdCheckCircle, MdCancel, MdMoveUp, MdEdit, MdLink } from 'react-icons/m
 
 const ProjectList = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-
-    const [order, setOrder] = useState("Orders")
+    const accessToken = localStorage.getItem('accessToken')
+    
     const [searchTerms, setSearchTerms] = useState({ title: "", langauge: "" })
     const [loading, setLoading] = useState(false)
     const [projectListData, setProjectList] = useState([])
@@ -45,14 +45,14 @@ const ProjectList = () => {
 
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchProject(searchTerms, userData?.id, activeFilter)
+        const res = await searchProject(searchTerms, activeFilter, accessToken)
         setSearchedData(res?.data)
         setLoading(false)
     }
 
     const projectListServices = async () => {
         setLoading(true)
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setProjectList(res.data)
         setLoading(false)
     }
@@ -71,7 +71,7 @@ const ProjectList = () => {
     const StatusServices = async (id) => {
         setProjectChangeId(id)
         setLoading(true)
-        const res = await projectChangeStatus(id)
+        const res = await projectChangeStatus(id, accessToken)
         setProjectChangeStatus(res?.data)
         if (res.success === true) {
             handleSearchService()
@@ -146,8 +146,7 @@ const ProjectList = () => {
         },
     ];
 
-    const tableData = searchedData
-        .map((item) => {
+    const tableData = searchedData?.map((item) => {
             let date = item.created_at.split('T');
             date = date[0]
             return {

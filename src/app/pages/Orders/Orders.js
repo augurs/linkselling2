@@ -13,6 +13,7 @@ import { Col } from 'react-bootstrap'
 const Orders = () => {
 
   const userData = JSON.parse(localStorage.getItem('userData'))
+  const accessToken = localStorage.getItem("accessToken")
   const { languageData } = useLanguage()
 
   const [ordersList, setOrdersList] = useState([])
@@ -26,7 +27,7 @@ const Orders = () => {
 
   const ordersListServices = async () => {
     setLoading(true)
-    const res = await orderslist(userData?.id)
+    const res = await orderslist(accessToken)
     if (res.success === true) {
       setOrdersList(res?.data)
       setIsDataPresent(res.data.length > 0);

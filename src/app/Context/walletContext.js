@@ -15,19 +15,16 @@ function WalletProvider({ children }) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     const [loading, setLoading] = useState(false);
     const [balance, setBalance] = useState('');
+    const [userDetails, setUserDetails] = useState('');
 
-    useEffect(() => {
-        if(userData?.id && balance){
-        showWalletBalance();
-        }
-    }, [balance]);
 
-    const showWalletBalance = async () => {
+    const showWalletBalance = async (accessToken) => {
         setLoading(true);
         try {
-            const res = await walletBalance(userData?.id);
+            const res = await walletBalance(accessToken);
             if (res.success === true) {
-                setBalance(res.data.wallet_amount);
+                setUserDetails(res?.data);
+                setBalance(res?.data.wallet_amount);
                 setLoading(false);
             } else {
                 console.error('API call failed:', res);
@@ -42,7 +39,7 @@ function WalletProvider({ children }) {
    
 
     return (
-        <WalletContext.Provider value={{loading, balance, showWalletBalance}}>
+        <WalletContext.Provider value={{loading, balance, showWalletBalance, userDetails}}>
             {children}
         </WalletContext.Provider>
     );

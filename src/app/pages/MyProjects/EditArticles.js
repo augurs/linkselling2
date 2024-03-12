@@ -13,7 +13,7 @@ import { useLanguage } from '../../Context/languageContext'
 const EditProjects = () => {
 
     const { id } = useParams();
-    let accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken')
 
     let initialValues = {
         projectName: "",
@@ -51,7 +51,7 @@ const EditProjects = () => {
 
     const editProjectServices = async () => {
         setUpdateLoader(true)
-        const res = await editProject(formValues, id)
+        const res = await editProject(formValues, id, accessToken)
         if (res.success === true && res.response === 1) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
                 position: "top-center",

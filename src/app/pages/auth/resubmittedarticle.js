@@ -32,9 +32,13 @@ const AddArticle = () => {
     const { languageData } = useLanguage();
     const { id } = useParams();
     const navigate = useNavigate()
+
+    const accessToken = localStorage.getItem("accessToken")
+
     useEffect(() => {
         setEditor(formValues.content);
     }, [formValues.content]);
+
 
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
@@ -85,7 +89,7 @@ const AddArticle = () => {
     }, []);
 
     const resubmitArticleServices = async () => {
-        const res = await resubmitarticle(id);
+        const res = await resubmitarticle(id, accessToken);
         if (res.success === true) {
             const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
@@ -247,7 +251,7 @@ const AddArticle = () => {
             }
 
 
-            const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment);
+            const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment, accessToken);
             if (res.success === true) {
                 toast(translate(languageData, "articleAddedSuccessfully"), {
                     position: "top-center",

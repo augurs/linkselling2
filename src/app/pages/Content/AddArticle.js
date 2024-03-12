@@ -16,6 +16,7 @@ import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import Select1 from 'react-select'
 const AddArticle = () => {
     const userData2 = JSON.parse(localStorage.getItem("userData"))
+    const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
     const initialValues = {
         document: "",
@@ -196,7 +197,7 @@ const AddArticle = () => {
         } else if (type === "save") {
             setLoading(true)
         }
-        const res = await addArticle(formValues, content, userData2.id, selectedFile)
+        const res = await addArticle(formValues, content, userData2.id, selectedFile, accessToken)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
@@ -258,7 +259,7 @@ const AddArticle = () => {
 
 
     const articleListServices2 = async () => {
-        const res = await projectList(userData2?.id)
+        const res = await projectList(accessToken)
         setArticlesData2(res?.data.reverse())
     }
 
@@ -326,7 +327,7 @@ const AddArticle = () => {
 
     const uploadDocxServices = async () => {
         setLoading(true);
-        const res = await uploadDocx(selectedFile, lang);
+        const res = await uploadDocx(selectedFile, lang, accessToken);
         if (res.success === true) {
             toast(translate(languageData, "docxFileUploadSuccessfully"), {
                 position: "top-center",
@@ -402,6 +403,11 @@ const AddArticle = () => {
             <ToastContainer />
             <div>
                 <Card className='mt-5 pb-5'>
+                    {loading && (
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                        </div>
+                    )}
                     <Card.Header>
                         <h3>  {translate(languageData, "AddArticle")}</h3>
                     </Card.Header>
@@ -565,7 +571,7 @@ const AddArticle = () => {
                     </div>
                 </Modal.Footer>
             </Modal>
-        </div>
+        </div >
     )
 }
 

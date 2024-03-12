@@ -9,6 +9,7 @@ import moment from 'moment';
 const ViewAddArticle = () => {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
+    const accessToken = localStorage.getItem('accessToken')
     const [loading, setLoading] = useState(false);
     const [article, setArticle] = useState(null);
     const { languageData } = useLanguage();
@@ -21,7 +22,7 @@ const ViewAddArticle = () => {
     const handleArticle = async () => {
       setLoading(true);
       try {
-        const res = await getArticles(userData?.id);
+        const res = await getArticles(accessToken);
         const selectedArticle = res.data.find((article) => article.id === parseInt(id));
         setArticle(selectedArticle);
       } catch (error) {

@@ -15,7 +15,7 @@ const AddProjects = () => {
 
     const { languageData } = useLanguage()
     const userData = JSON.parse(localStorage.getItem("userData"));
-
+    const accessToken = localStorage.getItem('accessToken')
     let initialValues = {
         projectName: "",
         webAddress: "",
@@ -51,7 +51,7 @@ const AddProjects = () => {
     const addProjectService = async () => {
         if (!validate(formValues)) return;
         setLoading(true)
-        const res = await addProjects(formValues, userData?.id);
+        const res = await addProjects(formValues, accessToken);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {

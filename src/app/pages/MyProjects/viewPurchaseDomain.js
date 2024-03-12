@@ -11,6 +11,7 @@ import { projectList, viewPurchaseDomainlist } from '../../../services/ProjectSe
 const ViewPurchaseDomain = () => {
 
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const accessToken = localStorage.getItem('accessToken')
     const { languageData } = useLanguage()
 
     const [viewPurchaseDomainList, setViewPurchaseDomainList] = useState([])
@@ -32,7 +33,7 @@ const ViewPurchaseDomain = () => {
 
     const projectListServices = async () => {
         setLoading(true)
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setProjectList(res.data)
         setLoading(false)
     }
@@ -49,7 +50,7 @@ const ViewPurchaseDomain = () => {
 
     const viewPurchaseDomainServices = async () => {
         setLoading(true)
-        const res = await viewPurchaseDomainlist(userData?.id, id)
+        const res = await viewPurchaseDomainlist(id, accessToken)
         if (res.success === true) {
             setViewPurchaseDomainList(res?.data)
             setIsDataPresent(res.data.length > 0);

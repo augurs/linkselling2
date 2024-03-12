@@ -13,7 +13,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices, userD
     }
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-
+    const accessToken = localStorage.getItem("accessToken")
     const [formValues, setFormValues] = useState(initialValues);
     const [loading, setLoading] = useState(false)
     const { languageData } = useLanguage()
@@ -48,7 +48,7 @@ const UserProfileModal = ({ isModalOpen, setModalOpen, showWalletServices, userD
                 progress: undefined,
                 type: 'success'
             });
-            showWalletServices();
+            showWalletServices(accessToken);
             setLoading(false);
             setModalOpen(false);
         } else if (res.success === false) {

@@ -12,21 +12,23 @@ import { translate } from '../../../utility/helper';
 import { Button, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 import UserProfileModal from './userProfileModal';
 import { ToastContainer } from 'react-toastify';
-import { walletBalance } from "../../../services/walletServices/walletService"
 import Referral from '../Referral/Referral'
 import RedeemModal from '../RedeemModal/reedeem'
+import { useWallet } from '../../Context/walletContext';
 
 const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-
+    const accessToken = localStorage.getItem("accessToken")
     const [menuType, setMenuType] = useState("")
     const [currentPath, setcurrentPath] = useState('')
     const [isModalOpen, setModalOpen] = useState(false);
     const [loading, setLoading] = useState(false)
-    const [userDetails, setUserDetails] = useState('');
+
     const { languageData } = useLanguage()
     const [isDesktopScreen, setIsDesktopScreen] = useState(window.innerWidth >= 991);
+    const { showWalletBalance, userDetails } = useWallet();
+
 
 
     const handleSidbarToggle = (type) => {
@@ -47,7 +49,9 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         setModalOpen(true);
     };
     useEffect(() => {
-        showWalletServices();
+        if (accessToken) {
+            showWalletBalance(accessToken);
+        }
         const handleResize = () => {
             setIsDesktopScreen(window.innerWidth >= 991);
         };
@@ -55,22 +59,22 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const showWalletServices = async () => {
-        setLoading(true);
-        try {
-            const res = await walletBalance(userData?.id);
-            if (res.success === true) {
-                setUserDetails(res?.data);
-                setLoading(false);
-            } else {
-                console.error('API call failed:', res);
-                setLoading(false);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setLoading(false);
-        }
-    };
+    // const showWalletServices = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const res = await walletBalance(userData?.id);
+    //         if (res.success === true) {
+    //             setUserDetails(res?.data);
+    //             setLoading(false);
+    //         } else {
+    //             console.error('API call failed:', res);
+    //             setLoading(false);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         setLoading(false);
+    //     }
+    // };
 
     const popoverContent = (
         <Popover id="popover-content">
@@ -233,7 +237,7 @@ const Sidebar = ({ toggleSiderbar, sidebarActive }) => {
                         </OverlayTrigger>
                     </ul></div>
             </div>
-            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} userDetails={userDetails} showWalletServices={showWalletServices} />
+            <UserProfileModal isModalOpen={isModalOpen} setModalOpen={setModalOpen} userDetails={userDetails} showWalletServices={showWalletBalance} />
             <ToastContainer />
         </div>
 

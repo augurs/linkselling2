@@ -155,7 +155,7 @@ function VieworderArticle() {
 
   const chatSectionShow = async () => {
     setLoading(true);
-    const res = await chatSectionService(id, articleid);
+    const res = await chatSectionService(id, articleid, accessToken);
 
     if (res.success === true) {
       setChatData(res.data);
@@ -188,7 +188,7 @@ function VieworderArticle() {
         res = await sentUserRejectMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
       }
       else {
-        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg);
+        res = await sentToPublisherMessage(portalArticleDetail[0]?.id, articleid, sendMsg, accessToken);
       }
       if (res.success === true) {
         const successMessage = modalType === "reject" ? translate(languageData, "CommentrejectAddedSuccessfully") : translate(languageData, "msgSentSuccessfully");

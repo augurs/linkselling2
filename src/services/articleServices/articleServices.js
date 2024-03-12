@@ -1,11 +1,16 @@
 import axios from "axios";
 import { baseURL2 } from "../../utility/data";
-import { base64ToFile } from "../../utility/helper";
+
 
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addArticle = (formValues, editor, id, selectedFile) => {
+export const addArticle = (formValues, editor, id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `application/json`,
+    'content-type' : 'multipart/form-data'
+  }
   const formData = new FormData();
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
@@ -21,7 +26,7 @@ export const addArticle = (formValues, editor, id, selectedFile) => {
   formData.append("user_id", id)
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/add-article`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/add-article`, formData, { headers })
     .then((res) => {
       return res.data;
     })
@@ -31,9 +36,14 @@ export const addArticle = (formValues, editor, id, selectedFile) => {
     });
 };
 
-export const getArticles = (id) => {
+export const getArticles = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/articles/${id}`,)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/articles`, { headers })
     .then((res) => {
       return res?.data;
     })
@@ -43,9 +53,14 @@ export const getArticles = (id) => {
     });
 };
 
-export const readyArticleList = (id) => {
+export const readyArticleList = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-ready-articles/${id}`,)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-ready-articles`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -55,34 +70,14 @@ export const readyArticleList = (id) => {
     });
 };
 
-export const articlesInProgressList = (id) => {
+export const articlesInProgressList = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-inprogress-articles/${id}`,)
-    .then((res) => {
-      return res?.data;
-    })
-    .catch((error) => {
-      console.log(error);
-      return error.response.data;
-    });
-};
-
-
-export const getRequestedArticles = (id) => {
-  return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/customer-articles/${id}`,)
-    .then((res) => {
-      return res?.data;
-    })
-    .catch((error) => {
-      console.log(error);
-      return error.response.data;
-    });
-};
-
-export const viewRequestedArticles = (customerId, articleId) => {
-  return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${customerId}/${articleId}`,)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-inprogress-articles`, { headers })
     .then((res) => {
       return res?.data;
     })
@@ -93,23 +88,14 @@ export const viewRequestedArticles = (customerId, articleId) => {
 };
 
 
-
-
-
-
-
-
-
-
-export const searchArticles = (values, id) => {
+export const getRequestedArticles = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article/${id}`, {
-      title: values.title,
-      project: values.project,
-      lead: "",
-      date: values.date,
-      status: "",
-    })
+    .get(`${baseURL2}/LinkSellingSystem/public/api/customer-articles`, { headers })
     .then((res) => {
       return res?.data;
     })
@@ -118,6 +104,74 @@ export const searchArticles = (values, id) => {
       return error.response.data;
     });
 };
+
+export const viewRequestedArticles = (articleId, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${articleId}`, { headers })
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+// export const searchArticles1 = (values, id, accessToken) => {
+//   const headers = {
+//     'Authorization': `Bearer ${accessToken}`,
+//     'Accept': `*/*`,
+//     'content-type' : 'application/json'
+//   }
+//   return axios
+//     .post(`${baseURL2}/LinkSellingSystem/public/api/search-article/${id}`, { headers } {
+//       title: values.title,
+//       project: values.project,
+//       lead: "",
+//       date: values.date,
+//       status: "",
+//     })
+//     .then((res) => {
+//       return res?.data;
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       return error.response.data;
+//     });
+// };
+
+export const searchArticles = (values, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': '*/*',
+    'Content-Type': 'application/json'
+  };
+
+  const requestData = {
+    title: values.title,
+    project: values.project,
+    lead: '',
+    date: values.date,
+    status: ''
+  };
+
+  return axios
+    .post(`${baseURL2}/LinkSellingSystem/public/api/search-article`, requestData, { headers })
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
 
 
 export const updateRequestedArticles = (viewArticle, suggestion, editor, status) => {

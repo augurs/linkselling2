@@ -11,6 +11,7 @@ import { FaEye, FaLink } from 'react-icons/fa';
 import { orderslist } from '../../services/OrdersServices/ordersServices'
 const Home = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
+  const accessToken = localStorage.getItem('accessToken')
   const { languageData } = useLanguage()
 
   const [dashBoardproject, setDashBoardProjects] = useState([])
@@ -29,7 +30,7 @@ const Home = () => {
 
   const todoListService = async () => {
     setLoading(true)
-    const res = await todolists(userData?.id)
+    const res = await todolists(accessToken)
     if (res.success === true) {
       setToDoList(res?.data)
       setLoading(false)
@@ -92,7 +93,7 @@ const Home = () => {
 
   const dashBoardProjectsServices = async () => {
     setLoading(true)
-    const res = await dashboardprojects(userData?.id)
+    const res = await dashboardprojects(accessToken)
     if (res.success === true) {
       setDashBoardProjects(res?.data)
       setLoading(false)
@@ -142,7 +143,7 @@ const Home = () => {
 
   const promotionListServices = async () => {
     setLoading(true)
-    const res = await dashboardpromotion()
+    const res = await dashboardpromotion(accessToken)
     if (res.success === true) {
       setPromotionList(res?.data)
       setLoading(false)
@@ -215,7 +216,7 @@ const Home = () => {
 
   const ordersListServices = async () => {
     setLoading(true)
-    const res = await orderslist(userData?.id)
+    const res = await orderslist(accessToken)
     if (res.success === true) {
       setOrdersList(res?.data)
       setLoading(false)

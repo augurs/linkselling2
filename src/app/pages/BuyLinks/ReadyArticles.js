@@ -13,7 +13,7 @@ const ReadyArticles = () => {
 
 
     const navigate = useNavigate();
-
+    const accessToken = localStorage.getItem('accessToken')
     const [projectListData, setProjectList] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -27,7 +27,7 @@ const ReadyArticles = () => {
     }, [])
 
     const projectListServices = async () => {
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setProjectList(res.data)
     }
 
@@ -38,7 +38,7 @@ const ReadyArticles = () => {
 
     const readyArticleListServices = async () => {
         setLoading(true)
-        const res = await readyArticleList(userData?.id)
+        const res = await readyArticleList(accessToken)
         if (res.success === true) {
             setData(res?.data);
             setIsDataPresent(res.data.length > 0);

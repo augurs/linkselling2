@@ -4,9 +4,14 @@ import { baseURL2 } from "../../utility/data";
 const userData = JSON.parse(localStorage.getItem('userData'))
 
 
-export const resubmitarticle = (id) => {
+export const resubmitarticle = (id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-resubmit-article/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-resubmit-article/${id}`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -30,7 +35,13 @@ export const uploadimagereqarticle = (id, imgid) => {
 };
 
 
-export const updaterResubmitarticle = (data, id, rejectComment) => {
+export const updaterResubmitarticle = (data, id, rejectComment, accessToken) => {
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
 
   const formData = new FormData();
   formData.append("title", data.title);
@@ -52,7 +63,7 @@ export const updaterResubmitarticle = (data, id, rejectComment) => {
 
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/update-resubmit-article/${id}`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-resubmit-article/${id}`, formData, {headers})
     .then((res) => {
       return res.data;
     })

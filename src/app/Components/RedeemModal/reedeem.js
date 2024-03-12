@@ -17,7 +17,7 @@ const Referral = () => {
     const [loading, setLoading] = useState(false);
     const [res, setRes] = useState(null);
     const { languageData } = useLanguage();
-
+    const accessToken = localStorage.getItem("accessToken")
 
     useEffect(() => {
         if (res?.success === false && res.message === "Wrong code") {
@@ -56,7 +56,7 @@ const Referral = () => {
             setLoading(false);
             return;
         }
-        const response = await redeemCode(formValues, userData?.id);
+        const response = await redeemCode(formValues, accessToken);
         setRes(response);
         setLoading(false);
         if (response.success === true && response.message == '') {

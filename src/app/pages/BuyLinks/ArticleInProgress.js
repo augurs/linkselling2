@@ -19,7 +19,7 @@ const ArticleInProgress = () => {
     const [isDataPresent, setIsDataPresent] = useState(true);
 
     const { languageData } = useLanguage()
-
+    const accessToken = localStorage.getItem('accessToken')
 
 
 
@@ -34,7 +34,7 @@ const ArticleInProgress = () => {
 
     const articlesInProgressServices = async () => {
         setLoading(true);
-        const res = await articlesInProgressList(userData?.id);
+        const res = await articlesInProgressList(accessToken);
         if (res.success === true) {
             setData(res?.data);
             setIsDataPresent(res.data.length > 0);
@@ -229,7 +229,7 @@ const ArticleInProgress = () => {
     ];
 
     const projectListServices = async () => {
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setProjectList(res?.data)
     }
 

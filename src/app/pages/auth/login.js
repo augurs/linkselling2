@@ -20,6 +20,7 @@ function Login() {
   };
 
   const userData = JSON.parse(localStorage.getItem('userData'));
+  const accessToken = localStorage.getItem("accessToken")
 
   useEffect(() => {
     if (userData) {
@@ -30,7 +31,7 @@ function Login() {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false)
-  const { showWalletBalance } = useWallet();
+  const { showWalletBalance, balance } = useWallet();
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -114,7 +115,10 @@ function Login() {
       });
       setTimeout(() => {
         navigate('/')
-        showWalletBalance()
+        if(balance && accessToken){
+        showWalletBalance(accessToken)
+        }
+
         localStorage.removeItem('nipData')
       }, 1000);
 

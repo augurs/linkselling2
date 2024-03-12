@@ -30,9 +30,14 @@ export const addToCart = (userId, domainId, serviceType) => {
         });
 };
 
-export const getCart = (userId) => {
+export const getCart = (accessToken) => {
+    const headers = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': `*/*`,
+        'content-type' : 'application/json'
+      }
     return axios
-        .get(`${baseURL2}/LinkSellingSystem/public/api/get-cart/${userId}`)
+        .get(`${baseURL2}/LinkSellingSystem/public/api/get-cart`, { headers })
         .then((res) => {
             return res?.data;
         })
@@ -56,15 +61,20 @@ export const deleteCart = (userId, id) => {
         });
 }
 
-export const buyNow = (userId, domainId , serviceType, articleType) => {
+export const buyNow = (domainId , serviceType, articleType, accessToken) => {
+    const headers = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': `*/*`,
+        'content-type' : 'application/json'
+      }
+
     const formData = new FormData();
-    formData.append("id", userId)
     formData.append('domain_id', domainId)
     formData.append('service_type', serviceType)
     formData.append('article_type', articleType)
 
     return axios
-        .post(`${baseURL2}/LinkSellingSystem/public/api/all-buy-now`, formData)
+        .post(`${baseURL2}/LinkSellingSystem/public/api/all-buy-now`, formData, {headers})
         .then((res) => {
             return res?.data
         })
@@ -74,9 +84,14 @@ export const buyNow = (userId, domainId , serviceType, articleType) => {
         })
 }
 
-export const getInvoices = (userId) => {
+export const getInvoices = (accessToken) => {
+    const headers = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': `*/*`,
+        'content-type' : 'application/json'
+      }
     return axios
-        .get(`${baseURL2}/LinkSellingSystem/public/api/get-invoices/${userId}`)
+        .get(`${baseURL2}/LinkSellingSystem/public/api/get-invoices`, {headers})
         .then((res) => {
             return res?.data;
         })

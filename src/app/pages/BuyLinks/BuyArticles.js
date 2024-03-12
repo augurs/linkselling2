@@ -56,6 +56,7 @@ const BuyArticles = () => {
         publicationLang: "",
     }
     const lang = localStorage.getItem("lang");
+    const accessToken = localStorage.getItem('accessToken')
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
     const [formValues, setFormValues] = useState(initialValues);
@@ -138,7 +139,7 @@ const BuyArticles = () => {
 
     const getUserDiscountServices = async () => {
         setListLoading(true)
-        const res = await walletBalance(userData?.id);
+        const res = await walletBalance(accessToken);
         setUserDiscount(res?.data)
         setListLoading(false)
     }
@@ -339,7 +340,7 @@ const BuyArticles = () => {
 
     const getArticleListServices = async () => {
         setListLoading(true)
-        const res = await getArticles(userData?.id)
+        const res = await getArticles(accessToken)
         setArticleList(res?.data)
         setListLoading(false)
     }
@@ -725,7 +726,7 @@ const BuyArticles = () => {
 
 
     const articleTypeListService = async () => {
-        const res = await articleTypeList()
+        const res = await articleTypeList(accessToken)
         setArticlePackages(res?.data?.reverse())
     }
 
@@ -1031,7 +1032,7 @@ const BuyArticles = () => {
             imageUrl: /^https?:\/\/\S+\.\S+$/.test(image) ? true : '' 
         }
         setCartLoading(true)
-        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
+        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"), accessToken)
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
                 position: "top-center",
@@ -1048,7 +1049,7 @@ const BuyArticles = () => {
             setShowCartOptions(false)
             getCartServices()
             setConfirmModal(true)
-            cartListServices()
+            cartListServices(accessToken)
             getPublisherArticlesService()
             setAddNewArticleProjectDropdown('')
         } else {
@@ -1064,7 +1065,7 @@ const BuyArticles = () => {
             });
             setCartLoading(false)
             setShowCartOptions(false)
-            cartListServices()
+            cartListServices(accessToken)
             setShowOfferModal(false)
             getPublisherArticlesService()
         }
@@ -1076,7 +1077,7 @@ const BuyArticles = () => {
     }
 
     const getCartServices = async () => {
-        const res = await getCart(userData?.id)
+        const res = await getCart(accessToken)
         setCartList(res?.product)
     }
 
@@ -1119,7 +1120,7 @@ const BuyArticles = () => {
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
-        const res = await getPublisherArticleDetails(domain, userData?.id)
+        const res = await getPublisherArticleDetails(domain, accessToken)
         if (res.success === true) {
             setShowOfferModal(true)
             setPublisherArticleDetails(res?.data)
@@ -1129,7 +1130,7 @@ const BuyArticles = () => {
 
     //slect project api and auto select option with id start
     const articleListServices = async () => {
-        const res = await projectList(userData?.id);
+        const res = await projectList(accessToken);
         const filteredData = res?.data?.filter(item => item.status === 'Active');
         setArticlesData2(filteredData);
     }
@@ -1151,7 +1152,7 @@ const BuyArticles = () => {
 
     //filter article send data with cheked box start
     const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
+        const res = await getPublisherArticles(page, search, typeAnchors, accessToken)
         setArticles(res.data)
         setLastPage(res?.last_page)
     }
@@ -1162,7 +1163,7 @@ const BuyArticles = () => {
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
-            const res = await dashboardpromotion();
+            const res = await dashboardpromotion(accessToken);
 
             if (res.success === true) {
                 const data = res.data.reverse();
@@ -1325,7 +1326,7 @@ const BuyArticles = () => {
 
 
     const handleUseArticleList = async () => {
-        const res = await getArticles(userData?.id)
+        const res = await getArticles(accessToken)
         setUseArticleList(res?.data)
     }
 
