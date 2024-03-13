@@ -14,6 +14,7 @@ import { useLocation } from 'react-router-dom';
 const ViewOffer = () => {
 
     const publisherData = JSON.parse(localStorage.getItem('publisherData'))
+    const accessToken = localStorage.getItem('publisherAccessToken');
     const { languageData } = useLanguage()
     const navigate = useNavigate();
     const [offerList, setOfferList] = useState([])
@@ -30,7 +31,7 @@ const ViewOffer = () => {
 
     const ViewOfferListServices = async () => {
         setLoading(true)
-        const res = await viewOffer(domainUrl, publisherData?.user?.id)
+        const res = await viewOffer(domainUrl, accessToken)
         if (res.success === true) {
             setOfferList(res?.data)
             setIsDataPresent(res.data.length > 0);

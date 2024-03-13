@@ -13,6 +13,7 @@ import { MenuProps } from '../../../../utility/data';
 
 const Myoffer = () => {
   const publisherData = JSON.parse(localStorage.getItem("publisherData"))
+  const accessToken = localStorage.getItem('publisherAccessToken');
   const lang = localStorage.getItem("lang");
 
 
@@ -24,8 +25,8 @@ const Myoffer = () => {
     maxLinks: "",
     typeofAnchors: "ema",
     Nofollow: "0",
-    contactMail: publisherData?.user?.email,
-    contactPhone: publisherData?.user?.mobile_no,
+    contactMail: publisherData?.email,
+    contactPhone: publisherData?.mobile_no,
 
     //2nd tab fields
     articleMaxLength: "",
@@ -78,7 +79,7 @@ const Myoffer = () => {
 
   const domainListServices = async () => {
     setLoading(true)
-    const res = await listDomain(publisherData?.user?.id)
+    const res = await listDomain(accessToken)
     const selectedDomain = res?.data.find((domain) => domain?.id === parseInt(domainId));
 
     if (res.success === true) {
@@ -94,7 +95,7 @@ const Myoffer = () => {
 
   const categoryofferListServices = async () => {
     setLoading(true)
-    const res = await categoryofferList()
+    const res = await categoryofferList(accessToken)
     if (res.success === true) {
       setCategoryList(res?.data)
       setLoading(false)
@@ -245,7 +246,7 @@ const Myoffer = () => {
       setOrderLoading(false);
       return;
     }
-    const res = await addPublisherOffer(formValues, publisherData?.user?.id);
+    const res = await addPublisherOffer(formValues, accessToken);
     if (res.success === true) {
       toast(translate(languageData, "offerAddedSuccessfully"), {
         position: "top-center",

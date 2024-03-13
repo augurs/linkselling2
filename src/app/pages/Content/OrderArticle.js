@@ -76,7 +76,7 @@ const OrderArticle = () => {
     }, [])
 
     const articleTypeListService = async () => {
-        const res = await articleTypeList()
+        const res = await articleTypeList(accessToken)
         setArticlePackages(res?.data?.reverse())
     }
 

@@ -12,6 +12,12 @@ const LanguageSelect = () => {
   const [lang, setLang] = useState({ name: 'Polish', flag: polandFlag });
   const { setLanguage } = useLanguage();
   const userData = JSON.parse(localStorage.getItem('userData'));
+  const publisherData = JSON.parse(localStorage.getItem('publisherData'));
+  const accessToken = localStorage.getItem('accessToken');
+  const publisherAccessToken = localStorage.getItem('publisherAccessToken');
+
+  
+
   const { i18n } = useTranslation();
   const location = useLocation();
   const getLang = localStorage.getItem('lang');
@@ -32,13 +38,13 @@ const LanguageSelect = () => {
     setLanguage(value);
     localStorage.setItem('lang', value);
 
-    addToCartArticleServices(value);
+    updateLanguagesServices(value);
   };
 
-  const addToCartArticleServices = async (lang) => {
+  const updateLanguagesServices = async (lang) => {
     try {
       const data = {
-        id: userData?.id,
+        id: userData?.id ? userData?.id : publisherData?.id,
         language: lang,
       };
 

@@ -42,7 +42,7 @@ const SignUp = () => {
     setFormValues({ ...formValues, phoneNumber: value });
   };
 
-  console.log(formValues)
+
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
     setFormValues({ ...formValues, [name]: checked });
@@ -210,7 +210,8 @@ const SignUp = () => {
       language: currLang
     }
     const res = await signUpPublisher(values, currLang);
-    if (res.success === true) {
+    console.log(res, "213");
+    if (res?.success === true) {
       toast(signUpSuccessMessage, {
         position: "top-center",
         autoClose: 5000,
@@ -227,7 +228,7 @@ const SignUp = () => {
       setTimeout(() => {
         navigate('/RegistrationDone')
       }, 2000);
-    } else if (res.message[0] === "The email has already been taken.") {
+    } else if (res?.message?.email ? res?.message?.email[0] === "The email has already been taken." : "") {
       toast(signUpErrorsMessage, {
         position: "top-center",
         autoClose: 5000,
@@ -240,9 +241,9 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
     }
-    else if (res.message[0] === "The username has already been taken.") {
+    else if (res?.message?.username[0] === "The username has already been taken.") {
       toast(userNameAlredyTaken, {
         position: "top-center",
         autoClose: 5000,
@@ -255,7 +256,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
     }
     else {
       toast(loginFailureMessage2, {
@@ -270,7 +271,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
+      // setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
     }
   }
 

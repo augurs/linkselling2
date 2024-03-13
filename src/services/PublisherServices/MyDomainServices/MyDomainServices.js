@@ -3,9 +3,14 @@ import { baseURL2 } from "../../../utility/data";
 
 
 
-export const listDomain = (id) => {
+export const listDomain = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-publisher-portal/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-publisher-portal`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -17,15 +22,18 @@ export const listDomain = (id) => {
 
 
 
-export const addDomainUrl = (formValues, id, lang) => {
-  console.log(formValues, "85");
+export const addDomainUrl = (formValues, lang, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   const formData = new FormData();
   formData.append("url", formValues?.enterUrl);
-  formData.append("publisher_id", id);
   formData.append("language", lang);
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/add-domain`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/add-domain`, formData, {headers})
     .then((res) => {
       return res.data;
     })
@@ -35,13 +43,17 @@ export const addDomainUrl = (formValues, id, lang) => {
     });
 };
 
-export const suspendOffer = (DomainUrl, id) => {
+export const suspendOffer = (DomainUrl, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   const formData = new FormData();
   formData.append("url", DomainUrl);
-  formData.append("publisher_id", id);
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/change-status-offer`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/change-status-offer`, formData, {headers})
     .then((res) => {
       return res.data;
     })
@@ -52,13 +64,18 @@ export const suspendOffer = (DomainUrl, id) => {
 };
 
 
-export const uploadCSV = (csv, id) => {
+export const uploadCSV = (csv, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
+
   const formData = new FormData();
   formData.append("file", csv);
-  formData.append("publisherId", id);
 
   return axios
-  .post(`${baseURL2}/LinkSellingSystem/public/api/add-domain-csv`, formData)
+  .post(`${baseURL2}/LinkSellingSystem/public/api/add-domain-csv`, formData, {headers})
     .then((res) => {
       return res.data;
     })
@@ -68,9 +85,14 @@ export const uploadCSV = (csv, id) => {
     });
 };
 
-export const downloadSampledCSV = () => {
+export const downloadSampledCSV = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/download-csv`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/download-csv`, {headers})
     .then((res) => {
       return res?.data;
     })

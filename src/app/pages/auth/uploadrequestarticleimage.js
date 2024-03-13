@@ -21,13 +21,19 @@ const AddArticle = () => {
 
     const [formValues, setFormValues] = useState(initialValues);
     const [loading, setLoading] = useState(false)
+    const [dataFound, setDataFound] = useState('')
     const [displayedImage, setDisplayedImage] = useState(null);
     const [showDropdown, setShowDropdown] = useState(true);
 
     const { languageData } = useLanguage();
     const { id } = useParams();
     const allowedImageExtension = ['.jpg', '.gif', '.png']
-    const userData2 = JSON.parse(localStorage.getItem("userData"))
+    // const userData2 = JSON.parse(localStorage.getItem("userData"))
+    const accessToken = localStorage.getItem("accessToken")
+
+    useEffect(() => {
+        getImgData()
+    }, [])
 
 
     const handlePixabayImageSelect = (selectedPixabayImage) => {
@@ -63,11 +69,10 @@ const AddArticle = () => {
         setFormValues({ ...formValues, userStatus: selectedOption?.value })
     }
 
-    useEffect(() => {
-        resubmitImg()
-    }, [])
-    const resubmitImg = async () => {
-        const res = await uploadimagereqarticle(userData2?.id, id)
+
+    const getImgData = async () => {
+        const res = await uploadimagereqarticle(id, accessToken)
+        setDataFound(res)
         if (res.success === true) {
             const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
@@ -99,10 +104,9 @@ const AddArticle = () => {
     };
 
 
-
     const updateResubmitArticleServices = async () => {
         setLoading(true)
-        const res = await updaterimagrequestedarticle(formValues, formValues?.id)
+        const res = await updaterimagrequestedarticle(formValues, formValues?.id, accessToken)
         if (res.success === true) {
             toast(translate(languageData, "responseUpdateSuccessfully"), {
                 position: "top-center",
@@ -130,7 +134,6 @@ const AddArticle = () => {
         }
     }
 
-    console.log(formValues, "132");
 
     return (
         <div className=''>
@@ -140,116 +143,117 @@ const AddArticle = () => {
                     <Card.Header>
                         <h3>  {translate(languageData, "resubmitArticle")}</h3>
                     </Card.Header>
-                    <Card.Body className='border-bottom pb-5'>
-                        <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
-                        <Row className='align-items-center'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "artilstTitle")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.title}
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "AddArtiLead")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0">
-                                    {formValues?.lead}
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4} className='mt-2'>
-                                <span>{translate(languageData, "sidebarContent")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3">
-                                <div dangerouslySetInnerHTML={{ __html: formValues?.content }} />
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "CommentsAndRecommendations")} </span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.comment || "--"}
-                                </div>
-
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "PublicationDate")}</span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.date}
-                                </div>
-
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "maxLinks")} </span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                    {formValues?.link}
-                                </div>
-
-                            </Col>
-                        </Row>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "writingUrl")} </span>
-                            </Col>
-                            <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <a href={formValues?.url} className="wrap-input100 validate-input mb-0">
-                                    {formValues?.url}
-                                </a>
-
-                            </Col>
-                        </Row>
-                        {!showDropdown && (
-                        <>
-                        <h2 className='mt-5'>{translate(languageData, "UpdateImage")} *</h2>
-                        <Row className='align-items-center mt-5'>
-                            <Col xs={12} md={4}>
-                                <span>{translate(languageData, "image")}</span>
-                            </Col>
-                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                {displayedImage ? <div> <img src={displayedImage} alt='Displayed' /></div> : <div className="border border-primary text-center">Image Preview</div>}
-                            </Col>
-                            <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
-                            </Col>
-                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                <div>{translate(languageData, "orselectviapixabay")}</div>
-                            </Col>
-                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
-                            </Col>
-                        </Row>
-                        </>)}
-                        {showDropdown && (
+                    {(dataFound.success == true && dataFound?.msg == "Data found") ?
+                        (<Card.Body className='border-bottom pb-5'>
+                            <div className='my-5'><h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5></div>
+                            <Row className='align-items-center'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "artilstTitle")}</span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        {formValues?.title}
+                                    </div>
+                                </Col>
+                            </Row>
                             <Row className='align-items-center mt-5'>
                                 <Col xs={12} md={4}>
-                                    <span>{translate(languageData, "Status")}</span>
+                                    <span>{translate(languageData, "AddArtiLead")}</span>
                                 </Col>
-                                <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                    <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={formValues?.value}/>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0">
+                                        {formValues?.lead}
+                                    </div>
                                 </Col>
+                            </Row>
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4} className='mt-2'>
+                                    <span>{translate(languageData, "sidebarContent")}</span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3">
+                                    <div dangerouslySetInnerHTML={{ __html: formValues?.content }} />
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "CommentsAndRecommendations")} </span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        {formValues?.comment || "--"}
+                                    </div>
 
-                            </Row>)}
-                    </Card.Body>
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "PublicationDate")}</span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        {formValues?.date}
+                                    </div>
 
-                    <div className='d-flex mb-5 mt-5'>
-                        <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => updateResubmitArticleServices()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "submit")} </Button>
-                    </div>
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "maxLinks")} </span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        {formValues?.link}
+                                    </div>
+
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-5'>
+                                <Col xs={12} md={4}>
+                                    <span>{translate(languageData, "writingUrl")} </span>
+                                </Col>
+                                <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                    <a href={formValues?.url} className="wrap-input100 validate-input mb-0">
+                                        {formValues?.url}
+                                    </a>
+
+                                </Col>
+                            </Row>
+                            {!showDropdown && (
+                                <>
+                                    <h2 className='mt-5'>{translate(languageData, "UpdateImage")} *</h2>
+                                    <Row className='align-items-center mt-5'>
+                                        <Col xs={12} md={4}>
+                                            <span>{translate(languageData, "image")}</span>
+                                        </Col>
+                                        <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                            {displayedImage ? <div> <img src={displayedImage} alt='Displayed' /></div> : <div className="border border-primary text-center">Image Preview</div>}
+                                        </Col>
+                                        <Col xs={12} md={3} className="mt-3 mt-md-0">
+                                            <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" /></div>
+                                        </Col>
+                                        <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                            <div>{translate(languageData, "orselectviapixabay")}</div>
+                                        </Col>
+                                        <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                            <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
+                                        </Col>
+                                    </Row>
+                                </>)}
+                            {showDropdown && (
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "Status")}</span>
+                                    </Col>
+                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                        <Select options={languagesOpts} placeholder={translate(languageData, "Select")} styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={formValues?.value} />
+                                    </Col>
+
+                                </Row>)}
+                        </Card.Body>) : (<div className='text-center mb-4'>{translate(languageData, "notFoundAnyNewRecords")}</div>)}
+                    {(dataFound.success == true && dataFound?.msg == "Data found") ?
+                        <div className='d-flex mb-5 mt-5'>
+                            <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => updateResubmitArticleServices()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "submit")} </Button>
+                        </div> : ""}
                 </Card>
             </div>
         </div>

@@ -6,7 +6,6 @@ import { autoLoginPublisher, loginPublisher, sendingUserLoggedin } from '../../.
 import globalLoader from '../../../../assets/images/loader.svg'
 import { ToastContainer, toast } from 'react-toastify';
 import LanguageSelect from '../../../Components/Language/languageSelect';
-import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../../Context/languageContext';
 import { translate } from '../../../../utility/helper';
 import { useLocation } from 'react-router-dom';
@@ -42,7 +41,6 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { t } = useTranslation();
   const { languageData } = useLanguage();
 
   const handleChange = (e) => {
@@ -96,10 +94,11 @@ function Login() {
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language
     );
-    console.log(res, "100");
-    if (res.success === true) {
+    if (res?.user?.status === "1") {
       setLoading(false)
-      localStorage.setItem('publisherData', JSON.stringify(res))
+      localStorage.setItem('publisherData', JSON.stringify(res?.user))
+      localStorage.setItem('publisherAccessToken', res?.access_token)
+
       if (!language) {
         localStorage.setItem('lang', "pl")
       }
@@ -164,10 +163,12 @@ function Login() {
     setLoading(true)
     localStorage.removeItem("userData");
     const res = await autoLoginPublisher(LoginAutoId)
+    console.log(res, "166");
     console.log(res?.user.logged_in, "166");
     if (res?.success === true && res?.user.logged_in == "0") {
       setLoginAutoPublisher(res?.data)
-      localStorage.setItem('publisherData', JSON.stringify(res))
+      localStorage.setItem('publisherData', JSON.stringify(res?.user))
+      localStorage.setItem('publisherAccessToken', res?.access_token)
       if (!language) {
         localStorage.setItem('lang', "pl")
       }
@@ -186,7 +187,7 @@ function Login() {
         navigate('/publisher')
       }, 1000);
       setLoading(false)
-      sendingUserLoggedin(1, res?.user?.id)
+      sendingUserLoggedin(1, res?.access_token ? res?.access_token : "")
     } else if (res?.user?.logged_in == "1") {
       toast(alreadyusedLink, {
         position: "top-center",

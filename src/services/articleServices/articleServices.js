@@ -5,7 +5,7 @@ import { baseURL2 } from "../../utility/data";
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addArticle = (formValues, editor, id, accessToken) => {
+export const addArticle = (formValues, editor, accessToken) => {
   const headers = {
     'Authorization': `Bearer ${accessToken}`,
     'Accept': `application/json`,
@@ -23,7 +23,7 @@ export const addArticle = (formValues, editor, id, accessToken) => {
     formData.append("image", formValues.image);
   
   formData.append("content", editor)
-  formData.append("user_id", id)
+  // formData.append("user_id", id)
 
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/add-article`, formData, { headers })

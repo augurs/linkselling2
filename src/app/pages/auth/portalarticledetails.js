@@ -16,6 +16,53 @@ import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
 import moment from 'moment';
 import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
+import { Document, Packer, Paragraph, TextRun, ImageRun } from 'docx';
+import { saveAs } from 'file-saver';
+
+async function fetchImageAsBase64(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error fetching image:', error);
+        throw error;
+    }
+}
+
+async function createDocFromData(data) {
+    try {
+        const imageData = await fetchImageAsBase64(data.image);
+        const doc = new Document({
+            sections: [
+                {
+                    children: [
+                        new Paragraph({ children: [new TextRun(data.title)] }),
+                        new Paragraph({ children: [new TextRun(<div dangerouslySetInnerHTML={{ __html: data.content }} />)] }),
+                        new Paragraph({ children: [new TextRun(data.lead)] }),
+                        new Paragraph({
+                            children: [new ImageRun({
+                                data: imageData,
+                                transformation: { width: 100, height: 100 }
+                            })]
+                        })
+                    ]
+                }
+            ]
+        });
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, "downloaded.docx");
+    } catch (error) {
+        console.error('Error creating DOCX:', error);
+    }
+}
+
 function Portalarticledetails() {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -48,11 +95,13 @@ function Portalarticledetails() {
         chatSectionShow()
     }, [portalArticleDetail])
 
+
     const ordersListServices = async () => {
         setLoading(true);
         const res = await portalArticleDetails(id);
         if (res.success === true) {
             setPortalArticleDetail(res?.data);
+            // createDocFromJson(res?.data?.slice(0, 10));
             const apiLanguage = res?.data[0]?.language;
             setPortalLang(apiLanguage);
             if (apiLanguage) {
@@ -72,7 +121,6 @@ function Portalarticledetails() {
             );
         }
     }, [portalLang])
-
 
 
     const handleCopyClick = (content) => {
@@ -179,6 +227,22 @@ function Portalarticledetails() {
         setLoading(false);
     };
 
+    const handleDownload = async () => {
+        setLoading(true);
+        const articleData = portalArticleDetail[0];
+
+        if (articleData) {
+            await createDocFromData({
+                title: articleData.title || "",
+                content: articleData.content || "",
+                lead: articleData.lead || "",
+                image: `${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}` || ""
+            });
+        }
+
+        setLoading(false);
+    };
+
     return (
         <div className='ltr login-img'>
             <ToastContainer />
@@ -194,6 +258,7 @@ function Portalarticledetails() {
                         <Card className='h-100'>
                             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
                                 <h3 className='fw-semibold'>{translate(languageData, "ArticleDetails")}</h3>
+                                <button onClick={handleDownload} disabled={loading}>Download DOCX</button>
                             </Card.Header>
                             <Card.Body >
                                 <div className=''>

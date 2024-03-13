@@ -28,8 +28,7 @@ const Header = ({ toggleSiderbar, setModalShow }) => {
                             <FaHome style={{ marginTop: "-3px" }} size={25} />
                         </Link>
                     </div>
-                    <div className="navbar navbar-collapse responsive-navbar p-0">
-                        
+                    <div className="navbar navbar-collapse responsive-navbar p-0">       
                     </div>
                     <div className='me-4'>
                         <LanguageSelect />

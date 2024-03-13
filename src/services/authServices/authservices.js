@@ -180,12 +180,16 @@ export const autoLoginPublisher = (id) => {
     });
 };
 
-export const sendingUserLoggedin = (logged_in, id) => {
+export const sendingUserLoggedin = (logged_in, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   const formData = new FormData();
   formData.append("logged_in", logged_in);
-  formData.append("id", id);
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-logged_in`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-logged_in`, formData, {headers})
     .then((res) => {
       return res.data;
     })

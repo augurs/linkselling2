@@ -13,6 +13,7 @@ import { FaEye, FaEdit } from 'react-icons/fa'
 const OfferList = () => {
 
     const publisherData = JSON.parse(localStorage.getItem('publisherData'))
+    const accessToken = localStorage.getItem('publisherAccessToken');
     const { languageData } = useLanguage()
     const navigate = useNavigate();
     const [offerList, setOfferList] = useState([])
@@ -26,7 +27,7 @@ const OfferList = () => {
 
     const offerListServices = async () => {
         setLoading(true)
-        const res = await listoffer(publisherData?.user?.id)
+        const res = await listoffer(accessToken)
         if (res.success === true) {
             setOfferList(res?.data)
             setIsDataPresent(res.data.length > 0);

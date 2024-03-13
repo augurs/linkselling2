@@ -197,7 +197,7 @@ const AddArticle = () => {
         } else if (type === "save") {
             setLoading(true)
         }
-        const res = await addArticle(formValues, content, userData2.id, selectedFile, accessToken)
+        const res = await addArticle(formValues, content, accessToken)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
