@@ -221,8 +221,12 @@ export const updateRequestedArticles = (viewArticle, suggestion, editor, status)
 // };
 
 
-export const orderArticles = (formValues, orderPrice, articleType, linkAnchorPairs) => {
-  console.log(formValues, "85");
+export const orderArticles = (formValues, orderPrice, articleType, linkAnchorPairs, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': '*/*',
+    'Content-Type': 'application/json'
+  };
   const formData = new FormData();
   formData.append("article", articleType);
   formData.append("project", formValues.project);
@@ -231,10 +235,10 @@ export const orderArticles = (formValues, orderPrice, articleType, linkAnchorPai
   formData.append("order_link_list", linkAnchorPairs.map((item=>item.link)));
   formData.append("order_requestAnchor_list", linkAnchorPairs.map((item=>item.requestAnchor)));
   formData.append("suggestion", formValues.suggestion);
-  formData.append("user_id", userData?.id)
+  // formData.append("user_id", userData?.id)
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/order-article`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/order-article`, formData, {headers})
     .then((res) => {
       return res.data;
     })

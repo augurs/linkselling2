@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Card, Col, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import FileUpload from '../../Components/FileUpload/FileUpload'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { FaInfoCircle, FaPlusCircle } from 'react-icons/fa';
 import { addArticle } from '../../../services/articleServices/articleServices';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,6 +15,8 @@ import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import Select1 from 'react-select'
 const AddArticle = () => {
+
+    const fileInputRef = useRef(null);
     const userData2 = JSON.parse(localStorage.getItem("userData"))
     const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
@@ -45,6 +47,7 @@ const AddArticle = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const { languageData } = useLanguage();
     const [showModal, setShowModal] = useState(false);
+    const [buttonName, setButtonName] = useState(true);
     const navigate = useNavigate()
 
     const handleSelectChange1 = (selectedOption) => {
@@ -52,6 +55,9 @@ const AddArticle = () => {
         validate(formValues1)
     }
 
+    const resetIsData = () => {
+        setButtonName(true);
+    };
 
 
     const handleChange1 = (e) => {
@@ -191,7 +197,6 @@ const AddArticle = () => {
 
     };
     const handleAddArticleServices = async (type) => {
-
         if (type === "saveandexit") {
             setLoading2(true)
         } else if (type === "save") {
@@ -216,6 +221,12 @@ const AddArticle = () => {
             } else {
                 setLoading(false)
             }
+
+            setFormValues(initialValues)
+            setContent('')
+            setDisplayedImage(null);
+            setSelectedFile(null);
+            setButtonName(false);
 
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
@@ -423,6 +434,8 @@ const AddArticle = () => {
                                         allowedFileExtensions={allowedDocExtensions}
                                         getData={handleFileChange}
                                         name="document"
+                                        isData={buttonName}
+                                        resetIsData={resetIsData}
                                     />
                                 </div>
                                 {formErrors.document && (
@@ -505,7 +518,7 @@ const AddArticle = () => {
                                 <div><img src={displayedImage} alt='Displayed' /></div>
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} /></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData}/></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>

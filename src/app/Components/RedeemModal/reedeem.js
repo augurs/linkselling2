@@ -85,6 +85,19 @@ const Referral = () => {
             });
             
         }
+        if (response.success === false && response.message == "This Redeem code is expired") {
+            toast(translate(languageData, "thisRedeemCodeIsExpired"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'info'
+            });
+            
+        }
 
     };
 
@@ -120,6 +133,9 @@ const Referral = () => {
                             )}
                             {res?.success === true && (
                                 <span className='text-primary mt-2'><BsPatchCheckFill className="text-primary" fontSize={16} /> {res?.data} </span>
+                            )}
+                            {res?.success === false && res.message === "This Redeem code is expired" && (
+                                <span className='text-danger mt-2'>{translate(languageData, "thisRedeemCodeIsExpired")}</span>
                             )}
                         </Col>
                     </Form.Group>

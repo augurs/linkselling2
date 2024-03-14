@@ -14,6 +14,7 @@ import { useLanguage } from '../../Context/languageContext';
 import green from '../../../assets/images/cards/Green.png';
 import grey from '../../../assets/images/cards/Grey.png';
 import { articleTypeList } from "../../../services/buyArticleServices/buyArticlesServices";
+import { buyNow } from '../../../services/invoicesServices/invoicesServices';
 
 const OrderArticle = () => {
     const userData = JSON.parse(localStorage.getItem("userData"))
@@ -36,6 +37,8 @@ const OrderArticle = () => {
     const [formErrors, setFormErrors] = useState({})
     const [orderLoading, setOrderLoading] = useState(false)
     const [articlePackages, setArticlePackages] = useState([])
+    const [redirectUrl, setRedirectUrl] = useState('')
+
     const [orderId, setOrderId] = useState(1);
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [provideSubject, setProvideSubject] = useState(false);
@@ -128,7 +131,7 @@ const OrderArticle = () => {
             setOrderLoading(false);
             return;
         }
-        const res = await orderArticles(formValues, orderPrice.split(",")[0], articleType, linkAnchorPairs);
+        const res = await orderArticles(formValues, orderPrice.split(",")[0], articleType, linkAnchorPairs, accessToken);
         if (res.success === true) {
             toast(translate(languageData, "OrderAddedSuccessfully"), {
                 position: "top-center",
@@ -140,8 +143,10 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'success'
             });
-
-            window.location.href = res?.redirect_url_all;
+            
+            buyNowServices('', "2", '', accessToken)
+           
+            // window.location.href = res?.redirect_url_all;
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
                 if (res.response.hasOwnProperty(field)) {
@@ -263,6 +268,18 @@ const OrderArticle = () => {
             setLastAddedLinkIndex(lastAddedLinkIndex - 1);
         }
     };
+
+    const buyNowServices = async (domainId, serviceType, articleType, accessToken) => {
+        setOrderLoading(true)
+        const res = await buyNow(domainId, serviceType, articleType, accessToken)
+        if (res.success === true) {
+            window.location.href= res.redirect_url_all;
+            setOrderLoading(false )
+        } else {
+            setOrderLoading(false )
+
+        }
+    }
     
 
     return (

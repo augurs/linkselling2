@@ -246,7 +246,7 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div id='contentToCopy' className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required">
-                                                <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
+                                                <div className='text-break' dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
                                                 <button className="copy-button position-relative" onClick={() => handleCopyClick(portalArticleDetail[0]?.content)}>
                                                     <FaCopy />
                                                 </button>
@@ -315,9 +315,9 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "communicationPanel")}</span>
                                         </Col>
-                                        {chatData.length > 0 ? (
+                                        {chatData?.length > 0 ? (
                                             <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
-                                                {chatData.map((message, index) => (
+                                                {chatData?.map((message, index) => (
                                                     <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
                                                         <Col xs={4} className="text-left">
                                                             {message.sender === 'user' && (

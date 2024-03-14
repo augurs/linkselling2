@@ -84,7 +84,7 @@ const Cart = () => {
     const deleteCartServices = async (id) => {
         setLoading({ ...loading, deleteLoading: true })
         setDeleteId(id)
-        const res = await deleteCart(userData?.id, id)
+        const res = await deleteCart(id, accessToken)
         if (res.success === true) {
             toast(translate(languageData, "deletedCartSuccessfully"), {
                 position: "top-center",

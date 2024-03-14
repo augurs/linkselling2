@@ -92,6 +92,8 @@ const Nip = () => {
             localStorage.setItem('nipData', nipData)
             let userData = JSON.stringify(res?.user)
             localStorage.setItem('userData', userData)
+            localStorage.setItem('accessToken', res?.access_token)
+
 
         } else if (res?.success === false && res?.message === "This nip number already registered") {
             toast("Ten numer NIP już jest zarejestrowany", {

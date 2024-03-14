@@ -47,11 +47,16 @@ export const getCart = (accessToken) => {
         });
 }
 
-export const deleteCart = (userId, id) => {
+export const deleteCart = (id, accessToken) => {
+    const headers = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': `*/*`,
+        'content-type' : 'application/json'
+      }
     const formData = new FormData();
     formData.append("id", id);
     return axios
-        .post(`${baseURL2}/LinkSellingSystem/public/api/delete-cart-data/${userId}`, formData)
+        .post(`${baseURL2}/LinkSellingSystem/public/api/delete-cart-data`, formData, {headers})
         .then((res) => {
             return res?.data;
         })

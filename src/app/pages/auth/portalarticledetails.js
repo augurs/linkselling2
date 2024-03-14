@@ -16,7 +16,7 @@ import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
 import moment from 'moment';
 import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
-import { Document, Packer, Paragraph, TextRun, ImageRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, ExternalHyperlink, HyperlinkType  } from 'docx';
 import { saveAs } from 'file-saver';
 
 async function fetchImageAsBase64(imageUrl) {
@@ -35,6 +35,21 @@ async function fetchImageAsBase64(imageUrl) {
     }
 }
 
+function convertHtmlToDocxElements(html) {
+    const elements = [];
+
+    if (html.includes('<p>')) {
+        const paragraphs = html.split('<p>').map(p => p.split('</p>')[0]);
+        paragraphs.forEach(p => {
+            if (p) {
+                elements.push(new Paragraph({ text: p, children: [new TextRun(p)] }));
+            }
+        });
+    }
+
+    return elements;
+}
+
 async function createDocFromData(data) {
     try {
         const imageData = await fetchImageAsBase64(data.image);
@@ -42,9 +57,18 @@ async function createDocFromData(data) {
             sections: [
                 {
                     children: [
-                        new Paragraph({ children: [new TextRun(data.title)] }),
-                        new Paragraph({ children: [new TextRun(<div dangerouslySetInnerHTML={{ __html: data.content }} />)] }),
-                        new Paragraph({ children: [new TextRun(data.lead)] }),
+                        new Paragraph({
+                            text: data.title,
+                            heading: HeadingLevel.HEADING_1,
+                            children: [
+                                new TextRun(data.title)
+                            ],
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({text : data.lead, bold: true})]
+                        }),
+                        ...convertHtmlToDocxElements(data.content),
+
                         new Paragraph({
                             children: [new ImageRun({
                                 data: imageData,
@@ -258,7 +282,7 @@ function Portalarticledetails() {
                         <Card className='h-100'>
                             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
                                 <h3 className='fw-semibold'>{translate(languageData, "ArticleDetails")}</h3>
-                                <button onClick={handleDownload} disabled={loading}>Download DOCX</button>
+                                <Button onClick={handleDownload} disabled={loading}>Download DOCX</Button>
                             </Card.Header>
                             <Card.Body >
                                 <div className=''>
@@ -366,9 +390,9 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "communicationPanel")}</span>
                                         </Col>
-                                        {chatData.length > 0 ? (
+                                        {chatData?.length > 0 ? (
                                             <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
-                                                {chatData.map((message, index) => (
+                                                {chatData?.map((message, index) => (
                                                     <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
                                                         <Col xs={4} className="text-left">
                                                             {message.sender === 'user' && (
