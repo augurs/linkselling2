@@ -22,7 +22,7 @@ export const requestArticle = (data) => {
     });
 };
 
-export const getPublisherArticles = (page, search, anchorType, accessToken) => {
+export const getPublisherArticles = (page, search, anchorType, lang, accessToken) => {
   const headers = {
     'Authorization': `Bearer ${accessToken}`,
     'Accept': `*/*`,
@@ -30,7 +30,7 @@ export const getPublisherArticles = (page, search, anchorType, accessToken) => {
   }
 
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}`,  { headers })
+    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}&lang=${lang}`,  { headers })
     .then((res) => {
       return res.data;
     })

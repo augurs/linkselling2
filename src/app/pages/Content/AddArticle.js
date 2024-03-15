@@ -59,6 +59,8 @@ const AddArticle = () => {
         setButtonName(true);
     };
 
+    console.log(formValues?.image, "62");
+
 
     const handleChange1 = (e) => {
         const { name, value } = e.target;
@@ -89,7 +91,7 @@ const AddArticle = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues1, userData2?.id);
+        const res = await addProjects(formValues1, accessToken);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
@@ -196,6 +198,7 @@ const AddArticle = () => {
         title: translate(languageData, "TitleField"),
 
     };
+
     const handleAddArticleServices = async (type) => {
         if (type === "saveandexit") {
             setLoading2(true)
@@ -518,7 +521,7 @@ const AddArticle = () => {
                                 <div><img src={displayedImage} alt='Displayed' /></div>
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData}/></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="addImage" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData} isUploadedImg= {formValues?.image}/></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>

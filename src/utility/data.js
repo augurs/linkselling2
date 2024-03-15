@@ -492,3 +492,14 @@ export const isValidUrl = (url) => {
     return urlPattern.test(url);
   };
   
+
+  export const languagesOpts = [
+    {
+        value: "English",
+        label: "English"
+    },
+    {
+        value: "Polish",
+        label: "Polish"
+    }
+]

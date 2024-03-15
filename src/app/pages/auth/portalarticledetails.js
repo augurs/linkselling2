@@ -16,7 +16,7 @@ import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
 import moment from 'moment';
 import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
-import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, ExternalHyperlink, HyperlinkType  } from 'docx';
+import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, ExternalHyperlink, HyperlinkType } from 'docx';
 import { saveAs } from 'file-saver';
 
 async function fetchImageAsBase64(imageUrl) {
@@ -35,17 +35,18 @@ async function fetchImageAsBase64(imageUrl) {
     }
 }
 
-function convertHtmlToDocxElements(html) {
+const convertHtmlToDocxElements = (html) => {
     const elements = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const paragraphs = doc.querySelectorAll('p');
 
-    if (html.includes('<p>')) {
-        const paragraphs = html.split('<p>').map(p => p.split('</p>')[0]);
-        paragraphs.forEach(p => {
-            if (p) {
-                elements.push(new Paragraph({ text: p, children: [new TextRun(p)] }));
-            }
-        });
-    }
+    paragraphs.forEach((paragraph) => {
+        const text = paragraph.textContent.trim();
+        if (text) {
+            elements.push(new Paragraph({ text: text }));
+        }
+    });
 
     return elements;
 }
@@ -64,9 +65,11 @@ async function createDocFromData(data) {
                                 new TextRun(data.title)
                             ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
-                            children: [new TextRun({text : data.lead, bold: true})]
+                            children: [new TextRun({ text: data.lead, bold: true })]
                         }),
+                        new Paragraph(""),
                         ...convertHtmlToDocxElements(data.content),
 
                         new Paragraph({
@@ -86,6 +89,8 @@ async function createDocFromData(data) {
         console.error('Error creating DOCX:', error);
     }
 }
+
+
 
 function Portalarticledetails() {
 
@@ -321,7 +326,7 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required">
-                                                <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
+                                                <div className='text-break' dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
                                                 <button className="copy-button position-relative" onClick={() => handleCopyClick(portalArticleDetail[0]?.content)}>
                                                     <FaCopy />
                                                 </button>

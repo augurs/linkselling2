@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import "./fileupload.css"
 import { MdDelete } from 'react-icons/md';
 
-const FileUpload = ({resetIsData, isData, allowedFileExtensions, getData, name, selectedImage, buttonName, classNames, errorMessage }) => {
+const FileUpload = ({ isUploadedImg, resetIsData, isData, allowedFileExtensions, getData, name, selectedImage, buttonName, classNames, errorMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
 
@@ -37,7 +37,7 @@ const FileUpload = ({resetIsData, isData, allowedFileExtensions, getData, name, 
         }
     }, [isData, resetIsData]);
 
-    console.log(isData, "40");
+    console.log(isUploadedImg, "40");
 
 
     const handleDragEnter = (e) => {
@@ -90,6 +90,20 @@ const FileUpload = ({resetIsData, isData, allowedFileExtensions, getData, name, 
 
     };
 
+    console.log(isUploadedImg, "93");
+
+    const getButtonText = () => {
+        if (name === "addImage") {
+          return isUploadedImg ? uploadedFilesName ? uploadedFilesName : buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile") :  buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile");
+        } else if (uploadedFilesName) {
+          return uploadedFilesName;
+        } else if (buttonName) {
+          return buttonName;
+        } else {
+          return translate(languageData, "AddArtiSelecrDragFile");
+        }
+      };
+
 
 
     return (
@@ -101,7 +115,9 @@ const FileUpload = ({resetIsData, isData, allowedFileExtensions, getData, name, 
             onDrop={handleDrop}
         >
             <div className='d-flex flex-column'>
-                <button className="text-break p-1" onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName : buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile")}</button>
+                <button className="text-break p-1" onClick={handleButtonClick}>{getButtonText()}
+                    {/* {uploadedFilesName ? uploadedFilesName : buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile")} */}
+                </button>
                 {uploadedFilesName && name == "document" && <button className="text-break p-1" onClick={clear}><MdDelete size={20} className="text-primary" /></button>}
             </div>
             <input

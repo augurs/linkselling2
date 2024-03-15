@@ -244,7 +244,7 @@ const BuyArticles = () => {
 
     useEffect(() => {
         getPublisherArticlesService()
-    }, [search, typeAnchors, page])
+    }, [search, typeAnchors, page, formValues1?.publicationLang])
 
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "UseArticle")) {
@@ -1147,12 +1147,11 @@ const BuyArticles = () => {
 
 
 
-
     //slect project api and auto select option with id 
 
     //filter article send data with cheked box start
     const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, accessToken)
+        const res = await getPublisherArticles(page, search, typeAnchors, formValues1?.publicationLang, accessToken)
         setArticles(res.data)
         setLastPage(res?.last_page)
     }
@@ -1226,7 +1225,7 @@ const BuyArticles = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues1, userData?.id);
+        const res = await addProjects(formValues1, accessToken);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
@@ -1314,6 +1313,10 @@ const BuyArticles = () => {
 
     const languagesOpts = [
         {
+            value: "select",
+            label: "Select Lang"
+        },
+        {
             value: "English",
             label: "English"
         },
@@ -1389,7 +1392,7 @@ const BuyArticles = () => {
                                     </Select>
                                 </FormControl>
                             </Col>
-                            <Col xs={12} sm={12} md={4} className=''>
+                            <Col xs={12} sm={12} md={2} className=''>
                                 <div className='border border-muted d-flex align-items-center bg-white mb-3 p-3' style={{ height: "45px" }}>
                                     <MdLink size={24} color="text-primary" />
                                     <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
@@ -1404,6 +1407,9 @@ const BuyArticles = () => {
                                         />
                                     </label>
                                 </div>
+                            </Col>
+                            <Col xs={12} sm={12} md={2} className=''>
+                                <Select1 options={languagesOpts} defaultValue={languagesOpts[0]} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', zIndex: 1}) }} onChange={handleSelectChange1} />  
                             </Col>
                             <Col xs={12} sm={12} md={4} className='d-flex gap-2'>
                                 {checkboxes
@@ -1484,7 +1490,7 @@ const BuyArticles = () => {
                                         />
                                     </div>
                                 </Col>
-                                <Col lg={6} className="pe-0">
+                                <Col lg={6} className="pe-0 z-0">
                                     <div
                                         className="wrap-input100 validate-input mb-0"
                                         data-bs-validate="Password is required"

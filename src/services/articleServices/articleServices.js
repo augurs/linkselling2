@@ -15,7 +15,7 @@ export const addArticle = (formValues, editor, accessToken) => {
   formData.append("title", formValues.title);
   formData.append("project", formValues.project);
   formData.append("lead", formValues.lead);
-  formData.append("document", formValues.document);
+  formData.append("document", '');
   // if (selectedFile) {
   //   formData.append("image", base64ToFile(formValues.image, "image.jpg"));
   // }

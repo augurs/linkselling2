@@ -60,8 +60,6 @@ function VieworderArticle() {
     }
   }, [portalArticleDetail])
 
-  console.log(portalArticleDetail.length, "63");
-
   const ordersListServices1 = async () => {
     setLoading(true);
     const res = await ordersListArticle1(id, accessToken);
