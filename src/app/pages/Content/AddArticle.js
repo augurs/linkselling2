@@ -10,10 +10,11 @@ import globalLoader from '../../../assets/images/loader.svg'
 import ReactQuill from 'react-quill';
 import { base64ToFile, translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
-import { addProjects, projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
+import { addProjects, languagesOptsList, projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
 import Select1 from 'react-select'
+import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
 
     const fileInputRef = useRef(null);
@@ -48,12 +49,29 @@ const AddArticle = () => {
     const { languageData } = useLanguage();
     const [showModal, setShowModal] = useState(false);
     const [buttonName, setButtonName] = useState(true);
+    const [languagesOpts, setLanguagesOpts] = useState([])
     const navigate = useNavigate()
 
     const handleSelectChange1 = (selectedOption) => {
         setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
         validate(formValues1)
     }
+
+    useEffect(() => {
+        setFormValues({ ...formValues, title: title, lead: lead })
+    }, [title, lead])
+
+    useEffect(() => {
+        if (selectedFile) {
+            uploadDocxServices()
+        }
+    }, [selectedFile])
+
+
+    useEffect(() => {
+        languagesOptsServices()
+        articleListServices2()
+    }, [])
 
     const resetIsData = () => {
         setButtonName(true);
@@ -67,26 +85,33 @@ const AddArticle = () => {
         setFormValues1({ ...formValues1, [name]: value })
     }
 
-    const languagesOpts = [
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
-        }
-    ]
+    // const languagesOpts = [
+    //     {
+    //         value: "English",
+    //         label: "English"
+    //     },
+    //     {
+    //         value: "Polish",
+    //         label: "Polish"
+    //     }
+    // ]
 
-    useEffect(() => {
-        setFormValues({ ...formValues, title: title, lead: lead })
-    }, [title, lead])
-
-    useEffect(() => {
-        if (selectedFile) {
-            uploadDocxServices()
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.englishName,
+                label: language.englishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
         }
-    }, [selectedFile])
+    };
 
     const addProjectService = async () => {
 
@@ -145,10 +170,7 @@ const AddArticle = () => {
         handleCloseModal();
     }
 
-    useEffect(() => {
-        articleListServices2()
-
-    }, [])
+    
 
     //pixabay Image selct start//
 

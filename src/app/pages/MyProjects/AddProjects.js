@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import Select from 'react-select'
-import { languages } from '../../../utility/data'
+import { baseURL2, languages } from '../../../utility/data'
 import { useState } from 'react'
-import { addProjects } from '../../../services/ProjectServices/projectServices'
+import { addProjects, languagesOptsList } from '../../../services/ProjectServices/projectServices'
 import globalLoader from '../../../assets/images/loader.svg'
 import { ToastContainer, toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
@@ -25,10 +25,15 @@ const AddProjects = () => {
 
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({})
+    const [languagesOpts, setLanguagesOpts] = useState([])
     const [loading, setLoading] = useState(false)
 
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        languagesOptsServices()
+    }, []);
 
 
     const handleChange = (e) => {
@@ -130,18 +135,33 @@ const AddProjects = () => {
         return isValid;
     };
 
-    const languagesOpts = [
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
+    // const languagesOpts = [
+    //     {
+    //         value: "English",
+    //         label: "English"
+    //     },
+    //     {
+    //         value: "Polish",
+    //         label: "Polish"
+    //     }
+    // ]
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.englishName,
+                label: language.englishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
         }
-    ]
-
-
+    };
 
 
 
@@ -203,7 +223,7 @@ const AddProjects = () => {
                     </Row> */}
                 </Card.Body>
                 <div className='d-flex mb-5'>
-                    <Button disabled={formErrors.webAddress || formErrors.projectName || formErrors.publicationLang  } className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
+                    <Button disabled={formErrors.webAddress || formErrors.projectName || formErrors.publicationLang} className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
                 </div>
             </Card>
 

@@ -14,7 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
-import { anchorTypes } from "../../../utility/data";
+import { anchorTypes, baseURL2 } from "../../../utility/data";
 import { translate, countLinksInEditor } from "../../../utility/helper";
 import { useLanguage } from "../../Context/languageContext";
 import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles } from "../../../services/buyArticleServices/buyArticlesServices";
@@ -29,7 +29,7 @@ import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
 import Select1 from 'react-select'
 import { Pagination, Stack } from "@mui/material";
-import { projectList } from '../../../services/ProjectServices/projectServices';
+import { languagesOptsList, projectList } from '../../../services/ProjectServices/projectServices';
 import { useSidebar } from '../../Context/togglerBarContext';
 import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 import ReactQuill from "react-quill";
@@ -114,6 +114,7 @@ const BuyArticles = () => {
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
+    const [languagesOpts, setLanguagesOpts] = useState([])
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
@@ -135,6 +136,7 @@ const BuyArticles = () => {
 
     useEffect(() => {
         handleUseArticleList()
+        languagesOptsServices()
     }, [])
 
     const getUserDiscountServices = async () => {
@@ -149,6 +151,24 @@ const BuyArticles = () => {
             setAddArtiLead('')
         }
     }, [articleType]);
+
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.code,
+                label: language.englishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleMaxLinksSelection = (maxLinks) => {
         setSelectedMaxLinks(maxLinks);
@@ -1310,22 +1330,6 @@ const BuyArticles = () => {
             label: item.name
         }
     })
-
-    const languagesOpts = [
-        {
-            value: "select",
-            label: "Select Lang"
-        },
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
-        }
-    ]
-    //add project modal api end
 
 
     const handleUseArticleList = async () => {

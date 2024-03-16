@@ -6,10 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import globalLoader from '../../../assets/images/loader.svg'
 import Select from 'react-select'
-import { projectChangeStatus, projectList, searchProject } from '../../../services/ProjectServices/projectServices';
+import { languagesOptsList, projectChangeStatus, projectList, searchProject } from '../../../services/ProjectServices/projectServices';
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import { MdCheckCircle, MdCancel, MdMoveUp, MdEdit, MdLink } from 'react-icons/md';
+import { baseURL2 } from '../../../utility/data';
 
 
 const ProjectList = () => {
@@ -23,8 +24,11 @@ const ProjectList = () => {
     const [activeFilter, setActiveFilter] = useState('Active');
     const [projectChangedStatus, setProjectChangeStatus] = useState('');
     const [projectChangedId, setProjectChangeId] = useState('');
+    const [languagesOpts, setLanguagesOpts] = useState([])
 
-
+    useEffect(() => {
+        languagesOptsServices()
+    }, []);
 
 
     const navigate = useNavigate();
@@ -57,16 +61,34 @@ const ProjectList = () => {
         setLoading(false)
     }
 
-    const languagesOpts = [
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
+    // const languagesOpts = [
+    //     {
+    //         value: "English",
+    //         label: "English"
+    //     },
+    //     {
+    //         value: "Polish",
+    //         label: "Polish"
+    //     }
+    // ]
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.englishName,
+                label: language.englishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
         }
-    ]
+    };
+
 
     const StatusServices = async (id) => {
         setProjectChangeId(id)

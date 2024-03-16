@@ -163,3 +163,16 @@ export const uploadDocx = (docx, lang, accessToken) => {
       return error.response.data;
     });
 };
+
+
+export const languagesOptsList = () => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-languages`)
+    .then((res) => {
+      return res?.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};

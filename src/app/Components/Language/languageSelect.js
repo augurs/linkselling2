@@ -6,17 +6,21 @@ import { useLanguage } from '../../Context/languageContext';
 import { updateLanguages } from '../../../services/CommonServices/commonService';
 import polandFlag from '../../../assets/images/flags/pl.svg';
 import usFlag from '../../../assets/images/flags/us.svg';
+import { languagesOptsList } from '../../../services/ProjectServices/projectServices';
+import { baseURL2 } from '../../../utility/data';
 
 const LanguageSelect = () => {
   const langState = localStorage.getItem('lang');
   const [lang, setLang] = useState({ name: 'Polish', flag: polandFlag });
+  const [languagesOpts, setLanguagesOpts] = useState([])
+  const [loading, setLoading] = useState(false)
   const { setLanguage } = useLanguage();
   const userData = JSON.parse(localStorage.getItem('userData'));
   const publisherData = JSON.parse(localStorage.getItem('publisherData'));
   const accessToken = localStorage.getItem('accessToken');
   const publisherAccessToken = localStorage.getItem('publisherAccessToken');
 
-  
+
 
   const { i18n } = useTranslation();
   const location = useLocation();
@@ -26,12 +30,29 @@ const LanguageSelect = () => {
     if (!getLang) {
       localStorage.setItem('lang', 'pl');
     }
+    languagesOptsServices()
   }, []);
 
-  const languages = [
-    { name: 'Polish', flag: polandFlag, value: 'pl' },
-    { name: 'English', flag: usFlag, value: 'en' },
-  ];
+  // const languages = [
+  //   { name: 'Polish', flag: polandFlag, value: 'pl' },
+  //   { name: 'English', flag: usFlag, value: 'en' },
+  // ];
+  const languagesOptsServices = async () => {
+    setLoading(true);
+    try {
+      const res = await languagesOptsList();
+      const mappedOptions = res.languages.map(language => ({
+        name: language.englishName,
+        value: language.code,
+        flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+      }));
+      setLanguagesOpts(mappedOptions);
+    } catch (error) {
+      console.error('Error fetching language options:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLanguage = (name, flag, value) => {
     setLang({ name, flag });
@@ -54,7 +75,7 @@ const LanguageSelect = () => {
     }
   };
 
-  const filteredLanguage = languages?.find((language) => language?.value === langState);
+  const filteredLanguage = languagesOpts?.find((language) => language?.value === langState);
 
   return (
     <div>
@@ -64,7 +85,7 @@ const LanguageSelect = () => {
           {filteredLanguage?.name}
         </Dropdown.Toggle>
         <Dropdown.Menu className="bg-primary border-0 rounded-0" style={{ minWidth: '100%' }}>
-          {languages.map((lang, index) => (
+          {languagesOpts.map((lang, index) => (
             <Dropdown.Item key={index} className="d-flex align-items-center text-white" onClick={() => handleLanguage(lang?.name, lang?.flag, lang?.value)}>
               <img src={lang?.flag} alt={lang?.name} width={25} className="pe-2" />
               {lang?.name}
