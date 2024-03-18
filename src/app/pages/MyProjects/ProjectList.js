@@ -16,7 +16,8 @@ import { baseURL2 } from '../../../utility/data';
 const ProjectList = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const accessToken = localStorage.getItem('accessToken')
-    
+    const lang = localStorage.getItem("lang");
+
     const [searchTerms, setSearchTerms] = useState({ title: "", langauge: "" })
     const [loading, setLoading] = useState(false)
     const [projectListData, setProjectList] = useState([])
@@ -25,10 +26,13 @@ const ProjectList = () => {
     const [projectChangedStatus, setProjectChangeStatus] = useState('');
     const [projectChangedId, setProjectChangeId] = useState('');
     const [languagesOpts, setLanguagesOpts] = useState([])
+    const [cardLang, setCardLang] = useState(lang)
 
     useEffect(() => {
-        languagesOptsServices()
-    }, []);
+        if (lang)
+            setCardLang(lang)
+            languagesOptsServices()
+    }, [lang, cardLang])
 
 
     const navigate = useNavigate();
@@ -78,7 +82,7 @@ const ProjectList = () => {
             const res = await languagesOptsList();
             const mappedOptions = res.languages.map(language => ({
                 value: language.englishName,
-                label: language.englishName,
+                label: cardLang == "en" ? language.englishName : language.polishName,
                 flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
             }));
             setLanguagesOpts(mappedOptions);
@@ -169,17 +173,17 @@ const ProjectList = () => {
     ];
 
     const tableData = searchedData?.map((item) => {
-            let date = item.created_at.split('T');
-            date = date[0]
-            return {
-                id: item.id,
-                projectName: item.name,
-                dateOfAdding: date,
-                language: item.language,
-                weburl: item.domain,
-                status: item.status
-            };
-        });
+        let date = item.created_at.split('T');
+        date = date[0]
+        return {
+            id: item.id,
+            projectName: item.name,
+            dateOfAdding: date,
+            language: item.language,
+            weburl: item.domain,
+            status: item.status
+        };
+    });
 
 
     const data = tableData;
@@ -247,7 +251,7 @@ const ProjectList = () => {
                 </Row>
             </div>
 
-            <div className='mt-5'>
+            <div className='mt-5' style={{ minHeight: 'calc(100vh - 300px)' }}>
                 {loading ?
                     <div className='d-flex justify-content-between align-items-center'>
                         <img src={globalLoader} className='mx-auto' />

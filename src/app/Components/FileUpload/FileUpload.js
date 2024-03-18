@@ -94,15 +94,17 @@ const FileUpload = ({ isUploadedImg, resetIsData, isData, allowedFileExtensions,
 
     const getButtonText = () => {
         if (name === "addImage") {
-          return isUploadedImg ? uploadedFilesName ? uploadedFilesName : buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile") :  buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile");
+            return isUploadedImg ? uploadedFilesName || "docx.jpeg" : buttonName || translate(languageData, "AddArtiSelecrDragFile");
+        } else if (name === "document") {
+            return uploadedFilesName || buttonName || translate(languageData, "AddArtiSelecrDragFile");
         } else if (uploadedFilesName) {
-          return uploadedFilesName;
+            return uploadedFilesName;
         } else if (buttonName) {
-          return buttonName;
+            return buttonName;
         } else {
-          return translate(languageData, "AddArtiSelecrDragFile");
+            return translate(languageData, "AddArtiSelecrDragFile");
         }
-      };
+    };
 
 
 

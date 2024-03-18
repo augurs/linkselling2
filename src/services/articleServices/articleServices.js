@@ -20,7 +20,7 @@ export const addArticle = (formValues, editor, accessToken) => {
   //   formData.append("image", base64ToFile(formValues.image, "image.jpg"));
   // }
   
-    formData.append("image", formValues.image);
+    formData.append("image", formValues?.addImage);
   
   formData.append("content", editor)
   // formData.append("user_id", id)

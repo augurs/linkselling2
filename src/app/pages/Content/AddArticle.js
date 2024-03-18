@@ -17,7 +17,6 @@ import Select1 from 'react-select'
 import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
 
-    const fileInputRef = useRef(null);
     const userData2 = JSON.parse(localStorage.getItem("userData"))
     const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
@@ -26,7 +25,7 @@ const AddArticle = () => {
         project: "",
         title: "",
         lead: "",
-        image: ""
+        addImage: ""
     };
 
     const initialValues1 = {
@@ -76,8 +75,6 @@ const AddArticle = () => {
     const resetIsData = () => {
         setButtonName(true);
     };
-
-    console.log(formValues?.image, "62");
 
 
     const handleChange1 = (e) => {
@@ -382,7 +379,7 @@ const AddArticle = () => {
                     title: res?.title.trim().replace(/\s+/g, ' '),
                     lead: res?.lead.trim().replace(/\s+/g, ' '),
                     content: res?.content.trim().replace(/\s+/g, ' '),
-                    image: res?.images[0] ? base64ToFile(res?.images[0]) : null,
+                    addImage: res?.images[0] ? base64ToFile(res?.images[0]) : null,
 
                 });
             }
@@ -405,7 +402,9 @@ const AddArticle = () => {
                 title: "",
                 lead: "",
                 content: "",
-                image: ""
+                addImage: "",
+                project: "",
+
             });
             setContent("")
             setDisplayedImage('')
@@ -433,6 +432,7 @@ const AddArticle = () => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
+
 
     return (
         <div>
@@ -475,7 +475,7 @@ const AddArticle = () => {
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div className="form-group d-flex">
-                                    <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { handleChange(e) }} onClick={() => validate(formValues)}>
+                                    <select name="project" value={formValues?.project} style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { handleChange(e) }} onClick={() => validate(formValues)}>
                                         <option label={translate(languageData, "artilstProject")}></option>
                                         {articlesData2.map((item, index) => {
                                             return (
@@ -543,7 +543,7 @@ const AddArticle = () => {
                                 <div><img src={displayedImage} alt='Displayed' /></div>
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="addImage" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData} isUploadedImg= {formValues?.image}/></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="addImage" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData} isUploadedImg= {formValues?.addImage}/></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>

@@ -56,7 +56,7 @@ const SignUp = () => {
   useEffect(() => {
     if (formValues.specialCode) {
       clearTimeout(typingTimeout);
-      const timeout = setTimeout(chatSectionShow, 1000);
+      const timeout = setTimeout(readSpecialCodeShow, 1000);
       setTypingTimeout(timeout);
     }
   }, [formValues.specialCode]);
@@ -126,6 +126,7 @@ const SignUp = () => {
   const passwordDoNotMatch = languageData && languageData?.filter((item) => item.title === 'passwordDoNotMatch')[0]?.value || 'passwordDoNotMatch';
   const userNameAlredyTaken = languageData && languageData?.filter((item) => item.title === 'userNameAlredyTaken')[0]?.value || 'userNameAlredyTaken';
   const wrongSpecialCode = languageData && languageData?.filter((item) => item.title === 'wrongSpecialCode')[0]?.value || 'wrongSpecialCode';
+  const expiredSpecialCode = languageData && languageData?.filter((item) => item.title === 'theSpecialCodeIsExpired')[0]?.value || 'Kod specjalny wygasł.';
 
 
   const signUpServices = async () => {
@@ -256,7 +257,7 @@ const SignUp = () => {
       setSignUpLoading(false)
       // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '', specialCode: ''  })
     } else if (res.success === false && res.message[0] === "The Special code is expired.") {
-      toast("The Special code is expired.", {
+      toast(expiredSpecialCode, {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -287,7 +288,7 @@ const SignUp = () => {
     }
   }
 
-  const chatSectionShow = async () => {
+  const readSpecialCodeShow = async () => {
     setSignUpLoading(true);
     const res = await readSpecialCode(formValues.specialCode);
 
@@ -308,6 +309,10 @@ const SignUp = () => {
       </div>
       <div className="page">
         <div>
+        {signUpLoading && (
+          <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+          </div>)}
           <Container className="col col-login mx-auto text-center">
             <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'title')[0]?.value || 'title'} </h2>
           </Container>
@@ -367,6 +372,9 @@ const SignUp = () => {
                     {formValues?.specialCode?.length > 0 ? (
                       specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.message ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : "")
                       : ("")}
+                      {/* {formValues?.specialCode?.length > 0 ? (
+                      specialCodeData.success === false && specialCodeData.message[0] === "The Special code is expired." ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "expiredSpecialCode")}</div> : "")
+                      : ("")} */}
 
                     <label className="custom-control custom-checkbox mt-4">
                       <input type="checkbox" className="custom-control-input" name='terms' onChange={handleCheckbox} checked={formValues.terms} />
@@ -386,10 +394,10 @@ const SignUp = () => {
                     </label>
                     <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.privacy}</div>
                     <div className="container-login100-form-btn text-primary">
-                      {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> :
-                        <Button onClick={() => signUpServices()} className="login100-form-btn btn-primary" disabled={formErrors.privacy || formErrors.marketing || formErrors.terms || formErrors.confirmPassword || formErrors.password || formErrors.email || formErrors.username}>
-                          {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
-                        </Button>}
+                      {/* {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> : */}
+                      <Button onClick={() => signUpServices()} className="login100-form-btn btn-primary" disabled={formErrors.privacy || formErrors.marketing || formErrors.terms || formErrors.confirmPassword || formErrors.password || formErrors.email || formErrors.username}>
+                        {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
+                      </Button>
                     </div>
                     <div className="text-center pt-3">
                       <p className="text-dark mb-0"> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount')[0]?.value || 'alreadyHaveAnAccount'}<a onClick={() => navigate('/Login')} className="text-primary ms-1" style={{ cursor: "pointer" }}> {languageData && languageData?.filter((item) => item.title === 'alreadyHaveAnAccount2')[0]?.value || 'alreadyHaveAnAccount2'}</a></p>

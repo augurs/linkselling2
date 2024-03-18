@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor } from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor, MdLanguage } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
@@ -89,6 +89,8 @@ const BuyArticles = () => {
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
     const [typeAnchors, setTypeAnchors] = useState([])
+    const [languageFilter, setLanguageFilter] = useState([])
+
     const [lastPage, setLastPage] = useState()
     const [page, setPage] = useState(1)
     const [publisherArticleDetails, setPublisherArticleDetails] = useState([])
@@ -136,7 +138,6 @@ const BuyArticles = () => {
 
     useEffect(() => {
         handleUseArticleList()
-        languagesOptsServices()
     }, [])
 
     const getUserDiscountServices = async () => {
@@ -158,8 +159,9 @@ const BuyArticles = () => {
         try {
             const res = await languagesOptsList();
             const mappedOptions = res.languages.map(language => ({
-                value: language.code,
-                label: language.englishName,
+                code: language.code,
+                value: language.englishName,
+                label: cardLang == "en" ? language.englishName : language.polishName,
                 flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
             }));
             setLanguagesOpts(mappedOptions);
@@ -260,11 +262,18 @@ const BuyArticles = () => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
     };
 
+    const handleRemoveLanguageFilter = (value) => {
+        setLanguageFilter(languageFilter.filter((item) => item !== value));
+    };
+
+
+
+
     const navigate = useNavigate()
 
     useEffect(() => {
         getPublisherArticlesService()
-    }, [search, typeAnchors, page, formValues1?.publicationLang])
+    }, [search, typeAnchors, page, languageFilter])
 
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "UseArticle")) {
@@ -319,7 +328,8 @@ const BuyArticles = () => {
     useEffect(() => {
         if (lang)
             setCardLang(lang)
-    }, [lang])
+        languagesOptsServices()
+    }, [lang, cardLang])
 
 
     useEffect(() => {
@@ -349,6 +359,11 @@ const BuyArticles = () => {
         const value = e.target.value
         setTypeAnchors(typeof value === 'string' ? value.split(',') : value)
         toggleSidebar1()
+    }
+
+    const handleLanguageFilter = (e) => {
+        const value = e.target.value
+        setLanguageFilter(typeof value === 'string' ? value.split(',') : value)
     }
 
     const handletoggle = () => {
@@ -1049,7 +1064,7 @@ const BuyArticles = () => {
             artId: articleType === translate(languageData, "UseArticle") ? addNewArticleProjectDropdown : "",
             publisherMsgText: publisherMsgText,
             addArtiLead: addArtiLead,
-            imageUrl: /^https?:\/\/\S+\.\S+$/.test(image) ? true : '' 
+            imageUrl: /^https?:\/\/\S+\.\S+$/.test(image) ? true : ''
         }
         setCartLoading(true)
         const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"), accessToken)
@@ -1171,7 +1186,7 @@ const BuyArticles = () => {
 
     //filter article send data with cheked box start
     const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, formValues1?.publicationLang, accessToken)
+        const res = await getPublisherArticles(page, search, typeAnchors, languageFilter, accessToken)
         setArticles(res.data)
         setLastPage(res?.last_page)
     }
@@ -1412,9 +1427,50 @@ const BuyArticles = () => {
                                     </label>
                                 </div>
                             </Col>
-                            <Col xs={12} sm={12} md={2} className=''>
+                            {/* <Col xs={12} sm={12} md={2} className=''>
                                 <Select1 options={languagesOpts} defaultValue={languagesOpts[0]} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', zIndex: 1}) }} onChange={handleSelectChange1} />  
+                            </Col> */}
+                            <Col xs={12} sm={12} md={2} className=''>
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="languagefilter-label"
+                                        id="languagefilter"
+                                        multiple
+                                        name='publicationLang'
+                                        value={languageFilter}
+                                        onChange={handleLanguageFilter}
+                                        input={<OutlinedInput name='publicationLang' />}
+                                        renderValue={(selected) => (
+                                            <div className="d-flex align-items-center">
+                                                <MdLanguage size={20} className="text-primary" />
+                                                <span className="d-flex flex-grow-1 justify-content-center text-primary">
+                                                    {selected?.length > 0 ? selected.join(', ') : translate(languageData, "Language")}
+                                                </span>
+                                            </div>
+                                        )}
+                                        style={{ height: "40px", marginTop: "5px" }}
+                                        className="custom-select"
+                                        displayEmpty={true}
+                                        IconComponent={() => (
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon text-primary'
+                                            />
+                                        )}
+                                    >
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "selectlang")}
+                                        </MenuItem>
+                                        {languagesOpts.map((name, index) => (
+                                            <MenuItem key={index} value={name.code} className='check_list'>
+                                                <Checkbox checked={languageFilter?.indexOf(name.code) > -1} />
+                                                <ListItemText primary={name.label} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Col>
+
                             <Col xs={12} sm={12} md={4} className='d-flex gap-2'>
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
@@ -1557,6 +1613,20 @@ const BuyArticles = () => {
                                         size="small"
                                         className="btn btn-light text-dark"
                                         onClick={() => handleRemoveTypeAnchor(type)}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        {type}
+                                    </Button>
+                                </li>
+                            ))}
+                            {languageFilter.map((type) => (
+                                <li key={type}>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemoveLanguageFilter(type)}
                                         style={{ display: 'flex', alignItems: 'center' }}
                                     >
                                         <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />

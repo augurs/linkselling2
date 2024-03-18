@@ -16,7 +16,8 @@ import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
 import moment from 'moment';
 import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
-import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel, ExternalHyperlink, HyperlinkType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel} from 'docx';
+import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 async function fetchImageAsBase64(imageUrl) {
@@ -83,12 +84,13 @@ async function createDocFromData(data) {
             ]
         });
 
-        const blob = await Packer.toBlob(doc);
-        saveAs(blob, "downloaded.docx");
+        return await Packer.toBlob(doc);
     } catch (error) {
         console.error('Error creating DOCX:', error);
+        throw error;
     }
 }
+
 
 
 
@@ -259,17 +261,32 @@ function Portalarticledetails() {
     const handleDownload = async () => {
         setLoading(true);
         const articleData = portalArticleDetail[0];
-
+    
         if (articleData) {
-            await createDocFromData({
+            const zip = new JSZip();
+    
+            // Generate DOCX files and add them to the ZIP file
+            const blob = await createDocFromData({
                 title: articleData.title || "",
                 content: articleData.content || "",
                 lead: articleData.lead || "",
                 image: `${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}` || ""
             });
+            zip.file("downloaded.docx", blob);
+    
+            // Generate more DOCX files if needed and add them to the ZIP file
+    
+            // Generate the ZIP file
+            zip.generateAsync({ type: "blob" })
+                .then((content) => {
+                    saveAs(content, "downloaded.zip");
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error generating ZIP file:', error);
+                    setLoading(false);
+                });
         }
-
-        setLoading(false);
     };
 
     return (
@@ -287,7 +304,7 @@ function Portalarticledetails() {
                         <Card className='h-100'>
                             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
                                 <h3 className='fw-semibold'>{translate(languageData, "ArticleDetails")}</h3>
-                                <Button onClick={handleDownload} disabled={loading}>Download DOCX</Button>
+                                <Button onClick={handleDownload} disabled={loading}>{translate(languageData, "downloadZipFile")}</Button>
                             </Card.Header>
                             <Card.Body >
                                 <div className=''>

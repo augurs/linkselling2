@@ -14,6 +14,7 @@ import { isValidUrl } from '../../../utility/data'
 const AddProjects = () => {
 
     const { languageData } = useLanguage()
+    const lang = localStorage.getItem("lang");
     const userData = JSON.parse(localStorage.getItem("userData"));
     const accessToken = localStorage.getItem('accessToken')
     let initialValues = {
@@ -26,14 +27,21 @@ const AddProjects = () => {
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({})
     const [languagesOpts, setLanguagesOpts] = useState([])
+    const [cardLang, setCardLang] = useState(lang)
     const [loading, setLoading] = useState(false)
 
 
     const navigate = useNavigate()
 
+    // useEffect(() => {
+    //     languagesOptsServices()
+    // }, []);
+
     useEffect(() => {
-        languagesOptsServices()
-    }, []);
+        if (lang)
+            setCardLang(lang)
+            languagesOptsServices()
+    }, [lang, cardLang])
 
 
     const handleChange = (e) => {
@@ -152,7 +160,7 @@ const AddProjects = () => {
             const res = await languagesOptsList();
             const mappedOptions = res.languages.map(language => ({
                 value: language.englishName,
-                label: language.englishName,
+                label: cardLang == "en" ? language.englishName : language.polishName,
                 flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
             }));
             setLanguagesOpts(mappedOptions);
@@ -167,7 +175,7 @@ const AddProjects = () => {
 
 
     return (
-        <div className='p-4'>
+        <div className='p-4' style={{minHeight: "100vh"}}>
             <ToastContainer />
             <Card>
                 <Card.Header><h2 className=''>{translate(languageData, "AddProject")}</h2></Card.Header>
@@ -199,7 +207,7 @@ const AddProjects = () => {
                             {translate(languageData, "publicationLanguage")} *
                         </Col>
                         <Col lg={8} xs={12}>
-                            <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} />
+                            <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} placeholder={translate(languageData, "Language")}/>
                             <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
                         </Col>
 
