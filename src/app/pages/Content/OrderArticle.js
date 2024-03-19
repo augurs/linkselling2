@@ -432,7 +432,7 @@ const OrderArticle = () => {
                                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                                         <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
                                             <input className="input100" type="text" name="link" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} value={pair.link} onChange={(e) => handleChangeLinkAnchor(index, 'link', e.target.value)} />
-                                            {(index === lastAddedLinkIndex || (index === linkAnchorPairs.length - 1 && lastAddedLinkIndex === linkAnchorPairs.length - 1)) && (
+                                            {linkAnchorPairs.length < MAX_LINK_ANCHOR_PAIRS && (index === lastAddedLinkIndex || (index === linkAnchorPairs.length - 1 && lastAddedLinkIndex === linkAnchorPairs.length - 1)) && (
                                                 <OverlayTrigger
                                                     placement="top"
                                                     overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}

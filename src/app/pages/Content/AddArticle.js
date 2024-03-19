@@ -179,7 +179,7 @@ const AddArticle = () => {
                 const previewUrl = URL.createObjectURL(blob);
                 setFormValues({
                     ...formValues,
-                    image: blob,
+                    addImage: blob,
                 });
 
                 setDisplayedImage(previewUrl);
@@ -378,7 +378,7 @@ const AddArticle = () => {
                     ...formValues,
                     title: res?.title.trim().replace(/\s+/g, ' '),
                     lead: res?.lead.trim().replace(/\s+/g, ' '),
-                    content: res?.content.trim().replace(/\s+/g, ' '),
+                    content: res?.content,
                     addImage: res?.images[0] ? base64ToFile(res?.images[0]) : null,
 
                 });
@@ -440,6 +440,11 @@ const AddArticle = () => {
             <div>
                 <Card className='mt-5 pb-5'>
                     {loading && (
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                        </div>
+                    )}
+                    {loading2 && (
                         <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                             <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
                         </div>
@@ -555,8 +560,8 @@ const AddArticle = () => {
                         </Row>
                     </Card.Body>
                     <div className='mt-5 ms-auto px-3'>
-                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")}> {translate(languageData, "Save")}  </Button>
-                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button>
+                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")} disabled={loading}> {translate(languageData, "Save")}  </Button>
+                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")} disabled={loading2}>{translate(languageData, "SaveAndExit")}</Button>
                     </div>
                 </Card>
             </div>

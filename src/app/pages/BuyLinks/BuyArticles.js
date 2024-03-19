@@ -8,7 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
 import { BsExclamationOctagon } from "react-icons/bs";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import "./BuyLinks.css";
 import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -29,7 +29,7 @@ import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
 import Select1 from 'react-select'
 import { Pagination, Stack } from "@mui/material";
-import { languagesOptsList, projectList } from '../../../services/ProjectServices/projectServices';
+import { languagesOptsList, projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useSidebar } from '../../Context/togglerBarContext';
 import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 import ReactQuill from "react-quill";
@@ -90,6 +90,7 @@ const BuyArticles = () => {
     const [listLoading, setListLoading] = useState(false)
     const [typeAnchors, setTypeAnchors] = useState([])
     const [languageFilter, setLanguageFilter] = useState([])
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [lastPage, setLastPage] = useState()
     const [page, setPage] = useState(1)
@@ -104,7 +105,7 @@ const BuyArticles = () => {
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
-    const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
+    const [selectedMaxLinks, setSelectedMaxLinks] = useState(null);
     const [provideSubject, setProvideSubject] = useState(false);
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [linkValues, setLinkValues] = useState([]);
@@ -117,8 +118,34 @@ const BuyArticles = () => {
     const [useArticleList, setUseArticleList] = useState([])
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
     const [languagesOpts, setLanguagesOpts] = useState([])
+    const [buttonName, setButtonName] = useState(true);
+    const [docxError, setDocxError] = useState('');
+
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
+
+    useEffect(() => {
+        if (selectedFile) {
+            uploadDocxServices()
+        }
+    }, [selectedFile])
+
+    //Start- this condition is when modal is close//
+
+    useEffect(() => {
+        if (showOfferModal == false) {
+            setShowCartOptions(false)
+            setProvideSubjectText('')
+            setSuggestion('')
+            setPublisherMsgText('')
+            setLinkValues([])
+            setAnchorValues([])
+            setWeProvideSubject(true);
+            setProvideSubject(false);
+        }
+    }, [showOfferModal])
+
+    //End- this condition is when modal is close//
 
     useEffect(() => {
         if (useArticleList) {
@@ -190,14 +217,15 @@ const BuyArticles = () => {
 
     const generateRows = () => {
         const rows = [];
-        for (let i = 1; i <= selectedMaxLinks; i++) {
+        const defaultPairs = Math.min(selectedMaxLinks, 3);
+        for (let i = 1; i <= defaultPairs; i++) {
             rows.push(
                 <Row key={i} className='align-items-center mt-5'>
                     <Col xs={12} md={4}>
-                        <span>{translate(languageData, "link")} {i} *</span>
+                        <span>{translate(languageData, "link")} {i} {i === 1 ? '*' : ''}</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
-                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Link is required">
+                        <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Link is required">
                             <input
                                 className="input100"
                                 type="url"
@@ -207,10 +235,22 @@ const BuyArticles = () => {
                                 onChange={(e) => handleLinkChange(i - 1, e.target.value)}
                                 value={linkValues[i - 1] || ''}
                             />
+                            {selectedMaxLinks > 3 && i === 3 ?
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip id="tooltip" style={{ zIndex: 105000 }}>{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                ><button className='bg-transparent'><FaPlusCircle /></button>
+                                </OverlayTrigger>
+                                : ""}
+                            {selectedMaxLinks > 3 && i > 3 ? (
+                                <button className='bg-transparent'><FaMinusCircle /></button>
+                            ) : ""}
                         </div>
+
                     </Col>
+
                     <Col xs={12} md={4}>
-                        <span>{translate(languageData, "requestanchor")} {i} *</span>
+                        <span>{translate(languageData, "requestanchor")} {i} {i === 1 ? '*' : ''}</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Anchor is required">
@@ -265,8 +305,6 @@ const BuyArticles = () => {
     const handleRemoveLanguageFilter = (value) => {
         setLanguageFilter(languageFilter.filter((item) => item !== value));
     };
-
-
 
 
     const navigate = useNavigate()
@@ -1352,10 +1390,82 @@ const BuyArticles = () => {
         setUseArticleList(res?.data)
     }
 
+    const resetIsData = () => {
+        setButtonName(true);
+    };
+
+    const handleFileChange = (file) => {
+        setSelectedFile(file);
+    }
+
+    const uploadDocxServices = async () => {
+        setLoading(true);
+        const res = await uploadDocx(selectedFile, lang, accessToken);
+        if (res.success === true) {
+            toast(translate(languageData, "docxFileUploadSuccessfully"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'success'
+            });
+
+            console.log(res?.images[0], "1401");
+            if (res?.title && res?.lead && res?.content) {
+                setRequestArticleTitle(res?.title.trim().replace(/\s+/g, ' '))
+                setAddArtiLead(res?.lead.trim().replace(/\s+/g, ' '))
+                setContent(res?.content)
+                setImageSource({ previewUrl: res?.images[0] });
+                setImage(res?.images[0] ? base64ToFile(res?.images[0]) : null)
+            }
+            setDocxError("");
+
+        } else if (res.success === false && res.message.file[0] === "The file must be a file of type: docx.") {
+            toast(`${translate(languageData, "pleaseUploadDocxFile")}`, {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setRequestArticleTitle('')
+            setAddArtiLead('')
+            setContent('')
+            setImageSource('')
+            setImage(null)
+            setDocxError(res.message.file[0])
+
+        } else {
+            toast(translate(languageData, "somethingwentwrong"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+        }
+
+        setLoading(false);
+    };
+
     return (
         <>
             <ToastContainer />
             <div className="p-4 w-100">
+                {loading && (
+                    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 10500, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                        <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                    </div>
+                )}
                 <Card>
                     <Card.Header className="justify-content-between align-items-center flex-wrap">
                         <div>
@@ -1905,6 +2015,25 @@ const BuyArticles = () => {
 
                                             {articleType === translate(languageData, "AddNewArticle") &&
                                                 <div>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "AddArtiImportDoc")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div>
+                                                                <FileUpload
+                                                                    allowedFileExtensions={'.docx'}
+                                                                    getData={handleFileChange}
+                                                                    name="document"
+                                                                    isData={buttonName}
+                                                                    resetIsData={resetIsData}
+                                                                />
+                                                                {docxError && <span className="text-danger d-flex justify-content-center">{translate(languageData, "pleaseUploadDocxFile")}</span>}
+                                                            </div>
+
+                                                        </Col>
+
+                                                    </Row>
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "artilstTitle")} *</span>

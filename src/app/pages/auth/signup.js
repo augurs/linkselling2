@@ -50,7 +50,12 @@ const SignUp = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+    if (value.trim().length === 0) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: '' }));
+    } else if (!value.startsWith(' ')) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+      setSpecialCodeData('');
+    }
   };
 
   useEffect(() => {
@@ -370,10 +375,10 @@ const SignUp = () => {
                       </span>
                     </div>
                     {formValues?.specialCode?.length > 0 ? (
-                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.message ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : "")
+                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.success === false && specialCodeData?.message=="Wrong code" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : specialCodeData.success === false && specialCodeData.message === "This Redeem code is expired" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "theSpecialCodeIsExpired")}</div> : "")
                       : ("")}
                       {/* {formValues?.specialCode?.length > 0 ? (
-                      specialCodeData.success === false && specialCodeData.message[0] === "The Special code is expired." ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "expiredSpecialCode")}</div> : "")
+                      specialCodeData.success === false && specialCodeData.message === "This Redeem code is expired" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "expiredSpecialCode")}</div> : "")
                       : ("")} */}
 
                     <label className="custom-control custom-checkbox mt-4">
