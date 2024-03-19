@@ -120,7 +120,25 @@ const BuyArticles = () => {
     const [languagesOpts, setLanguagesOpts] = useState([])
     const [buttonName, setButtonName] = useState(true);
     const [docxError, setDocxError] = useState('');
+    const [numRows, setNumRows] = useState(0);
 
+    useEffect(() => {
+        if (selectedMaxLinks > 0) {
+            setNumRows(Math.min(selectedMaxLinks, 3)); // Set numRows based on selectedMaxLinks
+        }
+    }, [selectedMaxLinks]);
+
+    const handleAddRow = () => {
+        if (numRows < selectedMaxLinks) {
+            setNumRows(prevNumRows => prevNumRows + 1);
+        }
+    };
+
+    const handleRemoveRow = () => {
+        if (numRows > 3) {
+            setNumRows(prevNumRows => prevNumRows - 1);
+        }
+    };
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
@@ -217,8 +235,8 @@ const BuyArticles = () => {
 
     const generateRows = () => {
         const rows = [];
-        const defaultPairs = Math.min(selectedMaxLinks, 3);
-        for (let i = 1; i <= defaultPairs; i++) {
+        // const defaultPairs = Math.min(selectedMaxLinks, 3);
+        for (let i = 1; i <= numRows; i++) {
             rows.push(
                 <Row key={i} className='align-items-center mt-5'>
                     <Col xs={12} md={4}>
@@ -235,16 +253,21 @@ const BuyArticles = () => {
                                 onChange={(e) => handleLinkChange(i - 1, e.target.value)}
                                 value={linkValues[i - 1] || ''}
                             />
-                            {selectedMaxLinks > 3 && i === 3 ?
+                            {selectedMaxLinks > 3 && i === numRows && numRows < selectedMaxLinks ?
+
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip id="tooltip" style={{ zIndex: 105000 }}>{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
-                                ><button className='bg-transparent'><FaPlusCircle /></button>
+                                ><button className='bg-transparent' onClick={handleAddRow}><FaPlusCircle /></button>
                                 </OverlayTrigger>
+
                                 : ""}
-                            {selectedMaxLinks > 3 && i > 3 ? (
-                                <button className='bg-transparent'><FaMinusCircle /></button>
-                            ) : ""}
+                            {numRows > 3 && i > 2 && (
+                                <button className='bg-transparent' onClick={handleRemoveRow}>
+                                    <FaMinusCircle />
+                                </button>
+
+                            )}
                         </div>
 
                     </Col>
