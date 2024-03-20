@@ -355,7 +355,7 @@ const AddArticle = () => {
         'header',
         'bold', 'italic', 'underline', 'strike',
         'list', 'bullet',
-        'link', 'image'
+        'link', 'image',
     ];
 
     const uploadDocxServices = async () => {

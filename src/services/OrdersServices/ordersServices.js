@@ -56,6 +56,24 @@ export const ordersListArticle = (id, accessToken) => {
       });
   };
 
+  export const ordersListArticle2 = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/RequestArticleOrders/${id}`, { headers })
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+
   export const chatSectionService = (id, articleType, accessToken) => {
     const headers = {
       'Authorization': `Bearer ${accessToken}`,

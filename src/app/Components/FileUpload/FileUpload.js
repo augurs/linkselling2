@@ -4,6 +4,7 @@ import { translate } from '../../../utility/helper';
 import { useEffect } from 'react';
 import "./fileupload.css"
 import { MdDelete } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const FileUpload = ({ isUploadedImg, resetIsData, isData, allowedFileExtensions, getData, name, selectedImage, buttonName, classNames, errorMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -72,8 +73,14 @@ const FileUpload = ({ isUploadedImg, resetIsData, isData, allowedFileExtensions,
     const handleInputChange = (e) => {
         const files = e?.target?.files[0];
         if (files) {
-            getData(files, e.target.name);
-            setUploadedFilesName(files.name);
+            const fileExtension = files.name.split('.').pop().toLowerCase();
+            console.log(`.${fileExtension}`, allowedFileExtensions, "77");
+            if (!allowedFileExtensions.includes(`.${fileExtension}`)) {
+                toast.error(translate(languageData, "FileTypeNotAllowed"));
+            } else {
+                getData(files, e.target.name);
+                setUploadedFilesName(files.name);
+            }
         } else {
             console.log("No file selected or upload cancelled.");
         }

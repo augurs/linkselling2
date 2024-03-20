@@ -54,6 +54,16 @@ const SignUp = () => {
       setFormValues((prevValues) => ({ ...prevValues, [name]: '' }));
     } else if (!value.startsWith(' ')) {
       setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+      // setSpecialCodeData('');
+    }
+  };
+
+  const handleSpecialCodeChange = (e) => {
+    const { name, value } = e.target;
+    if (value.trim().length === 0) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: '' }));
+    } else if (!value.startsWith(' ')) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
       setSpecialCodeData('');
     }
   };
@@ -83,10 +93,11 @@ const SignUp = () => {
     let error = {};
     let isValid = true;
     const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!values.username) {
-      error.username = languageData && languageData?.filter((item) => item.title === 'signUpUserError')[0]?.value || 'signUpUserError'
-      isValid = false
-    }
+    const passwordReg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
+    // if (!values.username) {
+    //   error.username = languageData && languageData?.filter((item) => item.title === 'signUpUserError')[0]?.value || 'signUpUserError'
+    //   isValid = false
+    // }
     if (!values.email) {
       error.email = languageData && languageData?.filter((item) => item.title === 'signUpEmailError')[0]?.value || 'signUpEmailError';
       isValid = false;
@@ -96,6 +107,9 @@ const SignUp = () => {
     }
     if (!values.password) {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
+      isValid = false;
+    } else if (!passwordReg.test(values.password)) {
+      error.password = languageData && languageData?.filter((item) => item.title === 'passwordValidationError')[0]?.value || 'Hasło musi mieć co najmniej 8 znaków, w tym co najmniej 1 znak specjalny, 1 cyfrę i 1 alfabet.';
       isValid = false;
     }
     if (!values.confirmPassword) {
@@ -314,10 +328,10 @@ const SignUp = () => {
       </div>
       <div className="page">
         <div>
-        {signUpLoading && (
-          <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
-          </div>)}
+          {signUpLoading && (
+            <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+              <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+            </div>)}
           <Container className="col col-login mx-auto text-center">
             <h2 className='text-white fw-bold'>{languageData && languageData?.filter((item) => item.title === 'title')[0]?.value || 'title'} </h2>
           </Container>
@@ -327,14 +341,14 @@ const SignUp = () => {
                 <Card.Body>
                   <Form className="login100-form validate-form">
                     <span className="login100-form-title">{languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}</span>
-                    <div className="wrap-input100 validate-input mb-0">
+                    {/* <div className="wrap-input100 validate-input mb-0">
                       <input className="input100" type="text" name="username" placeholder={languageData && languageData?.filter((item) => item.title === 'userNameSignUp')[0]?.value || 'userNameSignUp'} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} value={formValues.username} />
                       <span className="focus-input100"></span>
                       <span className="symbol-input100">
                         <i className="mdi mdi-account" aria-hidden="true"></i>
                       </span>
                     </div>
-                    <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.username}</div>
+                    <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.username}</div> */}
                     <div className="wrap-input100 validate-input mb-0 mt-2">
                       <input className="input100" type="text" name="email" placeholder={languageData && languageData?.filter((item) => item.title === 'emailSignUp')[0]?.value || 'emailSignUp'} onChange={(e) => handleChange(e)} onKeyUp={() => validate(formValues)} value={formValues.email} />
                       <span className="focus-input100"></span>
@@ -368,16 +382,16 @@ const SignUp = () => {
                     </div>
                     <div className='mt-1 mb-2 text-danger text-sm-12'>{formErrors.confirmPassword}</div>
                     <div className="wrap-input100 validate-input mb-0 mt-2">
-                      <input className="input100" type="text" name="specialCode" placeholder={languageData && languageData?.filter((item) => item.title === 'specialCode')[0]?.value || 'Special Code'} onChange={(e) => handleChange(e)} value={formValues.specialCode} />
+                      <input className="input100" type="text" name="specialCode" placeholder={languageData && languageData?.filter((item) => item.title === 'specialCode')[0]?.value || 'Special Code'} onChange={(e) => handleSpecialCodeChange(e)} value={formValues.specialCode} />
                       <span className="focus-input100"></span>
                       <span className="symbol-input100">
                         <i className="mdi mdi-ticket-percent" aria-hidden="true"></i>
                       </span>
                     </div>
                     {formValues?.specialCode?.length > 0 ? (
-                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.success === false && specialCodeData?.message=="Wrong code" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : specialCodeData.success === false && specialCodeData.message === "This Redeem code is expired" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "theSpecialCodeIsExpired")}</div> : "")
+                      specialCodeData.success == true ? <div className='mt-1 mb-2 text-primary text-sm-12'>{specialCodeData.description}</div> : specialCodeData?.success === false && specialCodeData?.message == "Wrong code" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "wrongCode")}</div> : specialCodeData.success === false && specialCodeData.message === "This Redeem code is expired" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "theSpecialCodeIsExpired")}</div> : specialCodeData.success === false && specialCodeData.message === "This Redeem code is doesn't exist" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "RedeemCodeDoesn'tExist")}</div> : "")
                       : ("")}
-                      {/* {formValues?.specialCode?.length > 0 ? (
+                    {/* {formValues?.specialCode?.length > 0 ? (
                       specialCodeData.success === false && specialCodeData.message === "This Redeem code is expired" ? <div className='mt-1 mb-2 text-danger text-sm-12'>{translate(languageData, "expiredSpecialCode")}</div> : "")
                       : ("")} */}
 
@@ -400,7 +414,7 @@ const SignUp = () => {
                     <div className='mt-1 mb-2 text-danger text-sm-12 fs-6'>{formErrors.privacy}</div>
                     <div className="container-login100-form-btn text-primary">
                       {/* {signUpLoading ? <img src={globalLoader} alt='loader' width={50} /> : */}
-                      <Button onClick={() => signUpServices()} className="login100-form-btn btn-primary" disabled={formErrors.privacy || formErrors.marketing || formErrors.terms || formErrors.confirmPassword || formErrors.password || formErrors.email || formErrors.username}>
+                      <Button onClick={() => signUpServices()} className="login100-form-btn btn-primary" disabled={formErrors.privacy || formErrors.marketing || formErrors.terms || formErrors.confirmPassword || formErrors.password || formErrors.email }>
                         {languageData && languageData?.filter((item) => item.title === 'register')[0]?.value || 'register'}
                       </Button>
                     </div>

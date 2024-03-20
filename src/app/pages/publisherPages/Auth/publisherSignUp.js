@@ -32,9 +32,19 @@ const SignUp = () => {
   const navigate = useNavigate();
 
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormValues({ ...formValues, [name]: value });
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    if (value.trim().length === 0) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: '' }));
+    } else if (!value.startsWith(' ')) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+      // setSpecialCodeData('');
+    }
   };
 
 
@@ -57,6 +67,7 @@ const SignUp = () => {
     let isValid = true;
     const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
+    const passwordReg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
     if (!values.username) {
       error.username = languageData && languageData?.filter((item) => item.title === 'signUpUserError')[0]?.value || 'signUpUserError'
       isValid = false
@@ -70,6 +81,13 @@ const SignUp = () => {
     }
     if (!values.password) {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
+      isValid = false;
+    }
+    if (!values.password) {
+      error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
+      isValid = false;
+    } else if (!passwordReg.test(values.password)) {
+      error.password = languageData && languageData?.filter((item) => item.title === 'passwordValidationError')[0]?.value || 'Hasło musi mieć co najmniej 8 znaków, w tym co najmniej 1 znak specjalny, 1 cyfrę i 1 alfabet.';
       isValid = false;
     }
     if (!values.phoneNumber) {

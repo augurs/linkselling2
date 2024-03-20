@@ -102,7 +102,7 @@ const AddArticle = () => {
                 title: res?.data[0]?.title,
                 link: res?.data[0]?.max_links,
                 url: res?.data[0]?.link,
-                image: dynamicImageUrl,
+                image: res.data[0].image ? dynamicImageUrl : "",
                 comment: res?.data[0]?.comment,
                 lead: res?.data[0]?.lead,
                 content: res?.data[0]?.content,
@@ -255,7 +255,18 @@ const AddArticle = () => {
 
                 return;
             }
-
+            if (!formValues.image) {
+                toast.error(translate(languageData, "Please upload an image"), {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                return;
+            }
 
             const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment, accessToken);
             if (res.success === true) {
@@ -473,7 +484,7 @@ const AddArticle = () => {
                                         </Row>
                                         <Row className='align-items-center mt-5'>
                                             <Col xs={12} md={4}>
-                                                <span>{translate(languageData, "image")}</span>
+                                                <span>{translate(languageData, "image")} *</span>
                                             </Col>
                                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
                                                 <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>

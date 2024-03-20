@@ -7,8 +7,8 @@ import "./viewOrder.css";
 import { translate } from '../../../utility/helper';
 import custImg from "../../../assets/images/users/user.png"
 import publisherImg from "../../../assets/images/users/publisher1.png"
-import { chatSectionService, ordersListArticle, ordersListArticle1, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
-import { ToastContainer, toast } from 'react-toastify';
+import { chatSectionService, ordersListArticle, ordersListArticle1, ordersListArticle2, sentToPublisherMessage, sentUserRejectMessage } from '../../../services/OrdersServices/ordersServices';
+import { toast } from 'react-toastify';
 import { IoCheckmark, IoCheckmarkDoneOutline } from "react-icons/io5";
 import moment from "moment";
 function VieworderArticle() {
@@ -24,14 +24,17 @@ function VieworderArticle() {
   const [modalType, setModalType] = useState("");
 
   const handleChatModalClose = () => setShowChatModal(false);
-  const handleChatModalShow = () => setShowChatModal(true);
 
   useEffect(() => {
     if (articleid === 'addnewarticle') {
       ordersListServices();
     } else if (articleid === 'requestarticle') {
       ordersListServices1();
-    } else {
+    }
+    else if (articleid === 'RequestArticleOrders') {
+      ordersListServices2();
+    }
+    else {
       console.error('Invalid articleid:', articleid);
     }
   }, [articleid]);
@@ -76,6 +79,24 @@ function VieworderArticle() {
 
     setLoading(false);
   };
+
+  const ordersListServices2 = async () => {
+    setLoading(true);
+    const res = await ordersListArticle2(id, accessToken);
+
+    if (res?.success === true) {
+      setPortalArticleDetail(res?.data);
+    } else {
+      console.error('API request failed:', res?.msg);
+
+      if (res?.success === false && res?.data.length === 0) {
+        setPortalArticleDetail([]);
+      }
+    }
+
+    setLoading(false);
+  };
+
 
 
   const getStatusMessage = (status) => {

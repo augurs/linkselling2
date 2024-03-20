@@ -124,7 +124,7 @@ const BuyArticles = () => {
 
     useEffect(() => {
         if (selectedMaxLinks > 0) {
-            setNumRows(Math.min(selectedMaxLinks, 3)); // Set numRows based on selectedMaxLinks
+            setNumRows(Math.min(selectedMaxLinks, 3));
         }
     }, [selectedMaxLinks]);
 
@@ -165,6 +165,7 @@ const BuyArticles = () => {
 
     //End- this condition is when modal is close//
 
+    //start- this condition is bind the data in useArticle tab//
     useEffect(() => {
         if (useArticleList) {
             const data = useArticleList?.find((item) => item?.id == addNewArticleProjectDropdown)
@@ -176,6 +177,8 @@ const BuyArticles = () => {
             setImage(data?.file);
         }
     }, [addNewArticleProjectDropdown, useArticleList])
+
+    //End- this condition is bind the data in useArticle tab//
 
     useEffect(() => {
         getUserDiscountServices()
@@ -2319,7 +2322,7 @@ const BuyArticles = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         {showCartOptions ?
-                            <Button variant="primary" onClick={() => addToCartArticleServices()}>
+                            <Button variant="primary" onClick={() => addToCartArticleServices()} disabled={cartLoading}>
                                 {cartLoading ? "Wait..." : translate(languageData, "addToCart")}
                             </Button> : ""}
 
