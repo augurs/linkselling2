@@ -6,16 +6,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import globalLoader from '../../../assets/images/loader.svg'
 import Select from 'react-select'
-import { projectChangeStatus, projectList, searchProject } from '../../../services/ProjectServices/projectServices';
+import { languagesOptsList, projectChangeStatus, projectList, searchProject } from '../../../services/ProjectServices/projectServices';
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import { MdCheckCircle, MdCancel, MdMoveUp, MdEdit, MdLink } from 'react-icons/md';
+import { baseURL2 } from '../../../utility/data';
 
 
 const ProjectList = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
+    const accessToken = localStorage.getItem('accessToken')
+    const lang = localStorage.getItem("lang");
 
-    const [order, setOrder] = useState("Orders")
     const [searchTerms, setSearchTerms] = useState({ title: "", langauge: "" })
     const [loading, setLoading] = useState(false)
     const [projectListData, setProjectList] = useState([])
@@ -23,8 +25,14 @@ const ProjectList = () => {
     const [activeFilter, setActiveFilter] = useState('Active');
     const [projectChangedStatus, setProjectChangeStatus] = useState('');
     const [projectChangedId, setProjectChangeId] = useState('');
+    const [languagesOpts, setLanguagesOpts] = useState([])
+    const [cardLang, setCardLang] = useState(lang)
 
-
+    useEffect(() => {
+        if (lang)
+            setCardLang(lang)
+            languagesOptsServices()
+    }, [lang, cardLang])
 
 
     const navigate = useNavigate();
@@ -45,33 +53,51 @@ const ProjectList = () => {
 
     const handleSearchService = async () => {
         setLoading(true)
-        const res = await searchProject(searchTerms, userData?.id, activeFilter)
+        const res = await searchProject(searchTerms, activeFilter, accessToken)
         setSearchedData(res?.data)
         setLoading(false)
     }
 
     const projectListServices = async () => {
         setLoading(true)
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setProjectList(res.data)
         setLoading(false)
     }
 
-    const languagesOpts = [
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
+    // const languagesOpts = [
+    //     {
+    //         value: "English",
+    //         label: "English"
+    //     },
+    //     {
+    //         value: "Polish",
+    //         label: "Polish"
+    //     }
+    // ]
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.englishName,
+                label: cardLang == "en" ? language.englishName : language.polishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
         }
-    ]
+    };
+
 
     const StatusServices = async (id) => {
         setProjectChangeId(id)
         setLoading(true)
-        const res = await projectChangeStatus(id)
+        const res = await projectChangeStatus(id, accessToken)
         setProjectChangeStatus(res?.data)
         if (res.success === true) {
             handleSearchService()
@@ -146,19 +172,18 @@ const ProjectList = () => {
         },
     ];
 
-    const tableData = searchedData
-        .map((item) => {
-            let date = item.created_at.split('T');
-            date = date[0]
-            return {
-                id: item.id,
-                projectName: item.name,
-                dateOfAdding: date,
-                language: item.language,
-                weburl: item.domain,
-                status: item.status
-            };
-        });
+    const tableData = searchedData?.map((item) => {
+        let date = item.created_at.split('T');
+        date = date[0]
+        return {
+            id: item.id,
+            projectName: item.name,
+            dateOfAdding: date,
+            language: item.language,
+            weburl: item.domain,
+            status: item.status
+        };
+    });
 
 
     const data = tableData;
@@ -226,7 +251,7 @@ const ProjectList = () => {
                 </Row>
             </div>
 
-            <div className='mt-5'>
+            <div className='mt-5' style={{ minHeight: 'calc(100vh - 300px)' }}>
                 {loading ?
                     <div className='d-flex justify-content-between align-items-center'>
                         <img src={globalLoader} className='mx-auto' />

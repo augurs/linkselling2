@@ -14,12 +14,13 @@ import { Button, Modal } from 'react-bootstrap'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../../Context/cartListContext'
 import { walletBalance } from "../../../services/walletServices/walletService"
+import { useWallet } from '../../Context/walletContext'
 const Cart = () => {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const hasError = queryParams.get('error') === 'true';
-
+    const accessToken = localStorage.getItem("accessToken")
     const { languageData, language } = useLanguage()
 
     const [cartProducts, setCartProducts] = useState([])
@@ -29,10 +30,10 @@ const Cart = () => {
     const [buyNowId, setBuyNowId] = useState('')
     const [purchasedData, setPurchasedData] = useState([])
     const [rowId, setRowId] = useState('')
-    const [balance, setBalance] = useState('');
+    // const [balance, setBalance] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(hasError);
     const [proceedCheck, setProceedCheck] = useState(true)
-
+    const { showWalletBalance, balance } = useWallet();
     const userData = JSON.parse(localStorage.getItem('userData'))
     const { cartListServices } = useCart()
 
@@ -43,26 +44,26 @@ const Cart = () => {
     }, [hasError]);
 
     useEffect(() => {
-        showWalletServices()
+        showWalletBalance(accessToken)
     }, [])
 
 
-    const showWalletServices = async () => {
-        setLoading(true);
-        try {
-            const res = await walletBalance(userData?.id);
-            if (res.success === true) {
-                setBalance(res.data.wallet_amount);
-                setLoading(false);
-            } else {
-                console.error('API call failed:', res);
-                setLoading(false);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setLoading(false);
-        }
-    };
+    // const showWalletServices = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const res = await walletBalance(userData?.id);
+    //         if (res.success === true) {
+    //             setBalance(res.data.wallet_amount);
+    //             setLoading(false);
+    //         } else {
+    //             console.error('API call failed:', res);
+    //             setLoading(false);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         setLoading(false);
+    //     }
+    // };
 
     useEffect(() => {
         getCartServices()
@@ -73,7 +74,7 @@ const Cart = () => {
 
     const getCartServices = async () => {
         setLoading({ ...loading, listLoading: true })
-        const res = await getCart(userData?.id)
+        const res = await getCart(accessToken)
         if (res.success === true) {
             setLoading({ ...loading, listLoading: false })
             setCartProducts(res)
@@ -83,7 +84,7 @@ const Cart = () => {
     const deleteCartServices = async (id) => {
         setLoading({ ...loading, deleteLoading: true })
         setDeleteId(id)
-        const res = await deleteCart(userData?.id, id)
+        const res = await deleteCart(id, accessToken)
         if (res.success === true) {
             toast(translate(languageData, "deletedCartSuccessfully"), {
                 position: "top-center",
@@ -97,7 +98,7 @@ const Cart = () => {
             });
             setLoading({ ...loading, deleteLoading: false })
             getCartServices()
-            cartListServices()
+            cartListServices(accessToken)
         } else {
             toast(res.message, {
                 position: "top-center",
@@ -111,7 +112,7 @@ const Cart = () => {
             });
             setLoading({ ...loading, deleteLoading: false })
             getCartServices()
-            cartListServices()
+            cartListServices(accessToken)
         }
     }
 
@@ -119,19 +120,19 @@ const Cart = () => {
         setBuyNowId(domainId)
         setRowId(id)
         setLoading({ ...loading, buyNowLoading: true })
-        const res = await buyNow(userData?.id, domainId, serviceType, articleType)
+        const res = await buyNow(domainId, serviceType, articleType, accessToken)
         if (res.success === true) {
             setshowCartModal(true)
             setLoading({ ...loading, buyNowLoading: false })
             setPurchasedData(res)
             getCartServices()
-            cartListServices()
+            cartListServices(accessToken)
             setRowId()
         } else {
             setshowCartModal(true)
             setLoading({ ...loading, buyNowLoading: false })
             getCartServices()
-            cartListServices()
+            cartListServices(accessToken)
             setRowId()
 
         }
@@ -285,11 +286,6 @@ const Cart = () => {
     const handleClose = () => {
         setshowCartModal(false)
     }
-
-
-
-
-
 
 
 

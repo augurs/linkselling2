@@ -3,14 +3,16 @@ import { useLanguage } from '../../Context/languageContext';
 import { translate } from '../../../utility/helper';
 import { useEffect } from 'react';
 import "./fileupload.css"
+import { MdDelete } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
-const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, buttonName, classNames, errorMessage }) => {
+const FileUpload = ({ isUploadedImg, resetIsData, isData, allowedFileExtensions, getData, name, selectedImage, buttonName, classNames, errorMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadedFilesName, setUploadedFilesName] = useState('')
 
     const fileInputRef = useRef(null);
 
-    const { languageData  } = useLanguage();
+    const { languageData } = useLanguage();
 
     useEffect(() => {
         if (selectedImage) {
@@ -21,7 +23,23 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
             }
         }
     }, [selectedImage]);
-    
+
+    useEffect(() => {
+        if (isData != undefined && !isData && isData != true) {
+            setUploadedFilesName('');
+            fileInputRef.current.value = null;
+        }
+    }, [isData]);
+
+
+    useEffect(() => {
+        if (isData == false) {
+            resetIsData();
+        }
+    }, [isData, resetIsData]);
+
+    console.log(isUploadedImg, "40");
+
 
     const handleDragEnter = (e) => {
         e.preventDefault();
@@ -54,8 +72,18 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
 
     const handleInputChange = (e) => {
         const files = e?.target?.files[0];
-        getData(files, e.target.name)
-        setUploadedFilesName(files?.name)
+        if (files) {
+            const fileExtension = files.name.split('.').pop().toLowerCase();
+            console.log(`.${fileExtension}`, allowedFileExtensions, "77");
+            if (!allowedFileExtensions.includes(`.${fileExtension}`)) {
+                toast.error(translate(languageData, "FileTypeNotAllowed"));
+            } else {
+                getData(files, e.target.name);
+                setUploadedFilesName(files.name);
+            }
+        } else {
+            console.log("No file selected or upload cancelled.");
+        }
     };
 
 
@@ -65,7 +93,27 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
 
     const clear = () => {
         setUploadedFilesName('');
-      };
+        fileInputRef.current.value = null;
+
+    };
+
+    console.log(isUploadedImg, "93");
+
+    const getButtonText = () => {
+        if (name === "addImage") {
+            return isUploadedImg ? uploadedFilesName || "docx.jpeg" : buttonName || translate(languageData, "AddArtiSelecrDragFile");
+        } else if (name === "document") {
+            return uploadedFilesName || buttonName || translate(languageData, "AddArtiSelecrDragFile");
+        } else if (uploadedFilesName) {
+            return uploadedFilesName;
+        } else if (buttonName) {
+            return buttonName;
+        } else {
+            return translate(languageData, "AddArtiSelecrDragFile");
+        }
+    };
+
+
 
     return (
         <div
@@ -75,8 +123,12 @@ const FileUpload = ({ allowedFileExtensions, getData, name , selectedImage, butt
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
-            {/* <p></p> */}
-            <button className="text-break p-1" onClick={handleButtonClick}>{uploadedFilesName ? uploadedFilesName :buttonName ? buttonName :translate(languageData , "AddArtiSelecrDragFile")}</button>
+            <div className='d-flex flex-column'>
+                <button className="text-break p-1" onClick={handleButtonClick}>{getButtonText()}
+                    {/* {uploadedFilesName ? uploadedFilesName : buttonName ? buttonName : translate(languageData, "AddArtiSelecrDragFile")} */}
+                </button>
+                {uploadedFilesName && name == "document" && <button className="text-break p-1" onClick={clear}><MdDelete size={20} className="text-primary" /></button>}
+            </div>
             <input
                 type="file"
                 className="hidden-input"

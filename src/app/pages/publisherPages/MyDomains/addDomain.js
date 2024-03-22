@@ -20,6 +20,7 @@ const AddDomain = () => {
     const navigate = useNavigate()
 
     const publisherData = JSON.parse(localStorage.getItem("publisherData"))
+    const accessToken = localStorage.getItem('publisherAccessToken');
     const currLang = localStorage.getItem('lang');
 
     const { languageData } = useLanguage()
@@ -32,7 +33,7 @@ const AddDomain = () => {
             setOrderLoading(false);
             return;
         }
-        const res = await addDomainUrl(formValues, publisherData?.user?.id, currLang);
+        const res = await addDomainUrl(formValues, currLang, accessToken);
         if (res.success === true) {
             toast(translate(languageData, "DomainAddedSuccessfully"), {
                 position: "top-center",

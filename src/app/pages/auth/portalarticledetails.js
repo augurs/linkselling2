@@ -16,6 +16,84 @@ import publisherImg from "../../../assets/images/users/publisher1.png"
 import { baseURL2 } from '../../../utility/data';
 import moment from 'moment';
 import { IoCheckmark, IoCheckmarkDoneOutline } from 'react-icons/io5';
+import { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel} from 'docx';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
+async function fetchImageAsBase64(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error fetching image:', error);
+        throw error;
+    }
+}
+
+const convertHtmlToDocxElements = (html) => {
+    const elements = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const paragraphs = doc.querySelectorAll('p');
+
+    paragraphs.forEach((paragraph) => {
+        const text = paragraph.textContent.trim();
+        if (text) {
+            elements.push(new Paragraph({ text: text }));
+        }
+    });
+
+    return elements;
+}
+
+async function createDocFromData(data) {
+    try {
+        const imageData = await fetchImageAsBase64(data.image);
+        const doc = new Document({
+            sections: [
+                {
+                    children: [
+                        new Paragraph({
+                            // text: data.title,
+                            heading: HeadingLevel.HEADING_1,
+                            children: [
+                                new TextRun(data.title)
+                            ],
+                        }),
+                        new Paragraph(""),
+                        new Paragraph({
+                            children: [new TextRun({ text: data.lead, bold: true })]
+                        }),
+                        new Paragraph(""),
+                        ...convertHtmlToDocxElements(data.content),
+
+                        new Paragraph({
+                            children: [new ImageRun({
+                                data: imageData,
+                                transformation: { width: 100, height: 100 }
+                            })]
+                        })
+                    ]
+                }
+            ]
+        });
+
+        return await Packer.toBlob(doc);
+    } catch (error) {
+        console.error('Error creating DOCX:', error);
+        throw error;
+    }
+}
+
+
+
+
 function Portalarticledetails() {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -48,11 +126,13 @@ function Portalarticledetails() {
         chatSectionShow()
     }, [portalArticleDetail])
 
+
     const ordersListServices = async () => {
         setLoading(true);
         const res = await portalArticleDetails(id);
         if (res.success === true) {
             setPortalArticleDetail(res?.data);
+            // createDocFromJson(res?.data?.slice(0, 10));
             const apiLanguage = res?.data[0]?.language;
             setPortalLang(apiLanguage);
             if (apiLanguage) {
@@ -72,7 +152,6 @@ function Portalarticledetails() {
             );
         }
     }, [portalLang])
-
 
 
     const handleCopyClick = (content) => {
@@ -179,6 +258,73 @@ function Portalarticledetails() {
         setLoading(false);
     };
 
+    // const handleDownload = async () => {
+    //     setLoading(true);
+    //     const articleData = portalArticleDetail[0];
+    
+    //     if (articleData) {
+    //         const zip = new JSZip();
+    
+    //         // Generate DOCX files and add them to the ZIP file
+    //         const blob = await createDocFromData({
+    //             title: articleData.title || "",
+    //             content: articleData.content || "",
+    //             lead: articleData.lead || "",
+    //             image: `${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}` || ""
+    //         });
+    //         zip.file("downloaded.docx", blob);
+    
+    //         // Generate more DOCX files if needed and add them to the ZIP file
+    
+    //         // Generate the ZIP file
+    //         zip.generateAsync({ type: "blob" })
+    //             .then((content) => {
+    //                 saveAs(content, "downloaded.zip");
+    //                 setLoading(false);
+    //             })
+    //             .catch((error) => {
+    //                 console.error('Error generating ZIP file:', error);
+    //                 setLoading(false);
+    //             });
+    //     }
+    // };
+
+
+    const handleDownload = async () => {
+        setLoading(true);
+        const articleData = portalArticleDetail[0];
+
+        if (articleData) {
+            const zip = new JSZip();
+
+            // Generate DOCX files and add them to the ZIP file
+            const blob = await createDocFromData({
+                title: articleData.title || "",
+                content: articleData.content || "",
+                lead: articleData.lead || "",
+                image: `${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}` || ""
+            });
+            zip.file("downloaded.docx", blob);
+
+            // Download image file
+            const imageBlob = await fetch(`${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}`).then(response => response.blob());
+            zip.file(articleData.image, imageBlob);
+
+            const titleTextBlob = new Blob([articleData.title], { type: 'text/plain' });
+            zip.file("title.txt", titleTextBlob);
+
+            zip.generateAsync({ type: "blob" })
+                .then((content) => {
+                    saveAs(content, "downloaded.zip");
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error generating ZIP file:', error);
+                    setLoading(false);
+                });
+        }
+    };
+
     return (
         <div className='ltr login-img'>
             <ToastContainer />
@@ -194,6 +340,7 @@ function Portalarticledetails() {
                         <Card className='h-100'>
                             <Card.Header className='d-flex justify-content-between border-bottom pb-4'>
                                 <h3 className='fw-semibold'>{translate(languageData, "ArticleDetails")}</h3>
+                                <Button onClick={handleDownload} disabled={loading}>{translate(languageData, "downloadZipFile")}</Button>
                             </Card.Header>
                             <Card.Body >
                                 <div className=''>
@@ -219,7 +366,11 @@ function Portalarticledetails() {
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input mb-0 " data-bs-validate="Password is required">
                                                 {portalArticleDetail[0]?.lead || "--"}
+                                                <button className="copy-button" onClick={() => handleCopyClick(portalArticleDetail[0]?.lead)}>
+                                                    <FaCopy />
+                                                </button>
                                             </div>
+
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
@@ -228,7 +379,7 @@ function Portalarticledetails() {
                                         </Col>
                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
                                             <div className="wrap-input100 validate-input d-flex" data-bs-validate="Password is required">
-                                                <div dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
+                                                <div className='text-break' dangerouslySetInnerHTML={{ __html: portalArticleDetail[0]?.content }} />
                                                 <button className="copy-button position-relative" onClick={() => handleCopyClick(portalArticleDetail[0]?.content)}>
                                                     <FaCopy />
                                                 </button>
@@ -297,9 +448,9 @@ function Portalarticledetails() {
                                         <Col xs={12} md={4}>
                                             <span>{translate(languageData, "communicationPanel")}</span>
                                         </Col>
-                                        {chatData.length > 0 ? (
+                                        {chatData?.length > 0 ? (
                                             <Col xs={12} md={8} className="mt-3 mt-md-0 border border-3 timeline">
-                                                {chatData.map((message, index) => (
+                                                {chatData?.map((message, index) => (
                                                     <Row key={index} className="mb-3 align-items-center justify-content-center mt-4">
                                                         <Col xs={4} className="text-left">
                                                             {message.sender === 'user' && (
@@ -325,8 +476,8 @@ function Portalarticledetails() {
                                                                 <div className='border p-1 square bg-lightgray rounded-1 mb-4'>
                                                                     <div>{message.message}</div>
                                                                     <div style={{ fontSize: '0.66em' }} className='d-flex justify-content-end align-items-center gap-1'>
-                                                                    <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
-                                                                    <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} /> : <IoCheckmarkDoneOutline fontSize={14} color='green' />}</div>
+                                                                        <div>{moment(message?.date, 'YYYY-MM-DD HH:mm:ss').format('h:mm A D MMM, YYYY')}</div>
+                                                                        <div >{message.seenStatus == 0 ? <IoCheckmark fontSize={14} /> : <IoCheckmarkDoneOutline fontSize={14} color='green' />}</div>
                                                                     </div>
                                                                 </div>
                                                             )}

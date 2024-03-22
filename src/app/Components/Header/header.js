@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, Container, Dropdown, FormControl, InputGroup, Nav, Navbar } from 'react-bootstrap'
 import { useNavigate, Link } from 'react-router-dom'
 import LanguageSelect from '../Language/languageSelect';
@@ -14,18 +14,22 @@ import { FaHome } from 'react-icons/fa';
 const Header = ({ toggleSiderbar, setModalShow }) => {
 
     const navigate = useNavigate();
+    const accessToken = localStorage.getItem("accessToken");
 
-    const { cartContextData } = useCart()
+    const { cartContextData, cartListServices } = useCart()
 
     const logout = () => {
         localStorage.removeItem('userData')
         navigate('/login')
     }
 
+    useEffect(()=>{
+        if(accessToken){
+        cartListServices(accessToken)
+        }
+    },[])
 
-
-
-
+console.log(cartContextData?.length, "25");
 
 
     return (

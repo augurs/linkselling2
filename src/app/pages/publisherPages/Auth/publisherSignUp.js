@@ -32,9 +32,19 @@ const SignUp = () => {
   const navigate = useNavigate();
 
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormValues({ ...formValues, [name]: value });
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    if (value.trim().length === 0) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: '' }));
+    } else if (!value.startsWith(' ')) {
+      setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+      // setSpecialCodeData('');
+    }
   };
 
 
@@ -42,7 +52,7 @@ const SignUp = () => {
     setFormValues({ ...formValues, phoneNumber: value });
   };
 
-  console.log(formValues)
+
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
     setFormValues({ ...formValues, [name]: checked });
@@ -57,6 +67,7 @@ const SignUp = () => {
     let isValid = true;
     const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const phoneRegex = /^(\+\d{1,3})?\d{9,12}$/;
+    const passwordReg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
     if (!values.username) {
       error.username = languageData && languageData?.filter((item) => item.title === 'signUpUserError')[0]?.value || 'signUpUserError'
       isValid = false
@@ -70,6 +81,13 @@ const SignUp = () => {
     }
     if (!values.password) {
       error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
+      isValid = false;
+    }
+    if (!values.password) {
+      error.password = languageData && languageData?.filter((item) => item.title === 'signUpPasswordError')[0]?.value || 'signUpPasswordError';
+      isValid = false;
+    } else if (!passwordReg.test(values.password)) {
+      error.password = languageData && languageData?.filter((item) => item.title === 'passwordValidationError')[0]?.value || 'Hasło musi mieć co najmniej 8 znaków, w tym co najmniej 1 znak specjalny, 1 cyfrę i 1 alfabet.';
       isValid = false;
     }
     if (!values.phoneNumber) {
@@ -210,7 +228,8 @@ const SignUp = () => {
       language: currLang
     }
     const res = await signUpPublisher(values, currLang);
-    if (res.success === true) {
+    console.log(res, "213");
+    if (res?.success === true) {
       toast(signUpSuccessMessage, {
         position: "top-center",
         autoClose: 5000,
@@ -227,7 +246,7 @@ const SignUp = () => {
       setTimeout(() => {
         navigate('/RegistrationDone')
       }, 2000);
-    } else if (res.message[0] === "The email has already been taken.") {
+    } else if (res?.message?.email ? res?.message?.email[0] === "The email has already been taken." : "") {
       toast(signUpErrorsMessage, {
         position: "top-center",
         autoClose: 5000,
@@ -240,9 +259,9 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
     }
-    else if (res.message[0] === "The username has already been taken.") {
+    else if (res?.message?.username[0] === "The username has already been taken.") {
       toast(userNameAlredyTaken, {
         position: "top-center",
         autoClose: 5000,
@@ -255,7 +274,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
+      // setFormValues({ username: "", password: "", email: "", terms: false, marketing: false, privacy: false, confirmPassword: '' })
     }
     else {
       toast(loginFailureMessage2, {
@@ -270,7 +289,7 @@ const SignUp = () => {
         type: 'error'
       });
       setSignUpLoading(false)
-      setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
+      // setFormValues({ username: "", password: "", email: "", terms: false, confirmPassword: "" })
     }
   }
 

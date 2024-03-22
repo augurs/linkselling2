@@ -16,7 +16,9 @@ import FileUpload from '../../../Components/FileUpload/FileUpload'
 
 const DomainList = () => {
 
-  const publisherData = JSON.parse(localStorage.getItem('publisherData'))
+  const publisherData = JSON.parse(localStorage.getItem('publisherData'));
+  const accessToken = localStorage.getItem('publisherAccessToken');
+
   const { languageData } = useLanguage()
   const navigate = useNavigate();
   const [domainList, setDomainList] = useState([])
@@ -45,7 +47,7 @@ const DomainList = () => {
 
   const domainListServices = async () => {
     setLoading(true)
-    const res = await listDomain(publisherData?.user?.id)
+    const res = await listDomain(accessToken)
     if (res.success === true) {
       setDomainList(res?.data)
       setIsDataPresent(res.data.length > 0);
@@ -58,7 +60,7 @@ const DomainList = () => {
 
   const suspendOfferServices = async (DomainUrl) => {
     setLoading(true);
-    const res = await suspendOffer(DomainUrl, publisherData?.user?.id);
+    const res = await suspendOffer(DomainUrl, accessToken);
     if (res.success === true) {
       toast(translate(languageData, "suspendOfferSuccessfully"), {
         position: "top-center",
@@ -208,7 +210,7 @@ const DomainList = () => {
 
   const uploadCSVServices = async () => {
     setLoading(true);
-    const res = await uploadCSV(selectedFile, publisherData?.user?.id);
+    const res = await uploadCSV(selectedFile, accessToken);
     if (res?.success === true && res?.message === "CSV updated successfully.") {
       toast(translate(languageData, "csvFileUploadSuccessfully"), {
         position: "top-center",
@@ -267,7 +269,7 @@ const DomainList = () => {
 
   const downloadSampledCSVServices = async () => {
     setLoading(true)
-    const res = await downloadSampledCSV()
+    const res = await downloadSampledCSV(accessToken)
     if (res.success === true) {
       setDownloadSampledCSV(res?.message)
       setLoading(false)

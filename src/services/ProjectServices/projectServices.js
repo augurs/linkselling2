@@ -3,14 +3,18 @@ import { baseURL2 } from "../../utility/data";
 
 // const userData = JSON.parse(localStorage.getItem('userData'))
 
-export const addProjects = (values, id) => {
+export const addProjects = (values, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
     return axios
       .post(`${baseURL2}/LinkSellingSystem/public/api/add-project`, {
-        user_id: id,
         name: values.projectName,
         domain: values.webAddress,
         language: values.publicationLang,
-      })
+      }, {headers})
       .then((res) => {
         return res?.data;
       })
@@ -21,9 +25,14 @@ export const addProjects = (values, id) => {
   };
 
 
-  export const projectList = (id) => {
+  export const projectList = (accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/projects/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/projects`, { headers })
       .then((res) => {
         return res?.data;
       })
@@ -33,9 +42,14 @@ export const addProjects = (values, id) => {
       });
   };
 
-  export const projectChangeStatus = (id) => {
+  export const projectChangeStatus = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/project-change-status/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/project-change-status/${id}`, {headers})
       .then((res) => {
         return res?.data;
       })
@@ -45,9 +59,14 @@ export const addProjects = (values, id) => {
       });
   };
 
-  export const getProject = (id) => {
+  export const getProject = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/edit-project/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })
@@ -58,13 +77,18 @@ export const addProjects = (values, id) => {
   };
 
 
-  export const editProject = (values , id) => {
+  export const editProject = (values , id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
       .put(`${baseURL2}/LinkSellingSystem/public/api/update-project/${id}`, {
         name: values.projectName,
         domain: values.webAddress,
         language: values.publicationLang,
-      })
+      }, {headers})
       .then((res) => {
         return res?.data;
       })
@@ -74,14 +98,18 @@ export const addProjects = (values, id) => {
       });
   };
 
-  export const searchProject = (values, id, status) => {
-    console.log(values , "66");
+  export const searchProject = (values, status, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .post(`${baseURL2}/LinkSellingSystem/public/api/search-project/${id}`, {
+      .post(`${baseURL2}/LinkSellingSystem/public/api/search-project`, {
         language: values.language ? values.language : "" ,
         name: values.title,
         status: status,
-      })
+      }, {headers})
       .then((res) => {
         return res?.data;
       })
@@ -98,9 +126,14 @@ export const addProjects = (values, id) => {
 //   publicationLang: "",
 //   publicationCountry: ""
 
-export const viewPurchaseDomainlist = (uId, pId) => {
+export const viewPurchaseDomainlist = (pId, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/project-show-links/${uId}/${pId}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/project-show-links/${pId}`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -110,14 +143,33 @@ export const viewPurchaseDomainlist = (uId, pId) => {
     });
 };
 
-export const uploadDocx = (docx, lang) => {
+export const uploadDocx = (docx, lang, accessToken) => {
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `application/json`,
+    'content-type' : 'multipart/from-data'
+  }
   const formData = new FormData();
   formData.append("file", docx);
 
   return axios
-  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile?lang=${lang}`, formData)
+  .post(`${baseURL2}/LinkSellingSystem/public/api/readDocsFile?lang=${lang}`, formData, { headers })
     .then((res) => {
       return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+export const languagesOptsList = () => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-languages`)
+    .then((res) => {
+      return res?.data;
     })
     .catch((error) => {
       console.log(error);

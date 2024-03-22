@@ -24,6 +24,8 @@ const Layout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('userData')
+    localStorage.removeItem('accessToken')
+
     navigate('/login')
     setModalShow(false)
   }

@@ -14,7 +14,7 @@ import DataTable from 'react-data-table-component'
 import moment from 'moment';
 import FileUpload from '../FileUpload/FileUpload';
 import { useWallet } from '../../Context/walletContext';
-const Referral = () => {
+const Referral = ({handleLinkPath, toggleSidebar2}) => {
     const initialValues = {
         amount: "",
         ReferralPdf: "",
@@ -28,6 +28,7 @@ const Referral = () => {
     const [referralListData, setReferralListData] = useState([])
     const [showWithdrawalFields, setShowWithdrawalFields] = useState(false);
     const { showWalletBalance, balance } = useWallet();
+    const accessToken = localStorage.getItem("accessToken")
     useEffect(() => {
         if (showReferralModal) {
             showReferralLinkServices();
@@ -41,7 +42,7 @@ const Referral = () => {
     const showReferralLinkServices = async () => {
         setLoading(true);
         try {
-            const res = await showReferralLink(userData?.id);
+            const res = await showReferralLink(accessToken);
             if (res.success === true) {
                 setReferralLink(res);
                 setLoading(false);
@@ -68,7 +69,7 @@ const Referral = () => {
 
     const referralListServices = async () => {
         setLoading(true)
-        const res = await referralList(userData?.id)
+        const res = await referralList(accessToken)
         if (res.success === true) {
             setReferralListData(res?.code)
             setIsDataPresent(res?.code.length > 0);
@@ -146,7 +147,7 @@ const Referral = () => {
             setLoading(false)
             return;
         }
-        const res = await withdrawalReferral(formValues, userData?.id)
+        const res = await withdrawalReferral(formValues, accessToken)
         if (res.success === true) {
             toast(translate(languageData, "withdrawalSuccessfully"), {
                 position: "top-center",
@@ -159,8 +160,10 @@ const Referral = () => {
                 type: 'success'
             });
             setShowWithdrawalFields(false)
+            showReferralLinkServices()
             setFormValues(initialValues);
-            showWalletBalance()
+            showWalletBalance(accessToken)
+
             setLoading(false)
         } else if (res.success === false && res.message == "Please enter less than amount of your Balance") {
             toast(translate(languageData, "PleaseenterlessthanamountofyourBalance"), {
@@ -175,7 +178,20 @@ const Referral = () => {
             });
             setFormValues(initialValues);
             setLoading(false)
-        } else {
+        } else if (res.success === false && res.message[0] == "The referral pdf must be a file of type: pdf.") {
+            toast(translate(languageData, "pleaseEnterValidPDF"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setLoading(false)
+        }
+        else {
             toast(translate(languageData, "loginFailureMessage2"), {
                 position: "top-center",
                 autoClose: 2000,
@@ -190,10 +206,19 @@ const Referral = () => {
         }
     }
 
+    const handleAmountChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'amount' && parseFloat(value) == 0) {
+            setFormValues({ ...formValues, [name]: 1 });
+        } else {
+            setFormValues({ ...formValues, [name]: parseFloat(value) });
+        }
+    };
+
     return (
         <div>
             <div onClick={() => setShowReferralModal(true)}>
-                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide">
+                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide" onClick={() => toggleSidebar2() }>
                     <span className="side-menu__icon"><BsPeople size={20} style={{ color: "gray!important" }} /></span>
                     <span className="side-menu__label">{translate(languageData, "referFriends")}</span>
                 </Link>
@@ -235,8 +260,16 @@ const Referral = () => {
                             <Form.Group as={Row} controlId="withdrawalAmount">
                                 <Col><Form.Label>{translate(languageData, "enterAmount")} * : </Form.Label></Col>
                                 <Col sm="8">
-                                    <Form.Control type="number" name="amount" onChange={(e) => setFormValues({ ...formValues, amount: e.target.value })} />
-                                    {parseFloat(formValues?.amount) > balance ? <span className='text-danger'>{translate(languageData, "PleaseenterlessthanamountofyourBalance")}</span> : ""}
+                                    {/* <Form.Control type="number" name="amount" min="1" max="5" onChange={(e) => setFormValues({ ...formValues, amount: e.target.value })} /> */}
+                                    <Form.Control
+                                        type="number"
+                                        name="amount"
+                                        value={formValues?.amount}
+                                        onChange={(e) => {
+                                            handleAmountChange(e)
+                                        }}
+                                    />
+                                    {parseFloat(formValues?.amount) >= referralLink?.referralBalance ? <span className='text-danger'>{translate(languageData, "PleaseenterlessthanamountofyourBalance")}</span> : ""}
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row} controlId="uploadPdf">
@@ -248,7 +281,7 @@ const Referral = () => {
                             <Form.Group as={Row}>
                                 <Col></Col>
                                 <Col sm="8" className='d-flex justify-content-end'>
-                                    <Button variant="primary btn-primary" onClick={withdrawalReferralAmountServices}>
+                                    <Button disabled={parseFloat(formValues?.amount) >= referralLink?.referralBalance} variant="primary btn-primary" onClick={withdrawalReferralAmountServices}>
                                         {translate(languageData, "withdrawalAmount")}
                                     </Button>
                                 </Col>

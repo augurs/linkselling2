@@ -26,15 +26,21 @@ const AddArticle = () => {
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [editor, setEditor] = useState();
+    const [dataFound, setDataFound] = useState('');
+
     const [rejectComment, setRejectComment] = useState();
     const [displayedImage, setDisplayedImage] = useState(null);
     const [showDropdown, setShowDropdown] = useState(true);
     const { languageData } = useLanguage();
     const { id } = useParams();
     const navigate = useNavigate()
+
+    const accessToken = localStorage.getItem("accessToken")
+
     useEffect(() => {
         setEditor(formValues.content);
     }, [formValues.content]);
+
 
     const handleFiles = (file, name) => {
         setFormValues({ ...formValues, [name]: file });
@@ -85,7 +91,9 @@ const AddArticle = () => {
     }, []);
 
     const resubmitArticleServices = async () => {
-        const res = await resubmitarticle(id);
+        const res = await resubmitarticle(id, accessToken);
+        console.log(res, "93");
+        setDataFound(res)
         if (res.success === true) {
             const dynamicImageUrl = `${baseURL2}/LinkSellingSystem/public/articles/${res.data[0].image}`;
             setFormValues({
@@ -94,7 +102,7 @@ const AddArticle = () => {
                 title: res?.data[0]?.title,
                 link: res?.data[0]?.max_links,
                 url: res?.data[0]?.link,
-                image: dynamicImageUrl,
+                image: res.data[0].image ? dynamicImageUrl : "",
                 comment: res?.data[0]?.comment,
                 lead: res?.data[0]?.lead,
                 content: res?.data[0]?.content,
@@ -111,6 +119,8 @@ const AddArticle = () => {
             setShowDropdown(false);
         }
     };
+
+    console.log(dataFound?.success == true && dataFound?.msg == "Data found", "124");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -245,9 +255,20 @@ const AddArticle = () => {
 
                 return;
             }
+            if (!formValues.image) {
+                toast.error(translate(languageData, "Please upload an image"), {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                return;
+            }
 
-
-            const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment);
+            const res = await updaterResubmitarticle(formValues, formValues?.id, rejectComment, accessToken);
             if (res.success === true) {
                 toast(translate(languageData, "articleAddedSuccessfully"), {
                     position: "top-center",
@@ -290,9 +311,11 @@ const AddArticle = () => {
                         <h3>{translate(languageData, "resubmitArticle")}</h3>
                     </Card.Header>
                     <Card.Body className='border-bottom pb-5'>
-                        <div className='my-5'>
-                            <h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5>
-                        </div>
+                        {(dataFound.success == true && dataFound?.msg == "Data found") ?
+                            (
+                                <div className='my-5'>
+                                    <h5 className='fw-bold'>{translate(languageData, "AddArtiContents")}</h5>
+                                </div>) : ""}
 
                         {showDropdown ? (
                             <>
@@ -338,154 +361,158 @@ const AddArticle = () => {
                                     </Row> : ""}
                             </>
                         ) : (
-                            <>
-                                <Row className='align-items-center'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "artilstTitle")}*</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            <input
-                                                className='input100'
-                                                type='text'
-                                                name='title'
-                                                placeholder={translate(languageData, "artilstTitle")}
-                                                style={{ paddingLeft: "15px" }}
-                                                onChange={(e) => handleChange(e)}
-                                                value={formValues.title}
-                                            />
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors.title}</div>
-                                    </Col>
-                                </Row>
-                                <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "CommentsAndRecommendations")}</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
-                                            <textarea
-                                                className='input100'
-                                                type='text'
-                                                name='comment'
-                                                style={{ paddingLeft: "15px" }}
-                                                onChange={(e) => handleChange(e)}
-                                                onKeyDown={() => validate(formValues)}
-                                                value={formValues?.comment}
-                                            />
-                                        </div>
-                                        <div className='text-danger text-center mt-1'>{formErrors?.comment}</div>
-                                    </Col>
-                                </Row>
-                                <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "PublicationDate")}</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0' data-bs-validate='date is required'>
-                                            <input
-                                                className='input100'
-                                                type='date'
-                                                name='date'
-                                                placeholder='date'
-                                                style={{ paddingLeft: "15px" }}
-                                                onChange={(e) => handleChange(e)}
-                                                value={formValues?.date}
-                                            />
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "AddArtiLead")}</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <div className='wrap-input100 validate-input mb-0'>
-                                            <textarea
-                                                className='input100'
-                                                type='text'
-                                                name='lead'
-                                                style={{ paddingLeft: "15px" }}
-                                                onChange={(e) => handleChange(e)}
-                                                onKeyDown={() => validate(formValues)}
-                                                value={formValues?.lead}
-                                                rows={8}
-                                                cols={6}
-                                            />
-                                        </div>
-                                        <p className="text-end">{formValues?.lead?.length || 0}/{formValues?.minLeadLength}-{formValues?.maxLeadLength} Character</p>
-                                        <div className='text-danger text-center mt-1'>{formErrors?.lead}</div>
-                                    </Col>
-                                </Row>
-                                <Row className='mt-4 pb-8'>
-                                    <Col xs={12} md={4} className='mt-2'>
-                                        <span>{translate(languageData, "sidebarContent")} *</span>
-                                    </Col>
-                                    <Col xs={12} md={8} className='mt-3 mt-md-0'>
-                                        <ReactQuill
-                                            theme='snow'
-                                            onChange={handleEditorChange}
-                                            value={editor}
-                                            modules={modules}
-                                            formats={formats}
-                                            bounds={'.app'}
-                                            placeholder='Write content'
-                                        />
-                                        {formValues?.link < linkCount && (
-                                            <Alert variant="danger">
-                                                {translate(languageData, "Toomanylinks")} : {formValues?.link}
-                                            </Alert>
-                                        )}
-                                        <p className="text-end">{editor?.replace(/<[^>]*>/g, '').length || 0}/{formValues?.minArticleLength ? formValues?.minArticleLength : 0}-{formValues?.maxArticleLength ? formValues?.maxArticleLength : 0} Character</p>
-                                    </Col>
-                                </Row>
-                                <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "MessageforPublisher")} </span>
-                                    </Col>
-                                    <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
-                                        <div className="wrap-input100 validate-input mb-0">
-                                            <input
-                                                className='input100'
-                                                type='text'
-                                                name='publisherMsgText'
-                                                placeholder={translate(languageData, "MessageforPublisher")}
-                                                style={{ paddingLeft: "15px" }}
-                                                onChange={(e) => handleChange(e)}
-                                                value={formValues.publisherMsgText}
-                                            />
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row className='align-items-center mt-5'>
-                                    <Col xs={12} md={4}>
-                                        <span>{translate(languageData, "image")}</span>
-                                    </Col>
-                                    <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                        <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
-                                    </Col>
-                                    <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                        <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")} /></div>
-                                    </Col>
-                                    <Col xs={12} md={1} className='mt-3 mt-md-0'>
-                                        <div>{translate(languageData, "orselectviapixabay")}</div>
-                                    </Col>
+                            (dataFound.success == true && dataFound?.msg == "Data found") ?
+                                (
+                                    <>
+                                        <Row className='align-items-center'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "artilstTitle")}*</span>
+                                            </Col>
+                                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                                    <input
+                                                        className='input100'
+                                                        type='text'
+                                                        name='title'
+                                                        placeholder={translate(languageData, "artilstTitle")}
+                                                        style={{ paddingLeft: "15px" }}
+                                                        onChange={(e) => handleChange(e)}
+                                                        value={formValues.title}
+                                                    />
+                                                </div>
+                                                <div className='text-danger text-center mt-1'>{formErrors.title}</div>
+                                            </Col>
+                                        </Row>
+                                        <Row className='align-items-center mt-5'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "CommentsAndRecommendations")}</span>
+                                            </Col>
+                                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='Password is required'>
+                                                    <textarea
+                                                        className='input100'
+                                                        type='text'
+                                                        name='comment'
+                                                        style={{ paddingLeft: "15px" }}
+                                                        onChange={(e) => handleChange(e)}
+                                                        onKeyDown={() => validate(formValues)}
+                                                        value={formValues?.comment}
+                                                    />
+                                                </div>
+                                                <div className='text-danger text-center mt-1'>{formErrors?.comment}</div>
+                                            </Col>
+                                        </Row>
+                                        <Row className='align-items-center mt-5'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "PublicationDate")}</span>
+                                            </Col>
+                                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                                <div className='wrap-input100 validate-input mb-0' data-bs-validate='date is required'>
+                                                    <input
+                                                        className='input100'
+                                                        type='date'
+                                                        name='date'
+                                                        placeholder='date'
+                                                        style={{ paddingLeft: "15px" }}
+                                                        onChange={(e) => handleChange(e)}
+                                                        value={formValues?.date}
+                                                    />
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <Row className='align-items-center mt-5'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "AddArtiLead")}</span>
+                                            </Col>
+                                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                                <div className='wrap-input100 validate-input mb-0'>
+                                                    <textarea
+                                                        className='input100'
+                                                        type='text'
+                                                        name='lead'
+                                                        style={{ paddingLeft: "15px" }}
+                                                        onChange={(e) => handleChange(e)}
+                                                        onKeyDown={() => validate(formValues)}
+                                                        value={formValues?.lead}
+                                                        rows={8}
+                                                        cols={6}
+                                                    />
+                                                </div>
+                                                <p className="text-end">{formValues?.lead?.length || 0}/{formValues?.minLeadLength}-{formValues?.maxLeadLength} Character</p>
+                                                <div className='text-danger text-center mt-1'>{formErrors?.lead}</div>
+                                            </Col>
+                                        </Row>
+                                        <Row className='mt-4 pb-8'>
+                                            <Col xs={12} md={4} className='mt-2'>
+                                                <span>{translate(languageData, "sidebarContent")} *</span>
+                                            </Col>
+                                            <Col xs={12} md={8} className='mt-3 mt-md-0'>
+                                                <ReactQuill
+                                                    theme='snow'
+                                                    onChange={handleEditorChange}
+                                                    value={editor}
+                                                    modules={modules}
+                                                    formats={formats}
+                                                    bounds={'.app'}
+                                                    placeholder='Write content'
+                                                />
+                                                {formValues?.link < linkCount && (
+                                                    <Alert variant="danger">
+                                                        {translate(languageData, "Toomanylinks")} : {formValues?.link}
+                                                    </Alert>
+                                                )}
+                                                <p className="text-end">{editor?.replace(/<[^>]*>/g, '').length || 0}/{formValues?.minArticleLength ? formValues?.minArticleLength : 0}-{formValues?.maxArticleLength ? formValues?.maxArticleLength : 0} Character</p>
+                                            </Col>
+                                        </Row>
+                                        <Row className='align-items-center mt-5'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "MessageforPublisher")} </span>
+                                            </Col>
+                                            <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
+                                                <div className="wrap-input100 validate-input mb-0">
+                                                    <input
+                                                        className='input100'
+                                                        type='text'
+                                                        name='publisherMsgText'
+                                                        placeholder={translate(languageData, "MessageforPublisher")}
+                                                        style={{ paddingLeft: "15px" }}
+                                                        onChange={(e) => handleChange(e)}
+                                                        value={formValues.publisherMsgText}
+                                                    />
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <Row className='align-items-center mt-5'>
+                                            <Col xs={12} md={4}>
+                                                <span>{translate(languageData, "image")} *</span>
+                                            </Col>
+                                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                                <div>{displayedImage ? <img src={displayedImage} alt='Displayed' /> : ""}</div>
+                                            </Col>
+                                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                                <div><FileUpload allowedFileExtensions={['.jpg', '.gif', '.png']} getData={handleFiles} name='image' buttonName={translate(languageData, "uploadImage")} /></div>
+                                            </Col>
+                                            <Col xs={12} md={1} className='mt-3 mt-md-0'>
+                                                <div>{translate(languageData, "orselectviapixabay")}</div>
+                                            </Col>
 
-                                    <Col xs={12} md={3} className='mt-3 mt-md-0'>
-                                        <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
-                                    </Col>
-                                </Row>
-                            </>)}
+                                            <Col xs={12} md={3} className='mt-3 mt-md-0'>
+                                                <PixabayImageSearch onSelectImage={handlePixabayImageSelect} />
+                                            </Col>
+                                        </Row>
+                                    </>) : (<div className='text-center'>{translate(languageData, "notFoundAnyNewRecords")}</div>))}
                     </Card.Body>
-                    <div className='d-flex justify-content-end'>
-                        {loading ? <img src={globalLoader} className='mx-auto' /> :
-                            <div className='d-flex gap-2 mx-4 my-3'>
-                                <Button className='btn btn-primary' onClick={() => updateResubmitArticleServices()}>
-                                    {translate(languageData, "submit")}
-                                </Button>
-                            </div>
-                        }
-                    </div>
+                    {(dataFound.success == true && dataFound?.msg == "Data found") ?
+                        (
+                            <div className='d-flex justify-content-end'>
+                                {loading ? <img src={globalLoader} className='mx-auto' /> :
+                                    <div className='d-flex gap-2 mx-4 my-3'>
+                                        <Button className='btn btn-primary' onClick={() => updateResubmitArticleServices()}>
+                                            {translate(languageData, "submit")}
+                                        </Button>
+                                    </div>
+                                }
+                            </div>) : ""}
                 </Card>
             </div>
         </div>

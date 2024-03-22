@@ -22,10 +22,15 @@ export const requestArticle = (data) => {
     });
 };
 
-export const getPublisherArticles = (page, search, anchorType, userId) => {
+export const getPublisherArticles = (page, search, anchorType, lang, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
 
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}&user_id=${userId}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/publisher-articles?page=${page}&per_page=10&dofollow=${search?.doFollow}&promotion=${search?.promotions}&min_dr=${search?.drMin}&max_dr=${search?.drMax}&min_link=${search?.minLinks}&max_link=${search?.maxLinks}&min_href=${search?.ahrefMin}&max_href=${search?.ahrefMax}&type_of_anchor=${anchorType}&lang=${lang}`,  { headers })
     .then((res) => {
       return res.data;
     })
@@ -35,9 +40,14 @@ export const getPublisherArticles = (page, search, anchorType, userId) => {
     });
 };
 
-export const getPublisherArticleDetails = (domain, userId) => {
+export const getPublisherArticleDetails = (domain, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/article-details/${userId}/${domain?.portalLink}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-details/${domain?.portalLink}`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -47,9 +57,14 @@ export const getPublisherArticleDetails = (domain, userId) => {
     });
 }
 
-export const articleTypeList = () => {
+export const articleTypeList = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/article-types`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-types`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -60,7 +75,13 @@ export const articleTypeList = () => {
 }
 
 
-export const addToCartArticles = (data, isAddNew) => {
+export const addToCartArticles = (data, isAddNew, accessToken) => {
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `application/json`,
+    'content-type' : 'multipart/form-data'
+  }
 
   const formData = new FormData();
   formData.append("domain_id", data?.domainId);
@@ -85,11 +106,12 @@ export const addToCartArticles = (data, isAddNew) => {
   formData.append("art_id", data.artId);
   formData.append("publisher_msg", data.publisherMsgText);
   formData.append("lead", data.addArtiLead);
+  formData.append("imageUrl", data.imageUrl);
 
 
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/single-add-to-card/${data.userId}`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/single-add-to-card`, formData, {headers})
     .then((res) => {
       return res.data;
     })

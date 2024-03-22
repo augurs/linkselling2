@@ -8,6 +8,7 @@ import { useWallet } from "../../Context/walletContext";
 
 const WalletBalance = () => {
     const userData = JSON.parse(localStorage.getItem('userData'));
+    const accessToken = localStorage.getItem("accessToken")
     const [showModal, setShowModal] = useState(false);
     const [newBalance, setNewBalance] = useState('');
     const [taxPercentage, setTaxPercentage] = useState(23);
@@ -17,7 +18,8 @@ const WalletBalance = () => {
     const { showWalletBalance, balance } = useWallet();
 
     useEffect(() => {
-        showWalletBalance();
+        if (accessToken)
+            showWalletBalance(accessToken);
     }, []);
 
     const calculateTaxAndTotalAmount = (amount) => {
@@ -30,7 +32,7 @@ const WalletBalance = () => {
 
     const handleAddBalance = async () => {
         try {
-            const response = await updateWallet({ id: userData.id, amount: newBalance });
+            const response = await updateWallet(newBalance, accessToken);
             if (response.success) {
                 if (response.redirect_url_all) {
                     window.location.href = response.redirect_url_all;
@@ -53,7 +55,7 @@ const WalletBalance = () => {
         <div>
             <div onClick={() => setShowModal(true)}>
                 <FaWallet style={{ fontSize: "20px", marginRight: "6px" }} />
-                {balance? balance: 0} PLN{' '}
+                {balance ? balance : 0} PLN{' '}
                 <FaPlus
                     style={{ cursor: "pointer" }}
                 />

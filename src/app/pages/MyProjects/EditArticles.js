@@ -13,6 +13,7 @@ import { useLanguage } from '../../Context/languageContext'
 const EditProjects = () => {
 
     const { id } = useParams();
+    const accessToken = localStorage.getItem('accessToken')
 
     let initialValues = {
         projectName: "",
@@ -46,11 +47,11 @@ const EditProjects = () => {
         validate(formValues)
     }
 
-  
+
 
     const editProjectServices = async () => {
         setUpdateLoader(true)
-        const res = await editProject(formValues, id)
+        const res = await editProject(formValues, id, accessToken)
         if (res.success === true && res.response === 1) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
                 position: "top-center",
@@ -85,15 +86,19 @@ const EditProjects = () => {
 
 
     const getProjectServices = async () => {
-        const res = await getProject(id)
-        setFormValues({
-            ...formValues,
-            projectName: res.data[0].name,
-            webAddress: res.data[0].domain,
-            publicationLang: res.data[0].language,
-        });
+        const res = await getProject(id, accessToken)
+        console.log(res, "90");
+        if (res.success === true && res.msg == "Data found") {
+            setFormValues({
+                ...formValues,
+                projectName: res.data[0].name,
+                webAddress: res.data[0].domain,
+                publicationLang: res.data[0].language,
+            });
+        } else if (res.success === false && res.msg == "Data not found") {
+            setFormValues(res);
+        }
     }
-
 
 
 
@@ -102,17 +107,17 @@ const EditProjects = () => {
         let isValid = true;
 
         if (!values.projectName) {
-            errors.projectName = translate(languageData , "ProjectNameRequired");
+            errors.projectName = translate(languageData, "ProjectNameRequired");
             isValid = false
         }
 
         if (!values.webAddress) {
-            errors.webAddress = translate(languageData , "WebAddressRequired");
+            errors.webAddress = translate(languageData, "WebAddressRequired");
             isValid = false;
         }
 
         if (!values.publicationLang) {
-            errors.publicationLang = translate(languageData , "PublicationLanguageRequired")
+            errors.publicationLang = translate(languageData, "PublicationLanguageRequired")
             isValid = false;
         }
 
@@ -139,42 +144,46 @@ const EditProjects = () => {
     return (
         <div className='p-4'>
             <ToastContainer />
-            <Card>
-                <Card.Header><h2 className=''>{`${translate(languageData , "Edit")}  ${translate(languageData ,"artilstProject")}`}</h2></Card.Header>
-                <Card.Body>
-                    <Row className='align-items-center'>
-                        <Col lg={3} xs={12}>
-                        {translate(languageData , "NameOfTheProject")} *
-                        </Col>
-                        <Col lg={8} xs={12}>
-                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="projectName" placeholder='Project Name' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.projectName} />
-                            </div>
-                            <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
-                        </Col>
-                    </Row>
-                    <Row className='align-items-center mt-3'>
-                        <Col lg={3} xs={12}>
-                        {translate(languageData , "WebAddress")} *
-                        </Col>
-                        <Col lg={8} xs={12}>
-                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                                <input className="input100" type="text" name="webAddress" placeholder='Web Address' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.webAddress} />
-                            </div>
-                            <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
-                        </Col>
-                    </Row>
-                    <Row className='align-items-center mt-3'>
-                        <Col lg={3} xs={12}>
-                        {translate(languageData , "LanguagePublication")} *
-                        </Col>
-                        <Col lg={8} xs={12}>
-                            <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={languagesOpts.find((option) => option.value === formValues.publicationLang)} />
-                            <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
-                        </Col>
+            {formValues?.msg === "Data not found" ?
+                (<div className='text-center'>
+                    {translate(languageData, 'notFoundAnyNewRecords')}</div>
+                ) : (
+                    <Card>
+                        <Card.Header><h2 className=''>{`${translate(languageData, "Edit")}  ${translate(languageData, "artilstProject")}`}</h2></Card.Header>
+                        <Card.Body>
+                            <Row className='align-items-center'>
+                                <Col lg={3} xs={12}>
+                                    {translate(languageData, "NameOfTheProject")} *
+                                </Col>
+                                <Col lg={8} xs={12}>
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        <input className="input100" type="text" name="projectName" placeholder='Project Name' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.projectName} />
+                                    </div>
+                                    <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-3'>
+                                <Col lg={3} xs={12}>
+                                    {translate(languageData, "WebAddress")} *
+                                </Col>
+                                <Col lg={8} xs={12}>
+                                    <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                        <input className="input100" type="text" name="webAddress" placeholder='Web Address' style={{ paddingLeft: "15px" }} onChange={(e) => handleChange(e)} onKeyDown={() => validate(formValues)} value={formValues.webAddress} />
+                                    </div>
+                                    <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
+                                </Col>
+                            </Row>
+                            <Row className='align-items-center mt-3'>
+                                <Col lg={3} xs={12}>
+                                    {translate(languageData, "LanguagePublication")} *
+                                </Col>
+                                <Col lg={8} xs={12}>
+                                    <Select options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange} value={languagesOpts.find((option) => option.value === formValues.publicationLang)} />
+                                    <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
+                                </Col>
 
-                    </Row>
-                    {/* <Row className='align-items-center mt-3'>
+                            </Row>
+                            {/* <Row className='align-items-center mt-3'>
                         <Col lg={3} xs={12}>
                             Country of publication
                         </Col>
@@ -191,11 +200,11 @@ const EditProjects = () => {
                             <div className='text-danger text-center mt-1'>{formErrors.publicationCountry}</div>
                         </Col>
                     </Row> */}
-                </Card.Body>
-                <div className='d-flex mb-5'>
-                    <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => validate(formValues) ? editProjectServices() : ""}>{updateLoader ? <img src={globalLoader} width={20} /> : translate(languageData , "Save")} </Button>
-                </div>
-            </Card>
+                        </Card.Body>
+                        <div className='d-flex mb-5'>
+                            <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => validate(formValues) ? editProjectServices() : ""}>{updateLoader ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
+                        </div>
+                    </Card>)}
 
         </div>
     )

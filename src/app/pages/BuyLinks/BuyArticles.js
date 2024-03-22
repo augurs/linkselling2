@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import polandFlag from "../../../assets/images/flags/pl.svg"
-import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor } from 'react-icons/md';
+import { MdLink, MdOutlineKeyboardArrowDown, MdAnchor, MdLanguage } from 'react-icons/md';
 import usFlag from "../../../assets/images/flags/us.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { PiProhibitBold } from "react-icons/pi";
 import { BsExclamationOctagon } from "react-icons/bs";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import "./BuyLinks.css";
 import CloseIcon from '@mui/icons-material/Close';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Modal } from "react-bootstrap";
-import { anchorTypes } from "../../../utility/data";
+import { anchorTypes, baseURL2 } from "../../../utility/data";
 import { translate, countLinksInEditor } from "../../../utility/helper";
 import { useLanguage } from "../../Context/languageContext";
 import { addToCartArticles, articleTypeList, getPublisherArticleDetails, getPublisherArticles } from "../../../services/buyArticleServices/buyArticlesServices";
@@ -29,7 +29,7 @@ import { useCart } from "../../Context/cartListContext";
 import { Checkbox, FormControl, ListItemText, MenuItem, OutlinedInput, Select } from 'material-ui-core';
 import Select1 from 'react-select'
 import { Pagination, Stack } from "@mui/material";
-import { projectList } from '../../../services/ProjectServices/projectServices';
+import { languagesOptsList, projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useSidebar } from '../../Context/togglerBarContext';
 import { dashboardpromotion } from '../../../services/HomeServices/homeService'
 import ReactQuill from "react-quill";
@@ -56,6 +56,7 @@ const BuyArticles = () => {
         publicationLang: "",
     }
     const lang = localStorage.getItem("lang");
+    const accessToken = localStorage.getItem('accessToken')
     const { languageData } = useLanguage();
     // const [rating, setrating] = useState(initialState)
     const [formValues, setFormValues] = useState(initialValues);
@@ -88,6 +89,9 @@ const BuyArticles = () => {
     const [articles, setArticles] = useState([])
     const [listLoading, setListLoading] = useState(false)
     const [typeAnchors, setTypeAnchors] = useState([])
+    const [languageFilter, setLanguageFilter] = useState([])
+    const [selectedFile, setSelectedFile] = useState(null);
+
     const [lastPage, setLastPage] = useState()
     const [page, setPage] = useState(1)
     const [publisherArticleDetails, setPublisherArticleDetails] = useState([])
@@ -101,7 +105,7 @@ const BuyArticles = () => {
     const { cartListServices } = useCart()
     const { toggleSidebar1 } = useSidebar();
     const [showModal, setShowModal] = useState(false);
-    const [selectedMaxLinks, setSelectedMaxLinks] = React.useState(null);
+    const [selectedMaxLinks, setSelectedMaxLinks] = useState(null);
     const [provideSubject, setProvideSubject] = useState(false);
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [linkValues, setLinkValues] = useState([]);
@@ -113,9 +117,55 @@ const BuyArticles = () => {
     const [userDiscount, setUserDiscount] = useState('');
     const [useArticleList, setUseArticleList] = useState([])
     const [addNewArticleProjectDropdown, setAddNewArticleProjectDropdown] = useState([])
+    const [languagesOpts, setLanguagesOpts] = useState([])
+    const [buttonName, setButtonName] = useState(true);
+    const [docxError, setDocxError] = useState('');
+    const [numRows, setNumRows] = useState(0);
+
+    useEffect(() => {
+        if (selectedMaxLinks > 0) {
+            setNumRows(Math.min(selectedMaxLinks, 3));
+        }
+    }, [selectedMaxLinks]);
+
+    const handleAddRow = () => {
+        if (numRows < selectedMaxLinks) {
+            setNumRows(prevNumRows => prevNumRows + 1);
+        }
+    };
+
+    const handleRemoveRow = () => {
+        if (numRows > 3) {
+            setNumRows(prevNumRows => prevNumRows - 1);
+        }
+    };
 
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
+    useEffect(() => {
+        if (selectedFile) {
+            uploadDocxServices()
+        }
+    }, [selectedFile])
+
+    //Start- this condition is when modal is close//
+
+    useEffect(() => {
+        if (showOfferModal == false) {
+            setShowCartOptions(false)
+            setProvideSubjectText('')
+            setSuggestion('')
+            setPublisherMsgText('')
+            setLinkValues([])
+            setAnchorValues([])
+            setWeProvideSubject(true);
+            setProvideSubject(false);
+        }
+    }, [showOfferModal])
+
+    //End- this condition is when modal is close//
+
+    //start- this condition is bind the data in useArticle tab//
     useEffect(() => {
         if (useArticleList) {
             const data = useArticleList?.find((item) => item?.id == addNewArticleProjectDropdown)
@@ -128,6 +178,8 @@ const BuyArticles = () => {
         }
     }, [addNewArticleProjectDropdown, useArticleList])
 
+    //End- this condition is bind the data in useArticle tab//
+
     useEffect(() => {
         getUserDiscountServices()
     }, [])
@@ -138,7 +190,7 @@ const BuyArticles = () => {
 
     const getUserDiscountServices = async () => {
         setListLoading(true)
-        const res = await walletBalance(userData?.id);
+        const res = await walletBalance(accessToken);
         setUserDiscount(res?.data)
         setListLoading(false)
     }
@@ -148,6 +200,25 @@ const BuyArticles = () => {
             setAddArtiLead('')
         }
     }, [articleType]);
+
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                code: language.code,
+                value: language.englishName,
+                label: cardLang == "en" ? language.englishName : language.polishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleMaxLinksSelection = (maxLinks) => {
         setSelectedMaxLinks(maxLinks);
@@ -167,14 +238,15 @@ const BuyArticles = () => {
 
     const generateRows = () => {
         const rows = [];
-        for (let i = 1; i <= selectedMaxLinks; i++) {
+        // const defaultPairs = Math.min(selectedMaxLinks, 3);
+        for (let i = 1; i <= numRows; i++) {
             rows.push(
                 <Row key={i} className='align-items-center mt-5'>
                     <Col xs={12} md={4}>
-                        <span>{translate(languageData, "link")} {i} *</span>
+                        <span>{translate(languageData, "link")} {i} {i === 1 ? '*' : ''}</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0 mb-3">
-                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Link is required">
+                        <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Link is required">
                             <input
                                 className="input100"
                                 type="url"
@@ -184,10 +256,27 @@ const BuyArticles = () => {
                                 onChange={(e) => handleLinkChange(i - 1, e.target.value)}
                                 value={linkValues[i - 1] || ''}
                             />
+                            {selectedMaxLinks > 3 && i === numRows && numRows < selectedMaxLinks ?
+
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip id="tooltip" style={{ zIndex: 105000 }}>{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                ><button className='bg-transparent' onClick={handleAddRow}><FaPlusCircle /></button>
+                                </OverlayTrigger>
+
+                                : ""}
+                            {numRows > 3 && i > 2 && (
+                                <button className='bg-transparent' onClick={handleRemoveRow}>
+                                    <FaMinusCircle />
+                                </button>
+
+                            )}
                         </div>
+
                     </Col>
+
                     <Col xs={12} md={4}>
-                        <span>{translate(languageData, "requestanchor")} {i} *</span>
+                        <span>{translate(languageData, "requestanchor")} {i} {i === 1 ? '*' : ''}</span>
                     </Col>
                     <Col xs={12} md={8} className="mt-3 mt-md-0">
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Anchor is required">
@@ -239,11 +328,16 @@ const BuyArticles = () => {
         setTypeAnchors(typeAnchors.filter((item) => item !== type));
     };
 
+    const handleRemoveLanguageFilter = (value) => {
+        setLanguageFilter(languageFilter.filter((item) => item !== value));
+    };
+
+
     const navigate = useNavigate()
 
     useEffect(() => {
         getPublisherArticlesService()
-    }, [search, typeAnchors, page])
+    }, [search, typeAnchors, page, languageFilter])
 
     useEffect(() => {
         if (articleType === translate(languageData, "AddNewArticle") || articleType === translate(languageData, "selectLater") || articleType === translate(languageData, "UseArticle")) {
@@ -298,7 +392,8 @@ const BuyArticles = () => {
     useEffect(() => {
         if (lang)
             setCardLang(lang)
-    }, [lang])
+        languagesOptsServices()
+    }, [lang, cardLang])
 
 
     useEffect(() => {
@@ -330,6 +425,11 @@ const BuyArticles = () => {
         toggleSidebar1()
     }
 
+    const handleLanguageFilter = (e) => {
+        const value = e.target.value
+        setLanguageFilter(typeof value === 'string' ? value.split(',') : value)
+    }
+
     const handletoggle = () => {
         toggleSidebar1()
     }
@@ -339,7 +439,7 @@ const BuyArticles = () => {
 
     const getArticleListServices = async () => {
         setListLoading(true)
-        const res = await getArticles(userData?.id)
+        const res = await getArticles(accessToken)
         setArticleList(res?.data)
         setListLoading(false)
     }
@@ -725,7 +825,7 @@ const BuyArticles = () => {
 
 
     const articleTypeListService = async () => {
-        const res = await articleTypeList()
+        const res = await articleTypeList(accessToken)
         setArticlePackages(res?.data?.reverse())
     }
 
@@ -738,6 +838,16 @@ const BuyArticles = () => {
             return false;
         }
     };
+    const linkCount = countLinksInEditor(content);
+
+    useEffect(() => {
+        if (linkCount > selectedMaxLinks) {
+            console.error('Too many links in editor!');
+        }
+    }, [linkCount]);
+
+
+
 
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
@@ -770,7 +880,7 @@ const BuyArticles = () => {
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast(translate(languageData, "Minimum1link"), {
+                toast(`${translate(languageData, "Toomanylinks")}: ${selectedMaxLinks}`, {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -928,7 +1038,7 @@ const BuyArticles = () => {
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast(translate(languageData, "Minimum1link"), {
+                toast(`${translate(languageData, "Toomanylinks")}: ${selectedMaxLinks}`, {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -1028,9 +1138,10 @@ const BuyArticles = () => {
             artId: articleType === translate(languageData, "UseArticle") ? addNewArticleProjectDropdown : "",
             publisherMsgText: publisherMsgText,
             addArtiLead: addArtiLead,
+            imageUrl: /^https?:\/\/\S+\.\S+$/.test(image) ? true : ''
         }
         setCartLoading(true)
-        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"))
+        const res = await addToCartArticles(data, articleType === translate(languageData, "AddNewArticle"), accessToken)
         if (res.success === true) {
             toast(translate(languageData, 'addedCartSuccessfully'), {
                 position: "top-center",
@@ -1047,7 +1158,7 @@ const BuyArticles = () => {
             setShowCartOptions(false)
             getCartServices()
             setConfirmModal(true)
-            cartListServices()
+            cartListServices(accessToken)
             getPublisherArticlesService()
             setAddNewArticleProjectDropdown('')
         } else {
@@ -1063,7 +1174,7 @@ const BuyArticles = () => {
             });
             setCartLoading(false)
             setShowCartOptions(false)
-            cartListServices()
+            cartListServices(accessToken)
             setShowOfferModal(false)
             getPublisherArticlesService()
         }
@@ -1075,7 +1186,7 @@ const BuyArticles = () => {
     }
 
     const getCartServices = async () => {
-        const res = await getCart(userData?.id)
+        const res = await getCart(accessToken)
         setCartList(res?.product)
     }
 
@@ -1083,13 +1194,7 @@ const BuyArticles = () => {
         setContent(html)
     }
 
-    const linkCount = countLinksInEditor(content);
 
-    useEffect(() => {
-        if (linkCount > selectedMaxLinks) {
-            console.error('Too many links in editor!');
-        }
-    }, [linkCount]);
 
 
     const handleFiles = (file) => {
@@ -1118,7 +1223,7 @@ const BuyArticles = () => {
     // const paginationArray = numberToNumeralsArray(lastPage)
 
     const publisherArticleDetailService = async (domain) => {
-        const res = await getPublisherArticleDetails(domain, userData?.id)
+        const res = await getPublisherArticleDetails(domain, accessToken)
         if (res.success === true) {
             setShowOfferModal(true)
             setPublisherArticleDetails(res?.data)
@@ -1128,7 +1233,7 @@ const BuyArticles = () => {
 
     //slect project api and auto select option with id start
     const articleListServices = async () => {
-        const res = await projectList(userData?.id);
+        const res = await projectList(accessToken);
         const filteredData = res?.data?.filter(item => item.status === 'Active');
         setArticlesData2(filteredData);
     }
@@ -1143,16 +1248,19 @@ const BuyArticles = () => {
         }
     }, [pid]);
 
-
-
+    useEffect(() => {
+        if (search || typeAnchors || languageFilter) {
+            setPage(1)
+        }
+    }, [search, typeAnchors, languageFilter])
 
     //slect project api and auto select option with id 
 
     //filter article send data with cheked box start
     const getPublisherArticlesService = async () => {
-        const res = await getPublisherArticles(page, search, typeAnchors, userData?.id)
-        setArticles(res.data)
-        setLastPage(res?.last_page)
+        const res = await getPublisherArticles(page, search, typeAnchors, languageFilter, accessToken)
+        setArticles(res?.data)
+        setLastPage(res?.meta?.last_page)
     }
     //filter article send data with cheked box start
 
@@ -1161,7 +1269,7 @@ const BuyArticles = () => {
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
-            const res = await dashboardpromotion();
+            const res = await dashboardpromotion(accessToken);
 
             if (res.success === true) {
                 const data = res.data.reverse();
@@ -1224,7 +1332,7 @@ const BuyArticles = () => {
     const addProjectService = async () => {
 
         setLoading(true)
-        const res = await addProjects(formValues1, userData?.id);
+        const res = await addProjects(formValues1, accessToken);
 
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "Projectaddedsucessfully"), {
@@ -1310,28 +1418,88 @@ const BuyArticles = () => {
         }
     })
 
-    const languagesOpts = [
-        {
-            value: "English",
-            label: "English"
-        },
-        {
-            value: "Polish",
-            label: "Polish"
-        }
-    ]
-    //add project modal api end
-
 
     const handleUseArticleList = async () => {
-        const res = await getArticles(userData?.id)
+        const res = await getArticles(accessToken)
         setUseArticleList(res?.data)
     }
+
+    const resetIsData = () => {
+        setButtonName(true);
+    };
+
+    const handleFileChange = (file) => {
+        setSelectedFile(file);
+    }
+
+    const uploadDocxServices = async () => {
+        setLoading(true);
+        const res = await uploadDocx(selectedFile, lang, accessToken);
+        if (res.success === true) {
+            toast(translate(languageData, "docxFileUploadSuccessfully"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'success'
+            });
+
+            console.log(res?.images[0], "1401");
+            if (res?.title && res?.lead && res?.content) {
+                setRequestArticleTitle(res?.title.trim().replace(/\s+/g, ' '))
+                setAddArtiLead(res?.lead.trim().replace(/\s+/g, ' '))
+                setContent(res?.content)
+                setImageSource({ previewUrl: res?.images[0] });
+                setImage(res?.images[0] ? base64ToFile(res?.images[0]) : null)
+            }
+            setDocxError("");
+
+        } else if (res.success === false && res.message.file[0] === "The file must be a file of type: docx.") {
+            toast(`${translate(languageData, "pleaseUploadDocxFile")}`, {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+            setRequestArticleTitle('')
+            setAddArtiLead('')
+            setContent('')
+            setImageSource('')
+            setImage(null)
+            setDocxError(res.message.file[0])
+
+        } else {
+            toast(translate(languageData, "somethingwentwrong"), {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                type: 'error'
+            });
+        }
+
+        setLoading(false);
+    };
 
     return (
         <>
             <ToastContainer />
             <div className="p-4 w-100">
+                {loading && (
+                    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 10500, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                        <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                    </div>
+                )}
                 <Card>
                     <Card.Header className="justify-content-between align-items-center flex-wrap">
                         <div>
@@ -1387,7 +1555,7 @@ const BuyArticles = () => {
                                     </Select>
                                 </FormControl>
                             </Col>
-                            <Col xs={12} sm={12} md={4} className=''>
+                            <Col xs={12} sm={12} md={2} className=''>
                                 <div className='border border-muted d-flex align-items-center bg-white mb-3 p-3' style={{ height: "45px" }}>
                                     <MdLink size={24} color="text-primary" />
                                     <span className='flex-grow-1 d-flex align-items-center justify-content-center'>
@@ -1403,6 +1571,50 @@ const BuyArticles = () => {
                                     </label>
                                 </div>
                             </Col>
+                            {/* <Col xs={12} sm={12} md={2} className=''>
+                                <Select1 options={languagesOpts} defaultValue={languagesOpts[0]} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', zIndex: 1}) }} onChange={handleSelectChange1} />  
+                            </Col> */}
+                            <Col xs={12} sm={12} md={2} className=''>
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="languagefilter-label"
+                                        id="languagefilter"
+                                        multiple
+                                        name='publicationLang'
+                                        value={languageFilter}
+                                        onChange={handleLanguageFilter}
+                                        input={<OutlinedInput name='publicationLang' />}
+                                        renderValue={(selected) => (
+                                            <div className="d-flex align-items-center">
+                                                <MdLanguage size={20} className="text-primary" />
+                                                <span className="d-flex flex-grow-1 justify-content-center text-primary">
+                                                    {selected?.length > 0 ? selected.join(', ') : translate(languageData, "Language")}
+                                                </span>
+                                            </div>
+                                        )}
+                                        style={{ height: "40px", marginTop: "5px" }}
+                                        className="custom-select"
+                                        displayEmpty={true}
+                                        IconComponent={() => (
+                                            <MdOutlineKeyboardArrowDown
+                                                size={20}
+                                                className='me-1 MuiSvgIcon-root MuiSelect-icon text-primary'
+                                            />
+                                        )}
+                                    >
+                                        <MenuItem value="" disabled>
+                                            {translate(languageData, "selectlang")}
+                                        </MenuItem>
+                                        {languagesOpts.map((name, index) => (
+                                            <MenuItem key={index} value={name.code} className='check_list'>
+                                                <Checkbox checked={languageFilter?.indexOf(name.code) > -1} />
+                                                <ListItemText primary={name.label} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Col>
+
                             <Col xs={12} sm={12} md={4} className='d-flex gap-2'>
                                 {checkboxes
                                     ?.slice(0, numCheckboxesToDisplay)
@@ -1482,7 +1694,7 @@ const BuyArticles = () => {
                                         />
                                     </div>
                                 </Col>
-                                <Col lg={6} className="pe-0">
+                                <Col lg={6} className="pe-0 z-0">
                                     <div
                                         className="wrap-input100 validate-input mb-0"
                                         data-bs-validate="Password is required"
@@ -1545,6 +1757,20 @@ const BuyArticles = () => {
                                         size="small"
                                         className="btn btn-light text-dark"
                                         onClick={() => handleRemoveTypeAnchor(type)}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
+                                        {type}
+                                    </Button>
+                                </li>
+                            ))}
+                            {languageFilter.map((type) => (
+                                <li key={type}>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        className="btn btn-light text-dark"
+                                        onClick={() => handleRemoveLanguageFilter(type)}
                                         style={{ display: 'flex', alignItems: 'center' }}
                                     >
                                         <CloseIcon className="closeIcon" style={{ marginRight: '8px' }} fontSize="small" />
@@ -1825,6 +2051,25 @@ const BuyArticles = () => {
                                                 <div>
                                                     <Row className='align-items-center mt-5'>
                                                         <Col xs={12} md={4}>
+                                                            <span>{translate(languageData, "AddArtiImportDoc")} </span>
+                                                        </Col>
+                                                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                                            <div>
+                                                                <FileUpload
+                                                                    allowedFileExtensions={'.docx'}
+                                                                    getData={handleFileChange}
+                                                                    name="document"
+                                                                    isData={buttonName}
+                                                                    resetIsData={resetIsData}
+                                                                />
+                                                                {docxError && <span className="text-danger d-flex justify-content-center">{translate(languageData, "pleaseUploadDocxFile")}</span>}
+                                                            </div>
+
+                                                        </Col>
+
+                                                    </Row>
+                                                    <Row className='align-items-center mt-5'>
+                                                        <Col xs={12} md={4}>
                                                             <span>{translate(languageData, "artilstTitle")} *</span>
                                                         </Col>
                                                         <Col xs={12} md={8} className="mt-3 mt-md-0">
@@ -2085,7 +2330,7 @@ const BuyArticles = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         {showCartOptions ?
-                            <Button variant="primary" onClick={() => addToCartArticleServices()}>
+                            <Button variant="primary" onClick={() => addToCartArticleServices()} disabled={cartLoading}>
                                 {cartLoading ? "Wait..." : translate(languageData, "addToCart")}
                             </Button> : ""}
 

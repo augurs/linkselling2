@@ -4,9 +4,14 @@ import { baseURL2 } from "../../utility/data";
 const userData = JSON.parse(localStorage.getItem('userData'))
 
 
-export const resubmitarticle = (id) => {
+export const resubmitarticle = (id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-resubmit-article/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-resubmit-article/${id}`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -17,9 +22,14 @@ export const resubmitarticle = (id) => {
 };
 
 
-export const uploadimagereqarticle = (id, imgid) => {
+export const uploadimagereqarticle = (imgid, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${id}/${imgid}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/article-review/${imgid}`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -30,7 +40,13 @@ export const uploadimagereqarticle = (id, imgid) => {
 };
 
 
-export const updaterResubmitarticle = (data, id, rejectComment) => {
+export const updaterResubmitarticle = (data, id, rejectComment, accessToken) => {
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
 
   const formData = new FormData();
   formData.append("title", data.title);
@@ -52,7 +68,7 @@ export const updaterResubmitarticle = (data, id, rejectComment) => {
 
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/update-resubmit-article/${id}`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-resubmit-article/${id}`, formData, {headers})
     .then((res) => {
       return res.data;
     })
@@ -62,7 +78,12 @@ export const updaterResubmitarticle = (data, id, rejectComment) => {
     });
 };
 
-export const updaterimagrequestedarticle = (data, id) => {
+export const updaterimagrequestedarticle = (data, id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
 
   const formData = new FormData();
   if (data.image && (data.image instanceof File || data.image instanceof Blob)) {
@@ -75,7 +96,7 @@ export const updaterimagrequestedarticle = (data, id) => {
 }
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/update-image-article/${id}`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-image-article/${id}`, formData, {headers})
     .then((res) => {
       return res.data;
     })

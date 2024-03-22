@@ -11,6 +11,7 @@ import { FaEye, FaLink } from 'react-icons/fa';
 import { orderslist } from '../../services/OrdersServices/ordersServices'
 const Home = () => {
   const userData = JSON.parse(localStorage.getItem('userData'))
+  const accessToken = localStorage.getItem('accessToken')
   const { languageData } = useLanguage()
 
   const [dashBoardproject, setDashBoardProjects] = useState([])
@@ -29,7 +30,7 @@ const Home = () => {
 
   const todoListService = async () => {
     setLoading(true)
-    const res = await todolists(userData?.id)
+    const res = await todolists(accessToken)
     if (res.success === true) {
       setToDoList(res?.data)
       setLoading(false)
@@ -92,7 +93,7 @@ const Home = () => {
 
   const dashBoardProjectsServices = async () => {
     setLoading(true)
-    const res = await dashboardprojects(userData?.id)
+    const res = await dashboardprojects(accessToken)
     if (res.success === true) {
       setDashBoardProjects(res?.data)
       setLoading(false)
@@ -142,7 +143,7 @@ const Home = () => {
 
   const promotionListServices = async () => {
     setLoading(true)
-    const res = await dashboardpromotion()
+    const res = await dashboardpromotion(accessToken)
     if (res.success === true) {
       setPromotionList(res?.data)
       setLoading(false)
@@ -215,7 +216,7 @@ const Home = () => {
 
   const ordersListServices = async () => {
     setLoading(true)
-    const res = await orderslist(userData?.id)
+    const res = await orderslist(accessToken)
     if (res.success === true) {
       setOrdersList(res?.data)
       setLoading(false)
@@ -411,7 +412,7 @@ const Home = () => {
         </Col>
         <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
-            <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
+            <Card.Header className='f-flex justify-content-between border-bottom pb-1'>
               <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
               <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData, "AddProject")}</Button>
             </Card.Header>
@@ -421,7 +422,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-1' alt='loader1' />
                   </div> :
-                    <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
+                    <div style={{ height: '206px', overflowY: 'scroll', maxHeight: '206px' }}>
                       <DataTable
                         columns={columns}
                         data={tableData}

@@ -20,6 +20,7 @@ function Login() {
   };
 
   const userData = JSON.parse(localStorage.getItem('userData'));
+  const accessToken = localStorage.getItem("accessToken")
 
   useEffect(() => {
     if (userData) {
@@ -30,7 +31,7 @@ function Login() {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false)
-  const { showWalletBalance } = useWallet();
+  const { showWalletBalance, balance } = useWallet();
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -81,16 +82,26 @@ function Login() {
   const loginService = async () => {
     setLoading(true)
     localStorage.removeItem('publisherData');
+    localStorage.removeItem('userData');
+
     const res = await login(
       formValues.email.includes('@') ? { email: formValues.email, password: formValues.password } : { username: formValues.email, password: formValues.password },
       language
     );
-    if (res.status === "1") {
+    if (res?.user?.status === "1") {
       setLoading(false)
-      localStorage.setItem('userData', JSON.stringify(res))
+      localStorage.setItem('userData', JSON.stringify(res.user))
+      localStorage.setItem('accessToken', res?.access_token)
+
       if (!language) {
         localStorage.setItem('lang', "pl")
       }
+      // if (res.status === "1") {
+      //   setLoading(false)
+      //   localStorage.setItem('userData', JSON.stringify(res))
+      //   if (!language) {
+      //     localStorage.setItem('lang', "pl")
+      //   }
       toast(loginSuccessMessage, {
         position: "top-center",
         autoClose: 3000,
@@ -102,9 +113,12 @@ function Login() {
         theme: "colored",
         type: 'success'
       });
-      showWalletBalance()
       setTimeout(() => {
         navigate('/')
+        if(balance && accessToken){
+        showWalletBalance(accessToken)
+        }
+
         localStorage.removeItem('nipData')
       }, 1000);
 

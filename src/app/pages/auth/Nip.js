@@ -92,6 +92,8 @@ const Nip = () => {
             localStorage.setItem('nipData', nipData)
             let userData = JSON.stringify(res?.user)
             localStorage.setItem('userData', userData)
+            localStorage.setItem('accessToken', res?.access_token)
+
 
         } else if (res?.success === false && res?.message === "This nip number already registered") {
             toast("Ten numer NIP już jest zarejestrowany", {
@@ -140,12 +142,19 @@ const Nip = () => {
 
     }
 
-
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (validate(formValues)) {
+                nipRegisterServices();
+            }
+        }
+    };
 
 
 
     return (
-        <div className='ltr login-img'>
+        <div className='ltr login-img' onKeyPress={handleKeyPress}>
             <ToastContainer />
             <div className=' justify-content-end mt-2 me-2 d-none' >
                 <LanguageSelect />
@@ -157,7 +166,7 @@ const Nip = () => {
                     </Container>
                     <Container className="container-login100">
                         <div className='wrap-0login10 p-0'>
-                            <Card>
+                            <Card >
                                 <Card.Body>
                                     <Form className="login100-form validate-form">
                                         <span className="login100-form-title">{t('nipHeading')}</span>

@@ -23,7 +23,7 @@ export const login = (formValues, currLang) => {
 export const signup = (formValues, language, refId) => {
   return axios
     .post(`${baseURL2}/LinkSellingSystem/public/api/register-user`, {
-      name: formValues.username,
+      name: formValues.email,
       email: formValues.email,
       password: formValues.password,
       language: language,
@@ -180,14 +180,31 @@ export const autoLoginPublisher = (id) => {
     });
 };
 
-export const sendingUserLoggedin = (logged_in, id) => {
+export const sendingUserLoggedin = (logged_in, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   const formData = new FormData();
   formData.append("logged_in", logged_in);
-  formData.append("id", id);
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-logged_in`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/publisher-logged_in`, formData, {headers})
     .then((res) => {
       return res.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response.data;
+    });
+};
+
+
+export const readSpecialCode = (code) => {
+  return axios
+    .get(`${baseURL2}/LinkSellingSystem/public/api/getSpecialCodeDetails/${code}`)
+    .then((res) => {
+      return res?.data;
     })
     .catch((error) => {
       console.log(error);

@@ -11,19 +11,20 @@ function useCart() {
 
 function CustomCartContext({ children }) {
 
-    const userData = JSON.parse(localStorage.getItem('userData'));
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // const accessToken = localStorage.getItem("accessToken");
 
-    useEffect(() => {
-        if(userData?.id){
-        cartListServices()
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         cartListServices();
+    //     }
+    // }, []);
 
     const [cartContextData, setCartContextData] = useState([])
 
 
-    const cartListServices = async () => {
-        const res = await getCart(userData?.id)
+    const cartListServices = async (accessToken) => {
+        const res = await getCart(accessToken)
         if (res.success === true) {
             setCartContextData(res?.product)
         }
@@ -31,7 +32,7 @@ function CustomCartContext({ children }) {
 
 
     return (
-        <cartContext.Provider value={{ cartListServices, cartContextData }}>
+        <cartContext.Provider value={{ cartListServices, cartContextData, setCartContextData }}>
             {children}
         </cartContext.Provider>
     )

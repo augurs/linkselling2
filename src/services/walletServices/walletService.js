@@ -2,9 +2,14 @@ import axios from "axios";
 import { baseURL2 } from "../../utility/data";
 
 
-export const walletBalance = (id) => {
+export const walletBalance = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/user-wallet-amount/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/user-wallet-amount`, { headers })
     .then((res) => {
       return res?.data;
     })
@@ -15,9 +20,14 @@ export const walletBalance = (id) => {
 };
 
 
-export const showReferralLink = (id) => {
+export const showReferralLink = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-refer-code/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-refer-code`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -29,9 +39,14 @@ export const showReferralLink = (id) => {
 
 
 
-export const referralList = (id) => {
+export const referralList = (accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/get-refer-list/${id}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/get-refer-list`, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -43,14 +58,17 @@ export const referralList = (id) => {
 
 
 
-export const updateWallet = (data) => {
-  const { id, amount } = data;
+export const updateWallet = (amount, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
   const formData = new FormData();
-  formData.append("id", id);
   formData.append('amount', amount);
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/update-user-wallet`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/update-user-wallet`, formData, {headers})
     .then((res) => {
       return res?.data;
     })
@@ -61,16 +79,21 @@ export const updateWallet = (data) => {
 };
 
 
-export const withdrawalReferral = (formValues, id) => {
+export const withdrawalReferral = (formValues, accessToken) => {
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
 
   const formData = new FormData();
   formData.append("enter_amount", formValues.amount);
   formData.append("referral_pdf", formValues.ReferralPdf);
-  formData.append("id", id);
 
 
   return axios
-    .post(`${baseURL2}/LinkSellingSystem/public/api/referWithdrawalAmount`, formData)
+    .post(`${baseURL2}/LinkSellingSystem/public/api/referWithdrawalAmount`, formData, {headers})
     .then((res) => {
       return res.data;
     })
@@ -83,9 +106,14 @@ export const withdrawalReferral = (formValues, id) => {
 
 
 
-export const redeemCode = (formValues) => {
+export const redeemCode = (formValues, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'multipart/form-data'
+  }
   return axios
-    .get(`${baseURL2}/LinkSellingSystem/public/api/getRedeem/${formValues?.redeemCode}`)
+    .get(`${baseURL2}/LinkSellingSystem/public/api/getRedeem/${formValues?.redeemCode}`, {headers})
     .then((res) => {
       return res?.data;
     })

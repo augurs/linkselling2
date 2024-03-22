@@ -3,9 +3,14 @@ import { baseURL2 } from "../../utility/data";
 
 
 
-  export const orderslist = (id) => {
+  export const orderslist = (accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/get-article-orders/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/get-article-orders`, {headers})
       .then((res) => {
         return res?.data;
       })
@@ -16,9 +21,14 @@ import { baseURL2 } from "../../utility/data";
   };
 
 
-export const ordersListArticle = (id) => {
+export const ordersListArticle = (id, accessToken) => {
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Accept': `*/*`,
+    'content-type' : 'application/json'
+  }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/addnewarticle/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/addnewarticle/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })
@@ -29,9 +39,14 @@ export const ordersListArticle = (id) => {
   };
 
 
-  export const ordersListArticle1 = (id) => {
+  export const ordersListArticle1 = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/requestarticle/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/requestarticle/${id}`, { headers })
       .then((res) => {
         return res?.data;
       })
@@ -41,9 +56,32 @@ export const ordersListArticle = (id) => {
       });
   };
 
-  export const chatSectionService = (id, articleType) => {
+  export const ordersListArticle2 = (id, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
     return axios
-      .get(`${baseURL2}/LinkSellingSystem/public/api/article-messages/${articleType}/${id}`)
+      .get(`${baseURL2}/LinkSellingSystem/public/api/view-order-detail/RequestArticleOrders/${id}`, { headers })
+      .then((res) => {
+        return res?.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error.response.data;
+      });
+  };
+
+
+  export const chatSectionService = (id, articleType, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `*/*`,
+      'content-type' : 'application/json'
+    }
+    return axios
+      .get(`${baseURL2}/LinkSellingSystem/public/api/article-messages/${articleType}/${id}`, { headers })
       .then((res) => {
         console.log(id, "45");
         return res?.data;
@@ -54,7 +92,12 @@ export const ordersListArticle = (id) => {
       });
   };
 
-  export const sentToPublisherMessage = (id, article, message) => {
+  export const sentToPublisherMessage = (id, article, message, accessToken) => {
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': `application/json`,
+      'content-type' : 'application/json'
+    }
 
     const formData = new FormData();
     formData.append("message", message);
@@ -63,7 +106,7 @@ export const ordersListArticle = (id) => {
   
   
     return axios
-      .post(`${baseURL2}/LinkSellingSystem/public/api/user-send-message/${id}`, formData)
+      .post(`${baseURL2}/LinkSellingSystem/public/api/user-send-message/${id}`, formData, {headers})
       .then((res) => {
         return res.data;
       })

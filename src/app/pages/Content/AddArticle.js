@@ -1,30 +1,40 @@
 import React from 'react'
-import { Button, Card, Col, Row } from 'react-bootstrap'
+import { Button, Card, Col, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import FileUpload from '../../Components/FileUpload/FileUpload'
-import { useState } from 'react'
-import { FaInfoCircle } from 'react-icons/fa';
+import { useState, useRef } from 'react'
+import { FaInfoCircle, FaPlusCircle } from 'react-icons/fa';
 import { addArticle } from '../../../services/articleServices/articleServices';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import globalLoader from '../../../assets/images/loader.svg'
 import ReactQuill from 'react-quill';
-import { translate } from '../../../utility/helper';
+import { base64ToFile, translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
-import { projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
+import { addProjects, languagesOptsList, projectList, uploadDocx } from '../../../services/ProjectServices/projectServices';
 import { useEffect } from 'react';
 import PixabayImageSearch from '../../Components/Pixabay/pixabay';
-import { base64ToBinary } from '../../../utility/helper';
+import Select1 from 'react-select'
+import { baseURL2 } from '../../../utility/data';
 const AddArticle = () => {
+
     const userData2 = JSON.parse(localStorage.getItem("userData"))
+    const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
     const initialValues = {
         document: "",
         project: "",
         title: "",
         lead: "",
-        image: ""
+        addImage: ""
     };
 
+    const initialValues1 = {
+        projectName: "",
+        webAddress: "",
+        publicationLang: "",
+    }
+
+    const [formValues1, setFormValues1] = useState(initialValues1);
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({});
     const [loading, setLoading] = useState(false)
@@ -36,7 +46,15 @@ const AddArticle = () => {
     const [displayedImage, setDisplayedImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const { languageData } = useLanguage();
+    const [showModal, setShowModal] = useState(false);
+    const [buttonName, setButtonName] = useState(true);
+    const [languagesOpts, setLanguagesOpts] = useState([])
     const navigate = useNavigate()
+
+    const handleSelectChange1 = (selectedOption) => {
+        setFormValues1({ ...formValues1, publicationLang: selectedOption?.value })
+        validate(formValues1)
+    }
 
     useEffect(() => {
         setFormValues({ ...formValues, title: title, lead: lead })
@@ -48,6 +66,109 @@ const AddArticle = () => {
         }
     }, [selectedFile])
 
+
+    useEffect(() => {
+        languagesOptsServices()
+        articleListServices2()
+    }, [])
+
+    const resetIsData = () => {
+        setButtonName(true);
+    };
+
+
+    const handleChange1 = (e) => {
+        const { name, value } = e.target;
+        setFormValues1({ ...formValues1, [name]: value })
+    }
+
+    // const languagesOpts = [
+    //     {
+    //         value: "English",
+    //         label: "English"
+    //     },
+    //     {
+    //         value: "Polish",
+    //         label: "Polish"
+    //     }
+    // ]
+
+    const languagesOptsServices = async () => {
+        setLoading(true);
+        try {
+            const res = await languagesOptsList();
+            const mappedOptions = res.languages.map(language => ({
+                value: language.englishName,
+                label: language.englishName,
+                flag: `${baseURL2}/LinkSellingSystem/public/${language.image}`
+            }));
+            setLanguagesOpts(mappedOptions);
+        } catch (error) {
+            console.error('Error fetching language options:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const addProjectService = async () => {
+
+        setLoading(true)
+        const res = await addProjects(formValues1, accessToken);
+
+        if (res.response === true && res.success === true) {
+            toast(translate(languageData, "Projectaddedsucessfully"), {
+                position: "top-center",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'success'
+            });
+            await articleListServices2();
+            // setProject(res.data.id);
+            setLoading(false)
+        } else if (res.success === false && res.response) {
+            for (const field in res.response) {
+                if (res.response.hasOwnProperty(field)) {
+                    const errorMessages = res.response[field].map(message => {
+                        const translationKey = fieldTranslationMap[field] || field;
+                        return `${translate(languageData, translationKey)}`;
+                    });
+                    const errorMessage = errorMessages.join('. ');
+                    toast(errorMessage, {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        type: 'error'
+                    });
+                }
+            }
+        } else {
+            toast(translate(languageData, "loginFailureMessage2"), {
+                position: "top-center",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+                type: 'error'
+            });
+            setLoading(false)
+        }
+        handleCloseModal();
+    }
+
+    
+
     //pixabay Image selct start//
 
     const handlePixabayImageSelect = (selectedPixabayImage) => {
@@ -58,7 +179,7 @@ const AddArticle = () => {
                 const previewUrl = URL.createObjectURL(blob);
                 setFormValues({
                     ...formValues,
-                    image: blob,
+                    addImage: blob,
                 });
 
                 setDisplayedImage(previewUrl);
@@ -74,12 +195,17 @@ const AddArticle = () => {
     const allowedImageExtension = ['.jpg', '.gif', '.png']
 
     const handleFiles = (file, name) => {
-        setFormValues({ ...formValues, [name]: file });
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setDisplayedImage(reader.result);
-        };
-        reader.readAsDataURL(file);
+        if (file instanceof Blob) {
+            setFormValues({ ...formValues, [name]: file });
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setDisplayedImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.error('Invalid file or no file selected.');
+        }
     };
 
     const fieldTranslationMap = {
@@ -91,14 +217,14 @@ const AddArticle = () => {
         title: translate(languageData, "TitleField"),
 
     };
-    const handleAddArticleServices = async (type) => {
 
+    const handleAddArticleServices = async (type) => {
         if (type === "saveandexit") {
             setLoading2(true)
         } else if (type === "save") {
             setLoading(true)
         }
-        const res = await addArticle(formValues, content, userData2.id)
+        const res = await addArticle(formValues, content, accessToken)
         if (res.response === true && res.success === true) {
             toast(translate(languageData, "articleAddedSuccessfully"), {
                 position: "top-center",
@@ -117,6 +243,12 @@ const AddArticle = () => {
             } else {
                 setLoading(false)
             }
+
+            setFormValues(initialValues)
+            setContent('')
+            setDisplayedImage(null);
+            setSelectedFile(null);
+            setButtonName(false);
 
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
@@ -158,12 +290,9 @@ const AddArticle = () => {
         }
     };
 
-    useEffect(() => {
-        articleListServices2()
 
-    }, [])
     const articleListServices2 = async () => {
-        const res = await projectList(userData2?.id)
+        const res = await projectList(accessToken)
         setArticlesData2(res?.data.reverse())
     }
 
@@ -178,7 +307,6 @@ const AddArticle = () => {
     const handleFileChange = (file) => {
         setSelectedFile(file);
     }
-
 
     const handleEditorChange = (html) => {
         setContent(html)
@@ -227,12 +355,12 @@ const AddArticle = () => {
         'header',
         'bold', 'italic', 'underline', 'strike',
         'list', 'bullet',
-        'link', 'image'
+        'link', 'image',
     ];
-    
+
     const uploadDocxServices = async () => {
         setLoading(true);
-        const res = await uploadDocx(selectedFile, lang);
+        const res = await uploadDocx(selectedFile, lang, accessToken);
         if (res.success === true) {
             toast(translate(languageData, "docxFileUploadSuccessfully"), {
                 position: "top-center",
@@ -250,8 +378,8 @@ const AddArticle = () => {
                     ...formValues,
                     title: res?.title.trim().replace(/\s+/g, ' '),
                     lead: res?.lead.trim().replace(/\s+/g, ' '),
-                    content: res?.content.trim().replace(/\s+/g, ' '),
-                    image: (res?.images[0]),
+                    content: res?.content,
+                    addImage: res?.images[0] ? base64ToFile(res?.images[0]) : null,
 
                 });
             }
@@ -274,7 +402,9 @@ const AddArticle = () => {
                 title: "",
                 lead: "",
                 content: "",
-                image: ""
+                addImage: "",
+                project: "",
+
             });
             setContent("")
             setDisplayedImage('')
@@ -294,11 +424,31 @@ const AddArticle = () => {
 
         setLoading(false);
     };
+
+    const handleShowModal = () => {
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+
     return (
         <div>
             <ToastContainer />
             <div>
                 <Card className='mt-5 pb-5'>
+                    {loading && (
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                        </div>
+                    )}
+                    {loading2 && (
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <img src={globalLoader} alt="Loading..." className='w-25 h-25' />
+                        </div>
+                    )}
                     <Card.Header>
                         <h3>  {translate(languageData, "AddArticle")}</h3>
                     </Card.Header>
@@ -306,7 +456,7 @@ const AddArticle = () => {
 
                         <Row className='align-items-center border-bottom pb-4'>
                             <Col xs={12} md={4}>
-                                <span>{translate(languageData, "AddArtiImportDoc")} *</span>
+                                <span>{translate(languageData, "AddArtiImportDoc")} </span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
                                 <div>
@@ -314,6 +464,8 @@ const AddArticle = () => {
                                         allowedFileExtensions={allowedDocExtensions}
                                         getData={handleFileChange}
                                         name="document"
+                                        isData={buttonName}
+                                        resetIsData={resetIsData}
                                     />
                                 </div>
                                 {formErrors.document && (
@@ -327,8 +479,8 @@ const AddArticle = () => {
                                 <span>{translate(languageData, "AddArtiProjectAdvertising")} *</span>
                             </Col>
                             <Col xs={12} md={8} className="mt-3 mt-md-0">
-                                <div className="form-group">
-                                    <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { handleChange(e) }} onClick={() => validate(formValues)}>
+                                <div className="form-group d-flex">
+                                    <select name="project" value={formValues?.project} style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => { handleChange(e) }} onClick={() => validate(formValues)}>
                                         <option label={translate(languageData, "artilstProject")}></option>
                                         {articlesData2.map((item, index) => {
                                             return (
@@ -338,7 +490,13 @@ const AddArticle = () => {
 
 
                                     </select>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip id="tooltip">{translate(languageData, "AddProject")}</Tooltip>}
+                                    ><button className='bg-transparent' onClick={handleShowModal} ><FaPlusCircle /></button>
+                                    </OverlayTrigger>
                                 </div>
+
                                 <div className='text-danger text-center mt-1'>{formErrors.project}</div>
                             </Col>
                         </Row>
@@ -390,7 +548,7 @@ const AddArticle = () => {
                                 <div><img src={displayedImage} alt='Displayed' /></div>
                             </Col>
                             <Col xs={12} md={3} className="mt-3 mt-md-0">
-                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="image" buttonName={translate(languageData, "uploadImage")} /></div>
+                                <div><FileUpload allowedFileExtensions={allowedImageExtension} getData={handleFiles} name="addImage" buttonName={translate(languageData, "uploadImage")} isData={buttonName} resetIsData={resetIsData} isUploadedImg= {formValues?.addImage}/></div>
                                 <div className='text-danger text-center mt-1'>{formErrors.image}</div>
                             </Col>
                             <Col xs={12} md={1} className='mt-3 mt-md-0'>
@@ -402,12 +560,61 @@ const AddArticle = () => {
                         </Row>
                     </Card.Body>
                     <div className='mt-5 ms-auto px-3'>
-                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")}> {translate(languageData, "Save")}  </Button>
-                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")}>{loading2 ? <img src={globalLoader} width={20} height={20} /> : translate(languageData, "SaveAndExit")}  </Button>
+                        <Button className='btn btn-primary' onClick={() => handleAddArticleServices("save")} disabled={loading}> {translate(languageData, "Save")}  </Button>
+                        <Button className='btn btn-primary ms-2' onClick={() => handleAddArticleServices("saveandexit")} disabled={loading2}>{translate(languageData, "SaveAndExit")}</Button>
                     </div>
                 </Card>
             </div>
-        </div>
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Project</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row className='align-items-center'>
+                        <Col lg={3} xs={12}>
+                            {translate(languageData, "NameOfTheProject")} *
+                        </Col>
+                        <Col lg={8} xs={12}>
+                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                <input className="input100" type="text" name="projectName" placeholder={translate(languageData, "ProjectName")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                            </div>
+                            <div className='text-danger text-center mt-1'>{formErrors.projectName}</div>
+                        </Col>
+                    </Row>
+                    <Row className='align-items-center mt-3'>
+                        <Col lg={3} xs={12}>
+                            {translate(languageData, "WebAddress")} *
+                        </Col>
+                        <Col lg={8} xs={12}>
+                            <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                <input className="input100" type="text" name="webAddress" placeholder={translate(languageData, "WebAddress")} style={{ paddingLeft: "15px" }} onChange={(e) => handleChange1(e)} onKeyDown={() => validate(formValues1)} />
+                            </div>
+                            <div className='text-danger text-center mt-1'>{formErrors.webAddress}</div>
+                        </Col>
+                    </Row>
+                    <Row className='align-items-center mt-3'>
+                        <Col lg={3} xs={12}>
+                            {translate(languageData, "publicationLanguage")} *
+                        </Col>
+                        <Col lg={8} xs={12}>
+                            <Select1 options={languagesOpts} name='publicationLang' styles={{ control: (provided) => ({ ...provided, borderColor: '#ecf0fa', height: '45px', }) }} onChange={handleSelectChange1} />
+                            <div className='text-danger text-center mt-1'>{formErrors.publicationLang}</div>
+                        </Col>
+
+                    </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                    <div>
+                        <Button variant="secondary" onClick={handleCloseModal}>
+                            {translate(languageData, "close")}
+                        </Button>
+                    </div>
+                    <div className=''>
+                        <Button className='btn btn-primary btn-w-md mx-auto' onClick={() => addProjectService()}>{loading ? <img src={globalLoader} width={20} /> : translate(languageData, "Save")} </Button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
+        </div >
     )
 }
 

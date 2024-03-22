@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
 import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { FaInfoCircle } from 'react-icons/fa';
+
+import { FaInfoCircle, FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { orderArticles } from '../../../services/articleServices/articleServices';
 import { projectList } from '../../../services/ProjectServices/projectServices';
@@ -13,11 +14,13 @@ import { useLanguage } from '../../Context/languageContext';
 import green from '../../../assets/images/cards/Green.png';
 import grey from '../../../assets/images/cards/Grey.png';
 import { articleTypeList } from "../../../services/buyArticleServices/buyArticlesServices";
+import { buyNow } from '../../../services/invoicesServices/invoicesServices';
 
 const OrderArticle = () => {
     const userData = JSON.parse(localStorage.getItem("userData"))
+    const accessToken = localStorage.getItem('accessToken')
     const lang = localStorage.getItem("lang");
-    
+
     const initialValues = {
         articleType: "",
         project: "",
@@ -34,10 +37,15 @@ const OrderArticle = () => {
     const [formErrors, setFormErrors] = useState({})
     const [orderLoading, setOrderLoading] = useState(false)
     const [articlePackages, setArticlePackages] = useState([])
+    const [redirectUrl, setRedirectUrl] = useState('')
+
     const [orderId, setOrderId] = useState(1);
     const [weProvideSubject, setWeProvideSubject] = useState(true);
     const [provideSubject, setProvideSubject] = useState(false);
     const [cardLang, setCardLang] = useState(lang)
+    const [linkAnchorPairs, setLinkAnchorPairs] = useState([{ link: '', requestAnchor: '' }]);
+    const [lastAddedLinkIndex, setLastAddedLinkIndex] = useState(0);
+    const MAX_LINK_ANCHOR_PAIRS = 10;
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -46,12 +54,32 @@ const OrderArticle = () => {
     }, [lang])
 
 
+    const addLinkAnchorPair = () => {
+        if (linkAnchorPairs.length < MAX_LINK_ANCHOR_PAIRS) {
+            setLinkAnchorPairs([...linkAnchorPairs, { link: '', requestAnchor: '' }]);
+            setLastAddedLinkIndex(linkAnchorPairs.length);
+        }
+    };
+
+    const handleChangeLinkAnchor = (index, type, value) => {
+        const updatedLinkAnchorPairs = [...linkAnchorPairs];
+        updatedLinkAnchorPairs[index][type] = value;
+        setLinkAnchorPairs(updatedLinkAnchorPairs);
+    };
+
+    console.log(linkAnchorPairs.map((item=>item.link)),"67")
+    console.log(linkAnchorPairs.map((item=>item.requestAnchor)), "68")
+
+  
+
+
+
     useEffect(() => {
         articleTypeListService()
     }, [])
 
     const articleTypeListService = async () => {
-        const res = await articleTypeList()
+        const res = await articleTypeList(accessToken)
         setArticlePackages(res?.data?.reverse())
     }
 
@@ -103,8 +131,7 @@ const OrderArticle = () => {
             setOrderLoading(false);
             return;
         }
-        const res = await orderArticles(formValues, orderPrice, articleType);
-
+        const res = await orderArticles(formValues, orderPrice.split(",")[0], articleType, linkAnchorPairs, accessToken);
         if (res.success === true) {
             toast(translate(languageData, "OrderAddedSuccessfully"), {
                 position: "top-center",
@@ -116,6 +143,10 @@ const OrderArticle = () => {
                 progress: undefined,
                 type: 'success'
             });
+            
+            buyNowServices('', "2", '', accessToken)
+           
+            // window.location.href = res?.redirect_url_all;
         } else if (res.success === false && res.response) {
             for (const field in res.response) {
                 if (res.response.hasOwnProperty(field)) {
@@ -219,7 +250,7 @@ const OrderArticle = () => {
     }
 
     const articleListServices2 = async () => {
-        const res = await projectList(userData?.id)
+        const res = await projectList(accessToken)
         setArticlesData2(res?.data.reverse())
     }
 
@@ -229,6 +260,28 @@ const OrderArticle = () => {
         setFormValues({ ...formValues, [name]: value });
     };
 
+    const removeLinkAnchorPair = (index) => {
+        const updatedPairs = linkAnchorPairs.filter((pair, i) => i !== index);
+        setLinkAnchorPairs(updatedPairs);
+        
+        if (index <= lastAddedLinkIndex) {
+            setLastAddedLinkIndex(lastAddedLinkIndex - 1);
+        }
+    };
+
+    const buyNowServices = async (domainId, serviceType, articleType, accessToken) => {
+        setOrderLoading(true)
+        const res = await buyNow(domainId, serviceType, articleType, accessToken)
+        if (res.success === true) {
+            window.location.href= res.redirect_url_all;
+            setOrderLoading(false )
+        } else {
+            setOrderLoading(false )
+
+        }
+    }
+    
+
     return (
         <div>
 
@@ -236,7 +289,7 @@ const OrderArticle = () => {
             <Card className='mt-4'>
                 <Card.Header className='d-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>{translate(languageData, "back")}</Button></Card.Header>
                 <Card.Body>
-                    <div className='border-bottom'>
+                    {/* <div className='border-bottom'>
                         <Col lg={10} className='mt-6 pb-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
@@ -247,7 +300,7 @@ const OrderArticle = () => {
                                 </Col>
                             </Row>
                         </Col>
-                    </div>
+                    </div> */}
                     <div>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>
@@ -369,6 +422,42 @@ const OrderArticle = () => {
 
                             </Col>
                         </Row>
+
+                        {linkAnchorPairs.map((pair, index) => (
+                            <div key={index}>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "link")} </span>
+                                    </Col>
+                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                        <div className="wrap-input100 validate-input mb-0 d-flex" data-bs-validate="Password is required">
+                                            <input className="input100" type="text" name="link" placeholder={translate(languageData, "link")} style={{ paddingLeft: "15px" }} value={pair.link} onChange={(e) => handleChangeLinkAnchor(index, 'link', e.target.value)} />
+                                            {linkAnchorPairs.length < MAX_LINK_ANCHOR_PAIRS && (index === lastAddedLinkIndex || (index === linkAnchorPairs.length - 1 && lastAddedLinkIndex === linkAnchorPairs.length - 1)) && (
+                                                <OverlayTrigger
+                                                    placement="top"
+                                                    overlay={<Tooltip id="tooltip">{translate(languageData, "addMoreLink&Anchor")}</Tooltip>}
+                                                ><button className='bg-transparent' onClick={addLinkAnchorPair}><FaPlusCircle /></button>
+                                                </OverlayTrigger>
+                                            )}
+                                            {index > 0 && (
+                                                <button className='bg-transparent' onClick={() => removeLinkAnchorPair(index)}><FaMinusCircle /></button>
+                                            )}
+                                        </div>
+
+                                    </Col>
+                                </Row>
+                                <Row className='align-items-center mt-5'>
+                                    <Col xs={12} md={4}>
+                                        <span>{translate(languageData, "requestanchor")} </span>
+                                    </Col>
+                                    <Col xs={12} md={8} className="mt-3 mt-md-0">
+                                        <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
+                                            <input className="input100" type="text" name="requestAnchor" placeholder={translate(languageData, "requestanchor")} style={{ paddingLeft: "15px" }} value={pair.requestAnchor} onChange={(e) => handleChangeLinkAnchor(index, 'requestAnchor', e.target.value)} />
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </div>
+                        ))}
                     </div>
 
 

@@ -31,6 +31,7 @@ const Invoices = () => {
   };
 
   const userData = JSON.parse(localStorage.getItem('userData'))
+  const accessToken = localStorage.getItem('accessToken')
   const { languageData } = useLanguage()
   const [loading, setLoading] = useState(false)
   const [showNipEditModal, setShowNipEditModal] = useState(false);
@@ -80,7 +81,7 @@ const Invoices = () => {
 
   const invoicesListServices = async () => {
     setLoading(true)
-    const res = await getInvoices(userData?.id)
+    const res = await getInvoices(accessToken)
     if (res.success === true) {
       setInvoicesList(res?.user_info)
       setLoading(false)

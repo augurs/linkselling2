@@ -13,32 +13,34 @@ const ReadyArticles = () => {
 
 
     const navigate = useNavigate();
-
+    const accessToken = localStorage.getItem('accessToken')
     const [projectListData, setProjectList] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const [showIndexationModal, setShowIndexationModal] = useState(false)
     const [isDataPresent, setIsDataPresent] = useState(true);
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const [dropdownStatus, setDropdownStatus] = useState('');
+    const [project, setProject] = useState('');
+    const [search, setSearch] = useState('');
+    const [date, setDate] = useState('');
+
+
+    // const userData = JSON.parse(localStorage.getItem("userData"));
     const { languageData } = useLanguage()
 
     useEffect(() => {
         projectListServices()
-    }, [])
-
-    const projectListServices = async () => {
-        const res = await projectList(userData?.id)
-        setProjectList(res.data)
-    }
-
-    useEffect(() => {
         readyArticleListServices()
     }, [])
 
+    const projectListServices = async () => {
+        const res = await projectList(accessToken)
+        setProjectList(res.data)
+    }
 
     const readyArticleListServices = async () => {
         setLoading(true)
-        const res = await readyArticleList(userData?.id)
+        const res = await readyArticleList(accessToken)
         if (res.success === true) {
             setData(res?.data);
             setIsDataPresent(res.data.length > 0);
@@ -49,7 +51,12 @@ const ReadyArticles = () => {
         }
     };
 
-    const tableData = data?.map((item) => {
+
+    const tableData = data?.filter((item) =>
+        (item?.title && item?.title.toLowerCase().includes(search.toLowerCase()))
+    ).filter((item) => item?.project && typeof item?.project === 'string' && item?.project.toLowerCase().includes(project.toLowerCase())
+    )?.filter((item) => item?.status && typeof item?.status === 'string' && item?.status.toLowerCase().includes(dropdownStatus.toLowerCase())
+    )?.filter((item) => item?.created_at && typeof item?.created_at === 'string' && item?.created_at.toLowerCase().includes(date.toLowerCase())).map((item) => {
         return {
             portal: item?.portal,
             price: item?.price,
@@ -191,10 +198,9 @@ const ReadyArticles = () => {
             name: translate(languageData, "dateOfOrder"),
             selector: row => row.date,
             cell: (row) => (
-                <button className='btn btn-pill btn-outline-primary' style={{ fontSize: "12px" }}>{row.date}</button>
+                row.date
             ),
             sortable: true,
-            center: true,
             wrap: true,
             width: "150px",
             style: {
@@ -351,25 +357,24 @@ const ReadyArticles = () => {
         },
     ]
 
-    const status = [
-        translate(languageData, "All"),
-        "Untested",
-        "Correct",
-        translate(languageData, "Checked"),
-        "Not Available",
-    ]
+    // const status = [
+    //     translate(languageData, "All"),
+    //     "Untested",
+    //     "Correct",
+    //     translate(languageData, "Checked"),
+    //     "Not Available",
+    // ]
 
-    const indexationStatus = [
-        translate(languageData, "All"),
-        translate(languageData, "Unknown"),
-        translate(languageData, "ReadyArticleChecked"),
-        translate(languageData, "ReadyArticleOk"),
-        translate(languageData, "Unindexed"),
-        translate(languageData, "UnindexedPublisherBlocks"),
-        translate(languageData, "DuringIndexation"),
-        translate(languageData, "FailedIndexation")
-    ]
-
+    // const indexationStatus = [
+    //     translate(languageData, "All"),
+    //     translate(languageData, "Unknown"),
+    //     translate(languageData, "ReadyArticleChecked"),
+    //     translate(languageData, "ReadyArticleOk"),
+    //     translate(languageData, "Unindexed"),
+    //     translate(languageData, "UnindexedPublisherBlocks"),
+    //     translate(languageData, "DuringIndexation"),
+    //     translate(languageData, "FailedIndexation")
+    // ]
 
     return (
         <div className='p-4'>
@@ -378,11 +383,11 @@ const ReadyArticles = () => {
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
-                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country">
+                            <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" onChange={(e) => setProject(e.target.value)} >
                                 <option label={translate(languageData, "artilstProject")}></option>
                                 {projectListData?.map((item, index) => {
                                     return (
-                                        <option value={item.id} key={index}>{item.name}</option>
+                                        <option value={item.name} key={index}>{item.name}</option>
                                     )
                                 })}
                             </select>
@@ -391,7 +396,7 @@ const ReadyArticles = () => {
                     </Col>
                     <Col xs={12} sm={6} md={4} className='mb-3'>
                         <div className="wrap-input100 validate-input mb-0" data-bs-validate="Password is required">
-                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} />
+                            <input className="input100" type="text" name="search" placeholder={translate(languageData, "EnterNameTitle")} onChange={(e) => setSearch(e.target.value)} />
                             <span className="focus-input100"></span>
                             <span className="symbol-input100">
                                 <i className="zmdi zmdi-search" aria-hidden="true"></i>
@@ -400,13 +405,21 @@ const ReadyArticles = () => {
                     </Col>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="form-group">
-                            <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status">
+                            <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setDropdownStatus(e.target.value)} value={dropdownStatus}>
                                 <option label={translate(languageData, "PublicationStatus")}></option>
-                                {status.map((item, index) => {
+                                {/* {data?.map((item, index) => {
                                     return (
-                                        <option value={item} key={index}>{item}</option>
+                                        <option value={item?.status} key={index}>{item?.status}</option>
                                     )
-                                })}
+                                })} */}
+
+                                {[...new Set(data?.map((item) => item.status))]?.map(
+                                    (status, index) => (
+                                        <option value={status} key={index}>
+                                            {status=="AcceptPublication" ? translate(languageData, "AcceptPublication"): status}
+                                        </option>
+                                    )
+                                )}
                             </select>
                         </div>
                     </Col>
@@ -414,7 +427,7 @@ const ReadyArticles = () => {
                 <Row>
                     <Col xs={12} sm={6} md={4} className=''>
                         <div className="input-group">
-                            <input className="form-control" id="datepicker-date" placeholder="MM/DD/YYYY" type="date" style={{ height: "45px" }} max={new Date().toISOString().split("T")[0]} />
+                            <input className="form-control" id="datepicker-date" placeholder="MM/DD/YYYY" type="date" style={{ height: "45px" }} max={new Date().toISOString().split("T")[0]} onChange={(e) => setDate(e.target.value)} />
                         </div>
                     </Col>
                 </Row>
