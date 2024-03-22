@@ -838,6 +838,16 @@ const BuyArticles = () => {
             return false;
         }
     };
+    const linkCount = countLinksInEditor(content);
+
+    useEffect(() => {
+        if (linkCount > selectedMaxLinks) {
+            console.error('Too many links in editor!');
+        }
+    }, [linkCount]);
+
+
+
 
     const addToCartArticleServices = async () => {
         if (articleType === translate(languageData, "AddNewArticle")) {
@@ -870,7 +880,7 @@ const BuyArticles = () => {
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast(translate(languageData, "Minimum1link"), {
+                toast(`${translate(languageData, "Toomanylinks")}: ${selectedMaxLinks}`, {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -1028,7 +1038,7 @@ const BuyArticles = () => {
             }
 
             if (linkCount > 0 && linkCount > selectedMaxLinks) {
-                toast(translate(languageData, "Minimum1link"), {
+                toast(`${translate(languageData, "Toomanylinks")}: ${selectedMaxLinks}`, {
                     position: "top-center",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -1184,13 +1194,7 @@ const BuyArticles = () => {
         setContent(html)
     }
 
-    const linkCount = countLinksInEditor(content);
 
-    useEffect(() => {
-        if (linkCount > selectedMaxLinks) {
-            console.error('Too many links in editor!');
-        }
-    }, [linkCount]);
 
 
     const handleFiles = (file) => {
@@ -1244,15 +1248,19 @@ const BuyArticles = () => {
         }
     }, [pid]);
 
-
+    useEffect(() => {
+        if (search || typeAnchors || languageFilter) {
+            setPage(1)
+        }
+    }, [search, typeAnchors, languageFilter])
 
     //slect project api and auto select option with id 
 
     //filter article send data with cheked box start
     const getPublisherArticlesService = async () => {
         const res = await getPublisherArticles(page, search, typeAnchors, languageFilter, accessToken)
-        setArticles(res.data)
-        setLastPage(res?.last_page)
+        setArticles(res?.data)
+        setLastPage(res?.meta?.last_page)
     }
     //filter article send data with cheked box start
 

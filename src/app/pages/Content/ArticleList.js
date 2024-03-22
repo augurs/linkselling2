@@ -9,6 +9,8 @@ import globalLoader from '../../../assets/images/loader.svg'
 import { translate } from '../../../utility/helper';
 import { useLanguage } from '../../Context/languageContext';
 import { FaEye } from 'react-icons/fa';
+import { projectList } from '../../../services/ProjectServices/projectServices';
+import { articleListStatus } from '../../../utility/data';
 
 const ArticleList = () => {
 
@@ -17,6 +19,7 @@ const ArticleList = () => {
     const [searchTerms, setSearchTerms] = useState({ title: "", project: "", status: "", date: "" })
     const [articleSearchData, setArticleSearchData] = useState([]);
     const [loading, setLoading] = useState(false)
+    const [projectListData, setProjectList] = useState([])
 
     const userData = JSON.parse(localStorage.getItem('userData'))
     const accessToken = localStorage.getItem('accessToken')
@@ -29,7 +32,15 @@ const ArticleList = () => {
 
     useEffect(() => {
         handleArticleList()
+        projectListServices()
     }, [])
+
+    const projectListServices = async () => {
+        setLoading(true)
+        const res = await projectList(accessToken)
+        setProjectList(res.data)
+        setLoading(false)
+    }
 
     const handleSearchService = async () => {
         setLoading(true)
@@ -106,10 +117,6 @@ const ArticleList = () => {
         }
     })
 
-    const handleOrders = (orders) => {
-        setOrder(orders)
-    }
-
 
     const sourecDropOptions = [
         {
@@ -122,20 +129,13 @@ const ArticleList = () => {
 
     const noDataComponent = <div className="text-center">{translate(languageData, "thereAreNoRecordsToDisplay")}</div>;
 
+
     return (
         <div className='p-4'>
 
             <div className='d-flex flex-wrap '>
                 <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addArticle')}>{translate(languageData, "SidebarAddArticle")}</Button>
-                <Dropdown className='mt-2'>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        {translate(languageData, "artilistOrders")}
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => handleOrders("Order an Article")}>{translate(languageData, "artilistOrderArticle")}</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Button className='btn btn-primary btn-w-md me-2 mt-2' >{translate(languageData, "artilistOrders")}</Button>
             </div>
             <div className=' mt-4'>
                 <Row>
@@ -143,8 +143,8 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="project" style={{ height: "45px" }} class=" form-select" id="default-dropdown" data-bs-placeholder="Select Country" onChange={(e) => setSearchTerms({ ...searchTerms, project: e.target.value })}>
                                 <option label={translate(languageData, "artilstProject")}></option>
-                                {[...new Set(articleList?.map(item => item.project))]?.map((project, index) => (
-                                    <option value={project} key={index}>{project}</option>
+                                {projectListData?.map((project, index) => (
+                                    <option value={project.name} key={index}>{project.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -163,10 +163,9 @@ const ArticleList = () => {
                         <div className="form-group">
                             <select name="status" style={{ height: "45px" }} className=" form-select" id="default-dropdown" data-bs-placeholder="Select Status" onChange={(e) => setSearchTerms({ ...searchTerms, status: e.target.value })}>
                                 <option label={translate(languageData, "artilstStatus")}></option>
-                                {[...new Set(articleTableData?.map((item) => item.status))]?.map(
-                                    (status, index) => (
-                                        <option value={status} key={index}>
-                                            {status}
+                                {articleListStatus?.map((status, index) => (
+                                        <option value={status.value} key={index}>
+                                            {status.label}
                                         </option>
                                     )
                                 )}

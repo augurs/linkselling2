@@ -14,7 +14,7 @@ import DataTable from 'react-data-table-component'
 import moment from 'moment';
 import FileUpload from '../FileUpload/FileUpload';
 import { useWallet } from '../../Context/walletContext';
-const Referral = () => {
+const Referral = ({handleLinkPath, toggleSidebar2}) => {
     const initialValues = {
         amount: "",
         ReferralPdf: "",
@@ -218,7 +218,7 @@ const Referral = () => {
     return (
         <div>
             <div onClick={() => setShowReferralModal(true)}>
-                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide">
+                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide" onClick={() => toggleSidebar2() }>
                     <span className="side-menu__icon"><BsPeople size={20} style={{ color: "gray!important" }} /></span>
                     <span className="side-menu__label">{translate(languageData, "referFriends")}</span>
                 </Link>

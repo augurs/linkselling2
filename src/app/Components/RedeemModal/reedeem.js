@@ -7,7 +7,7 @@ import { useLanguage } from "../../Context/languageContext";
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { BsPatchCheckFill } from "react-icons/bs";
-const Referral = () => {
+const Referral = ({toggleSidebar2}) => {
     const initialValues = {
         redeemCode: ""
     };
@@ -70,7 +70,7 @@ const Referral = () => {
                 progress: undefined,
                 type: 'success'
             });
-            
+
         }
         if (response.success === true && response.message == "This is already active") {
             toast(translate(languageData, "thisCodeAlreadyUsed"), {
@@ -83,7 +83,7 @@ const Referral = () => {
                 progress: undefined,
                 type: 'info'
             });
-            
+
         }
         if (response.success === false && response.message == "This Redeem code is expired") {
             toast(translate(languageData, "thisRedeemCodeIsExpired"), {
@@ -96,7 +96,7 @@ const Referral = () => {
                 progress: undefined,
                 type: 'info'
             });
-            
+
         }
 
     };
@@ -109,7 +109,7 @@ const Referral = () => {
     return (
         <div>
             <div onClick={() => setShowRedeemModal(true)}>
-                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide">
+                <Link to='#' className="side-menu__item has-link" data-bs-toggle="slide" onClick={() => toggleSidebar2()}>
                     <span className="side-menu__icon"><FaHandHoldingUsd size={20} style={{ color: "gray!important" }} /></span>
                     <span className="side-menu__label">{translate(languageData, "redeemCode")}</span>
                 </Link>
@@ -140,7 +140,7 @@ const Referral = () => {
                         </Col>
                     </Form.Group>
                     <div className='d-flex justify-content-end gap-1 border-top'>
-                        <Button onClick={redeemCodeServices} className='mt-2'>
+                        <Button onClick={redeemCodeServices} className='mt-2' disabled={loading}>
                             {loading ? 'Loading...' : translate(languageData, "redeem")}
                         </Button>
                     </div>

@@ -261,13 +261,87 @@ function VieworderArticle() {
               <Card.Body>
                 {portalArticleDetail.length > 0 ?
                   (<div>
+                    {portalArticleDetail[0]?.article_id == "paid" &&
+                      <Row className="mt-5">
+                        <Col xs={12} md={4}>
+                          <span>{translate(languageData, 'ArticleType')}</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0">
+                            {portalArticleDetail[0]?.article_id ?? '--'}
+                          </div>
+                        </Col>
+                      </Row>}
+                    {portalArticleDetail[0]?.article_id == "paid" &&
+                      <Row className="mt-5">
+                        <Col xs={12} md={4}>
+                          <span>{translate(languageData, 'articleSubject')}</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0">
+                            {portalArticleDetail[0]?.articlesubject ?? '--'}
+                          </div>
+                        </Col>
+                      </Row>}
+                    {portalArticleDetail[0]?.article_id == "paid" &&
+                      <Row className="mt-5">
+                        <Col xs={12} md={4}>
+                          <span>{translate(languageData, 'link')}</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0">
+                            {portalArticleDetail[0]?.link ? (
+                              portalArticleDetail[0]?.link.split(",").map((link, index) => (
+                                <div key={index}>
+                                  <a href={link}>{link}</a>,
+                                  {index === 0 && <br />}
+                                </div>
+                              ))
+                            ) : (
+                              '--'
+                            )}
+                          </div>
+                        </Col>
+
+                      </Row>}
+                    {portalArticleDetail[0]?.article_id == "paid" &&
+                      <Row className="mt-5">
+                        <Col xs={12} md={4}>
+                          <span>{translate(languageData, 'requestanchor')}</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0">
+                            {portalArticleDetail[0]?.placing_anchor ? (
+                              portalArticleDetail[0]?.placing_anchor.split(",").map((placing_anchor, index) => (
+                                <div key={index}>
+                                  {placing_anchor},
+                                  {index === 0 && <br />}
+                                </div>
+                              ))
+                            ) : (
+                              '--'
+                            )}
+                          </div>
+                        </Col>
+                      </Row>}
+                    {portalArticleDetail[0]?.article_id == "paid" &&
+                      <Row className="mt-5">
+                        <Col xs={12} md={4}>
+                          <span>{translate(languageData, 'ProjectName')}</span>
+                        </Col>
+                        <Col xs={12} md={8} className="mt-3 mt-md-0">
+                          <div className="wrap-input100 validate-input mb-0">
+                            {portalArticleDetail[0]?.project ?? '--'}
+                          </div>
+                        </Col>
+                      </Row>}
                     <Row className="mt-5">
                       <Col xs={12} md={4}>
                         <span>{translate(languageData, 'TitleOfArticle')}</span>
                       </Col>
                       <Col xs={12} md={8} className="mt-3 mt-md-0">
                         <div className="wrap-input100 validate-input mb-0">
-                          {portalArticleDetail[0]?.title ?? ''}
+                          {portalArticleDetail[0]?.title ?? '--'}
                         </div>
                       </Col>
                     </Row>

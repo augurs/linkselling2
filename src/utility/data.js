@@ -1,5 +1,7 @@
 export const baseURL = 'https://link.load-fast.com';
 export const baseURL2 = 'https://linkselling.augurslive.com';
+// export const baseURL2 = 'https://panel.trustluna.com';
+
 
 const ITEM_HEIGHT = 43;
 const ITEM_PADDING_TOP = 4;
@@ -501,5 +503,17 @@ export const isValidUrl = (url) => {
     {
         value: "Polish",
         label: "Polish"
+    }
+]
+
+
+export const articleListStatus = [
+    {
+        value: "Ready to Publish",
+        label: "Ready for publication"
+    },
+    {
+        value: "Paid",
+        label: "Published articles"
     }
 ]

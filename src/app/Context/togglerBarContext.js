@@ -27,8 +27,16 @@ export const SidebarProvider = ({ children }) => {
     }
   }, [hasBeenOpened]);
 
+  const toggleSidebar2 = useCallback(() => {
+    if (hasBeenOpened) {
+      setSidebarActive(false);
+      setHasBeenOpened(true);
+    } else {
+      setSidebarActive(false);
+    }
+  }, [hasBeenOpened]);
   return (
-    <SidebarContext.Provider value={{ sidebarActive, toggleSidebar, toggleSidebar1 }}>
+    <SidebarContext.Provider value={{ sidebarActive, toggleSidebar, toggleSidebar1, toggleSidebar2 }}>
       {children}
     </SidebarContext.Provider>
   );

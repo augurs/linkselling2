@@ -158,7 +158,7 @@ export const searchArticles = (values, accessToken) => {
     project: values.project,
     lead: '',
     date: values.date,
-    status: ''
+    status: values.status
   };
 
   return axios

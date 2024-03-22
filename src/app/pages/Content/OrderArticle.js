@@ -289,7 +289,7 @@ const OrderArticle = () => {
             <Card className='mt-4'>
                 <Card.Header className='d-flex justify-content-between border-bottom pb-4'><h4 className='fw-semibold'>{translate(languageData, "OrderOneMoreArticles")}</h4><Button className="btn btn-outline-primary" onClick={() => navigate('/articleList')}>{translate(languageData, "back")}</Button></Card.Header>
                 <Card.Body>
-                    <div className='border-bottom'>
+                    {/* <div className='border-bottom'>
                         <Col lg={10} className='mt-6 pb-6' >
                             <Row className='align-items-center '>
                                 <Col xs={12} md={4}>
@@ -300,7 +300,7 @@ const OrderArticle = () => {
                                 </Col>
                             </Row>
                         </Col>
-                    </div>
+                    </div> */}
                     <div>
                         <Row className='align-items-center mt-5'>
                             <Col xs={12} md={4}>

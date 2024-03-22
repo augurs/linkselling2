@@ -60,7 +60,7 @@ async function createDocFromData(data) {
                 {
                     children: [
                         new Paragraph({
-                            text: data.title,
+                            // text: data.title,
                             heading: HeadingLevel.HEADING_1,
                             children: [
                                 new TextRun(data.title)
@@ -93,7 +93,6 @@ async function createDocFromData(data) {
 
 function Portalarticledetails() {
 
-    const userData = localStorage.getItem('userData');
 
 
     const [loading, setLoading] = useState(false)
@@ -269,10 +268,10 @@ function Portalarticledetails() {
     const handleDownload = async () => {
         setLoading(true);
         const articleData = portalArticleDetail[0];
-    
+
         if (articleData) {
             const zip = new JSZip();
-    
+
             // Generate DOCX files and add them to the ZIP file
             const blob = await createDocFromData({
                 title: articleData.title || "",
@@ -281,10 +280,14 @@ function Portalarticledetails() {
                 image: `${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}` || ""
             });
             zip.file("downloaded.docx", blob);
-    
-            // Generate more DOCX files if needed and add them to the ZIP file
-    
-            // Generate the ZIP file
+
+            // Download image file
+            const imageBlob = await fetch(`${baseURL2}/LinkSellingSystem/public/articles/${articleData.image}`).then(response => response.blob());
+            zip.file(articleData.image, imageBlob);
+
+            const titleTextBlob = new Blob([articleData.title], { type: 'text/plain' });
+            zip.file("title.txt", titleTextBlob);
+
             zip.generateAsync({ type: "blob" })
                 .then((content) => {
                     saveAs(content, "downloaded.zip");

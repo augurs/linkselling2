@@ -412,7 +412,7 @@ const Home = () => {
         </Col>
         <Col xs={12} sm={12} lg={6}>
           <Card className='mt-5'>
-            <Card.Header className='f-flex justify-content-between border-bottom pb-4'>
+            <Card.Header className='f-flex justify-content-between border-bottom pb-1'>
               <h3 className='fw-semibold'>{translate(languageData, "projectList")}</h3>
               <Button className='btn btn-primary btn-w-md me-2 mt-2' onClick={() => navigate('/addProject')}>{translate(languageData, "AddProject")}</Button>
             </Card.Header>
@@ -422,7 +422,7 @@ const Home = () => {
                   {loading ? <div className='d-flex'>
                     <img src={globalLoader} className='mx-auto mt-1' alt='loader1' />
                   </div> :
-                    <div style={{ height: '200px', overflowY: 'scroll', maxHeight: '200px' }}>
+                    <div style={{ height: '206px', overflowY: 'scroll', maxHeight: '206px' }}>
                       <DataTable
                         columns={columns}
                         data={tableData}
